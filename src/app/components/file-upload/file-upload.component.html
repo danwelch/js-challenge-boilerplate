@@ -1,0 +1,25 @@
+<div class="upload">
+  <label class="upload__button" for="policy-file">
+    <span class="upload__icon" aria-hidden="true">⬆</span>
+    <span>Upload policy CSV</span>
+  </label>
+
+  <input
+    id="policy-file"
+    class="upload__input"
+    type="file"
+    accept=".csv,text/csv"
+    (change)="onFileChange($event)"
+    [attr.aria-describedby]="error() ? 'upload-hint upload-error' : 'upload-hint'"
+    [attr.aria-invalid]="error() ? 'true' : null"
+  />
+
+  <p class="upload__hint" id="upload-hint">CSV file only, up to 2 MB.</p>
+
+  @if (error(); as message) {
+    <p class="upload__error" id="upload-error" role="alert">
+      <span class="upload__error-icon" aria-hidden="true">⚠</span>
+      {{ message }}
+    </p>
+  }
+</div>
