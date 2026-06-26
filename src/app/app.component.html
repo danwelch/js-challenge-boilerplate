@@ -3,7 +3,7 @@
     <h1 class="app__title">Kin OCR</h1>
   </header>
 
-  <app-panel variant="upload" title="OCR File Upload">
+  <app-panel data-variant="upload" title="OCR File Upload">
     <p class="panel-subtitle" panel-subtitle>
       Upload the scanner’s CSV export to review the policy numbers it captured.
     </p>
@@ -14,7 +14,7 @@
     />
   </app-panel>
 
-  <app-panel variant="results" title="Results">
+  <app-panel data-variant="results" title="Results">
     @if (store.hasPolicies()) {
       <span class="panel-title-count" panel-title-extra
         >for {{ store.sourceName() }}</span

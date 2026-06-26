@@ -26,7 +26,7 @@ describe('AppComponent', () => {
 
   it('shows the empty state and no table before any upload', () => {
     const el = fixture.nativeElement as HTMLElement;
-    const resultsPanel = el.querySelector('app-panel.panel--results')!;
+    const resultsPanel = el.querySelector('app-panel[data-variant="results"]')!;
     expect(resultsPanel.textContent).toContain('No policy numbers loaded yet');
     expect(el.querySelector('app-policy-table')).toBeNull();
   });

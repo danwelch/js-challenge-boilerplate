@@ -1,8 +1,7 @@
 /*
- * Host styles for the panel. Modifier classes (`panel--upload`,
- * `panel--results`) are applied by the component via host bindings, so we
- * target them with `:host(.<modifier>)` and consumers can also style them from
- * a parent stylesheet under the same BEM names if they need to.
+ * Host styles for the panel. The component is variant-agnostic — consumers tag
+ * individual panels with their own HTML attributes and target those from their
+ * stylesheet (e.g. `app-panel[data-variant="results"]`).
  */
 :host {
   display: flex;
@@ -12,10 +11,6 @@
   background-color: var(--color-neutral-white);
   border: 1px solid var(--color-neutral-300);
   border-radius: var(--border-radius-400);
-}
-
-:host(.panel--results) {
-  align-self: stretch;
 }
 
 .panel-heading {

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PanelComponent, PanelVariant } from './panel.component';
+import { PanelComponent } from './panel.component';
 
 @Component({
   standalone: true,
   imports: [PanelComponent],
   template: `
-    <app-panel [variant]="variant" [title]="title">
+    <app-panel [title]="title">
       <span panel-title-extra>extra</span>
       <p panel-subtitle>subtitle</p>
       <div class="body">body</div>
@@ -14,13 +14,11 @@ import { PanelComponent, PanelVariant } from './panel.component';
   `,
 })
 class HostComponent {
-  variant: PanelVariant = 'upload';
   title = 'Upload';
 }
 
 describe('PanelComponent', () => {
   let fixture: ComponentFixture<HostComponent>;
-  let host: HostComponent;
 
   function panelEl(): HTMLElement {
     return fixture.nativeElement.querySelector('app-panel');
@@ -29,7 +27,6 @@ describe('PanelComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({ imports: [HostComponent] });
     fixture = TestBed.createComponent(HostComponent);
-    host = fixture.componentInstance;
     fixture.detectChanges();
   });
 
@@ -45,16 +42,11 @@ describe('PanelComponent', () => {
     expect(panelEl().querySelector('h2')!.textContent).toContain('Upload');
   });
 
-  it('applies the BEM modifier class for the current variant', () => {
+  it('applies the base panel class but no variant-specific classes', () => {
     expect(panelEl().classList).toContain('panel');
-    expect(panelEl().classList).toContain('panel--upload');
-    expect(panelEl().classList).not.toContain('panel--results');
-
-    host.variant = 'results';
-    fixture.detectChanges();
-
-    expect(panelEl().classList).toContain('panel--results');
-    expect(panelEl().classList).not.toContain('panel--upload');
+    // The panel itself is variant-agnostic — consumers tag panels via
+    // their own attributes/classes from the outside.
+    expect([...panelEl().classList].filter((c) => c.startsWith('panel--'))).toEqual([]);
   });
 
   it('projects content into all three slots', () => {

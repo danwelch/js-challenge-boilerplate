@@ -1,23 +1,22 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-export type PanelVariant = 'upload' | 'results';
-
 /** Monotonic counter so each panel gets a unique title id without DI plumbing. */
 let panelIdCounter = 0;
 
 /**
- * Section-style card with a labelled heading and projected body. Replaces the
- * ad-hoc `.panel` markup that used to live inline in `AppComponent`.
+ * Section-style card with a labelled heading and projected body.
  *
  * The host renders as a labelled landmark (`role="region"` + `aria-labelledby`)
- * so each panel shows up in assistive-tech navigation. The visual style is
- * picked by a `variant` input that maps to a BEM-style modifier class
- * (`panel--upload`, `panel--results`, …) — the consumer keeps using
- * the existing class names and can target them in `app.component.scss`.
+ * so each panel shows up in assistive-tech navigation. The panel itself is
+ * deliberately variant-agnostic: rather than enumerate a fixed list of variants
+ * here, consumers tag individual panels with whatever HTML attribute makes
+ * sense for their context (e.g. `<app-panel data-variant="results">`) and
+ * target them from their own stylesheet — `app-panel[data-variant="results"]`.
+ * This keeps the panel a clean structural primitive.
  *
  * Three projection slots:
  *   - `[panel-title-extra]`: inline content rendered next to the title text
- *     (e.g. the "for filename.csv" trailing label on the results panel).
+ *     (e.g. a trailing label beside the title).
  *   - `[panel-subtitle]`: the subtitle block under the title.
  *   - default: panel body content.
  */
@@ -30,15 +29,10 @@ let panelIdCounter = 0;
   host: {
     class: 'panel',
     role: 'region',
-    '[class.panel--upload]': "variant() === 'upload'",
-    '[class.panel--results]': "variant() === 'results'",
     '[attr.aria-labelledby]': 'titleId',
   },
 })
 export class PanelComponent {
-  /** Visual style; reflected as a BEM modifier class on the host. */
-  readonly variant = input.required<PanelVariant>();
-
   /** Panel title text. Required so the labelled-region landmark is meaningful. */
   readonly title = input.required<string>();
 

@@ -33,6 +33,10 @@
  * projected into the panel's slots, so they stay with the consumer (AppComponent)
  * because emulated view encapsulation scopes them to this view.
  */
+app-panel[data-variant='results'] {
+  align-self: stretch;
+}
+
 .panel-subtitle {
   margin: 0;
   color: var(--color-neutral-700);
