@@ -1,6 +1,6 @@
 <div class="upload">
-  <label class="upload__button" for="policy-file">
-    <span class="upload__icon" aria-hidden="true">⬆</span>
+  <label appButton variant="primary" class="upload__button" for="policy-file">
+    <lucide-icon [img]="UploadIcon" [size]="18" aria-hidden="true" />
     <span>Upload policy CSV</span>
   </label>
 
@@ -18,8 +18,8 @@
 
   @if (error(); as message) {
     <p class="upload__error" id="upload-error" role="alert">
-      <span class="upload__error-icon" aria-hidden="true">⚠</span>
-      {{ message }}
+      <lucide-icon [img]="AlertIcon" [size]="18" aria-hidden="true" />
+      <span>{{ message }}</span>
     </p>
   }
 </div>

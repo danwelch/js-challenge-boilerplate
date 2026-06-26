@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { LucideAngularModule, TriangleAlert, Upload } from 'lucide-angular';
+import { ButtonDirective } from '../button/button.directive';
 
 /** Maximum accepted file size: 2 MB, expressed in bytes. */
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -17,18 +19,24 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
  *
  * Accessibility notes:
  *  - The native `<input type="file">` is visually hidden but stays in the tab
- *    order; the styled `<label>` shows a focus ring via `:focus-within`.
+ *    order; the `<label appButton>` shows a focus ring via `:focus-within`.
  *  - Errors render in a `role="alert"` region so screen readers announce them,
  *    and the input is wired to them with `aria-describedby` / `aria-invalid`.
+ *  - Icons are decorative (`aria-hidden`); meaning is carried by the text.
  */
 @Component({
   selector: 'app-file-upload',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [LucideAngularModule, ButtonDirective],
   templateUrl: './file-upload.component.html',
   styleUrl: './file-upload.component.scss',
 })
 export class FileUploadComponent {
+  /** Lucide icons used in the template. */
+  protected readonly UploadIcon = Upload;
+  protected readonly AlertIcon = TriangleAlert;
+
   /** Error message to display (driven by the store), or `null` when clear. */
   readonly error = input<string | null>(null);
 

@@ -1,0 +1,73 @@
+/*
+ * Global styles for the `appButton` directive. A directive has no encapsulated
+ * stylesheet, so its design-system classes live in this global sheet (registered
+ * in angular.json). Values come from the shared design tokens in `styles.scss`.
+ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-75);
+  font-family: var(--font-public);
+  font-weight: var(--font-weight-600);
+  line-height: var(--line-height-0);
+  white-space: nowrap;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-200);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--color-secondary-200);
+  outline-offset: 2px;
+}
+
+/* Sizes */
+.btn--sm {
+  padding: var(--space-75) var(--space-200);
+  font-size: var(--text-body-sm);
+}
+
+.btn--md {
+  padding: var(--space-100) var(--space-300);
+  font-size: var(--text-body-md);
+}
+
+.btn--lg {
+  padding: var(--space-200) var(--space-400);
+  font-size: var(--text-body-lg);
+}
+
+/* Variants */
+.btn--primary {
+  color: var(--color-neutral-black);
+  background-color: var(--color-primary);
+  border-color: var(--color-neutral-black);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-500);
+}
+
+.btn--secondary {
+  color: var(--color-neutral-white);
+  background-color: var(--color-secondary);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-secondary-500);
+}
+
+.btn--ghost {
+  color: var(--color-secondary);
+  background-color: transparent;
+  border-color: var(--color-secondary);
+}
+
+.btn--ghost:hover {
+  background-color: var(--color-secondary-100);
+}
