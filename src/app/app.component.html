@@ -1,13 +1,13 @@
 <main class="app">
   <header class="app__header">
-    <h1 class="app__title">Kinsurance OCR</h1>
-    <p class="app__subtitle">
-      Upload the scanner’s CSV export to review the policy numbers it captured.
-    </p>
+    <h1 class="app__title">Kin OCR</h1>
   </header>
 
   <section class="app__panel" aria-labelledby="upload-heading">
-    <h2 id="upload-heading" class="app__panel-title">Upload</h2>
+    <h2 id="upload-heading" class="app__panel-title">OCR File Upload</h2>
+    <p class="app__subtitle">
+      Upload the scanner’s CSV export to review the policy numbers it captured.
+    </p>
     <app-file-upload
       [error]="store.uploadError()"
       (fileSelected)="onFileSelected($event)"
