@@ -7,8 +7,8 @@ import { Injectable } from '@angular/core';
  * Assumptions about the format (documented in the README):
  *  - There is no header row.
  *  - Values may be separated by commas, newlines, or both — the provided
- *    `sample.csv` is a single comma-separated line, but a one-value-per-line
- *    export is handled identically.
+ *    `sample-files/sample.csv` is a single comma-separated line, but a
+ *    one-value-per-line export is handled identically.
  *  - Surrounding whitespace and blank entries (e.g. a trailing comma) are
  *    insignificant and dropped.
  *  - Duplicates are preserved: the scanner can legitimately read the same

@@ -46,7 +46,19 @@ npm install
 ```bash
 npm start
 ```
-Then open <http://localhost:4200>. Use the provided `./sample.csv` as input.
+Then open <http://localhost:4200>. Use `./sample-files/sample.csv` as input.
+
+### Sample files
+
+`sample-files/` holds CSVs for exercising each upload path by hand:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `sample.csv` | Successful upload — 10 policy numbers listed in the table |
+| `sample-empty.csv` | A valid `.csv` with no values → "did not contain any policy numbers" |
+| `sample-too-large.csv` | ~2.1 MB file → rejected by the 2 MB size limit |
+
+(The Playwright suite uses its own copies under `e2e/fixtures/`.)
 
 ## Test
 
@@ -78,6 +90,7 @@ src/app/
     policy-table/                     # responsive results table
   app.component.*                     # thin orchestrator: upload → parse → store → table
 e2e/                                  # Playwright specs (*.e2e.ts) + fixtures
+sample-files/                         # sample CSVs for manual testing (success/empty/oversize)
 ```
 
 Data flow is one‑directional: the upload component emits a validated `File` (or a validation
