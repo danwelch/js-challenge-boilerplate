@@ -46,15 +46,15 @@ describe('PanelComponent', () => {
   });
 
   it('applies the BEM modifier class for the current variant', () => {
-    expect(panelEl().classList).toContain('app__panel');
-    expect(panelEl().classList).toContain('app__panel--upload');
-    expect(panelEl().classList).not.toContain('app__panel--results');
+    expect(panelEl().classList).toContain('panel');
+    expect(panelEl().classList).toContain('panel--upload');
+    expect(panelEl().classList).not.toContain('panel--results');
 
     host.variant = 'results';
     fixture.detectChanges();
 
-    expect(panelEl().classList).toContain('app__panel--results');
-    expect(panelEl().classList).not.toContain('app__panel--upload');
+    expect(panelEl().classList).toContain('panel--results');
+    expect(panelEl().classList).not.toContain('panel--upload');
   });
 
   it('projects content into all three slots', () => {

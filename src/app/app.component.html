@@ -4,7 +4,7 @@
   </header>
 
   <app-panel variant="upload" title="OCR File Upload">
-    <p class="app__panel-subtitle" panel-subtitle>
+    <p class="panel-subtitle" panel-subtitle>
       Upload the scanner’s CSV export to review the policy numbers it captured.
     </p>
     <app-file-upload
@@ -16,11 +16,11 @@
 
   <app-panel variant="results" title="Results">
     @if (store.hasPolicies()) {
-      <span class="app__panel-title-count" panel-title-extra
+      <span class="panel-title-count" panel-title-extra
         >for {{ store.sourceName() }}</span
       >
     } @else {
-      <p class="app__panel-subtitle" panel-subtitle>
+      <p class="panel-subtitle" panel-subtitle>
         No policy numbers loaded yet. Upload a CSV to get started.
       </p>
     }

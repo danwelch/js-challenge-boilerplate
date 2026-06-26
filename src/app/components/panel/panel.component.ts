@@ -7,12 +7,12 @@ let panelIdCounter = 0;
 
 /**
  * Section-style card with a labelled heading and projected body. Replaces the
- * ad-hoc `.app__panel` markup that used to live inline in `AppComponent`.
+ * ad-hoc `.panel` markup that used to live inline in `AppComponent`.
  *
  * The host renders as a labelled landmark (`role="region"` + `aria-labelledby`)
  * so each panel shows up in assistive-tech navigation. The visual style is
  * picked by a `variant` input that maps to a BEM-style modifier class
- * (`app__panel--upload`, `app__panel--results`, …) — the consumer keeps using
+ * (`panel--upload`, `panel--results`, …) — the consumer keeps using
  * the existing class names and can target them in `app.component.scss`.
  *
  * Three projection slots:
@@ -28,10 +28,10 @@ let panelIdCounter = 0;
   templateUrl: './panel.component.html',
   styleUrl: './panel.component.scss',
   host: {
-    class: 'app__panel',
+    class: 'panel',
     role: 'region',
-    '[class.app__panel--upload]': "variant() === 'upload'",
-    '[class.app__panel--results]': "variant() === 'results'",
+    '[class.panel--upload]': "variant() === 'upload'",
+    '[class.panel--results]': "variant() === 'results'",
     '[attr.aria-labelledby]': 'titleId',
   },
 })

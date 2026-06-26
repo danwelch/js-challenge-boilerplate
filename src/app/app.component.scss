@@ -33,13 +33,13 @@
  * projected into the panel's slots, so they stay with the consumer (AppComponent)
  * because emulated view encapsulation scopes them to this view.
  */
-.app__panel-subtitle {
+.panel-subtitle {
   margin: 0;
   color: var(--color-neutral-700);
   text-wrap: pretty;
 }
 
-.app__panel-title-count {
+.panel-title-count {
   margin-left: var(--space-100);
   color: var(--color-neutral-600);
   font-weight: var(--font-weight-400);
