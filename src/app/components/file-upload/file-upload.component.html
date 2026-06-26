@@ -12,7 +12,12 @@
       aria-hidden="true"
       class="upload__dropzone-icon"
     />
-    <p class="upload__dropzone-text">Drag &amp; drop a CSV file to upload</p>
+    <p class="upload__dropzone-text">Drag &amp; drop a CSV file here, or</p>
+
+    <label appButton size="sm" variant="primary" class="upload__button" for="policy-file">
+      <lucide-icon [img]="UploadIcon" aria-hidden="true" />
+      <span>Upload policy CSV</span>
+    </label>
 
     <input
       id="policy-file"
@@ -23,34 +28,10 @@
       [attr.aria-describedby]="error() ? 'upload-hint upload-error' : 'upload-hint'"
       [attr.aria-invalid]="error() ? 'true' : null"
     />
+    
+    
 
-    <p class="upload__hint" id="upload-hint">
-      CSV file only, up to 2 MB. Press Enter to load from a URL.
-    </p>
-  </div>
-  
-  <div>
-    Or upload from a URL:
-  </div>
-
-  <div class="upload__field">
-    <input
-      id="policy-url"
-      class="upload__url-input"
-      type="text"
-      inputmode="url"
-      autocomplete="off"
-      spellcheck="false"
-      placeholder="Paste a CSV URL or pick a file…"
-      aria-label="CSV file URL or selected file"
-      [value]="urlOrFileName()"
-      (input)="onUrlInput($event)"
-      (keydown.enter)="onUrlSubmit(); $event.preventDefault()"
-    />
-    <label appButton size="sm" variant="primary" class="upload__button" for="policy-file">
-      <lucide-icon [img]="UploadIcon" aria-hidden="true" />
-      <span>Browse</span>
-    </label>
+    <p class="upload__hint" id="upload-hint">CSV file only, up to 2 MB.</p>
   </div>
 
   @if (error(); as message) {

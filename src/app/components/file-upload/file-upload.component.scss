@@ -34,49 +34,6 @@
 }
 
 /*
- * Unified URL/file-location field: a single visual control where the wrapper owns
- * the border and the browse button sits flush on the right (like a search box).
- */
-.upload__field {
-  display: flex;
-  align-items: stretch;
-  width: min(28rem, 100%);
-  border: 1px solid var(--color-neutral-400);
-  border-radius: var(--border-radius-200);
-  background-color: var(--color-neutral-white);
-  overflow: hidden;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.upload__field:focus-within {
-  border-color: var(--color-secondary);
-  box-shadow: 0 0 0 3px var(--color-secondary-200);
-}
-
-.upload__url-input {
-  flex: 1;
-  min-width: 0;
-  padding: 0 var(--space-200);
-  border: 0;
-  background: transparent;
-  font: inherit;
-  color: var(--color-neutral-black);
-  outline: none;
-}
-
-.upload__url-input::placeholder {
-  color: var(--color-neutral-600);
-}
-
-/* Square off the inside edge and drop the directive's own border so the field
-   reads as a single control. */
-.upload__field .upload__button {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  border-left: 1px solid var(--color-neutral-black);
-}
-
-/*
  * Visually hide the native input but keep it focusable and in the tab order
  * (no display:none / visibility:hidden). The <label appButton> is the visible
  * control; its focus ring is driven by :focus-within below.
