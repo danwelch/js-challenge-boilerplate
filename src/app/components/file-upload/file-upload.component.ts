@@ -5,7 +5,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { LucideAngularModule, Upload } from 'lucide-angular';
+import { LucideAngularModule, Upload, FileSpreadsheet } from 'lucide-angular';
 import { AlertComponent } from '../alert/alert.component';
 import { ButtonDirective } from '../button/button.directive';
 
@@ -24,10 +24,13 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
  * upward and renders whatever error the store feeds back down. Valid files are
  * emitted via `fileSelected`; the parent reads and parses them.
  *
- * Drag-and-drop is a progressive enhancement: dropping a file runs the exact
- * same validation/emit path as the picker. Because drag-and-drop is mouse-only,
- * the visually-hidden `<input>` + `<label>` remain the keyboard/AT-accessible way
- * to choose a file.
+ * Three input paths feed the same validate/emit pipeline:
+ *  1. The native file picker (the `<label appButton>` + visually-hidden input)
+ *     — the keyboard/AT-accessible primary path.
+ *  2. Drag-and-drop — a progressive enhancement, mouse-only.
+ *  3. A URL field — paste a CSV URL and press Enter to fetch it. Subject to the
+ *     remote server's CORS headers; the input also displays the current file
+ *     name after a pick or drop, so it doubles as "file location" feedback.
  *
  * Accessibility notes:
  *  - The native `<input type="file">` is visually hidden but stays in the tab
@@ -47,6 +50,7 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
 export class FileUploadComponent {
   /** Lucide icon used for the upload button. */
   protected readonly UploadIcon = Upload;
+  protected readonly FileSpreadsheetIcon = FileSpreadsheet;
 
   /** Error message to display (driven by the store), or `null` when clear. */
   readonly error = input<string | null>(null);
@@ -60,6 +64,13 @@ export class FileUploadComponent {
   /** Whether a file is currently being dragged over the drop zone. */
   readonly isDragging = signal(false);
 
+  /**
+   * Current text in the URL/file-location input. Doubles as the selected file
+   * name display: when a file is picked or dropped successfully, we set this to
+   * the file's name so the input always reflects "what is currently loaded."
+   */
+  readonly urlOrFileName = signal('');
+
   /** Handles a file chosen via the file picker. */
   onFileChange(event: Event): void {
     const inputEl = event.target as HTMLInputElement;
@@ -69,6 +80,52 @@ export class FileUploadComponent {
     }
     // Clear the value so re-selecting the same file fires `change` again.
     inputEl.value = '';
+  }
+
+  /** Tracks edits to the URL/file-location input. */
+  onUrlInput(event: Event): void {
+    this.urlOrFileName.set((event.target as HTMLInputElement).value);
+  }
+
+  /**
+   * Submits the URL field: parses it as a URL, fetches the response as a Blob,
+   * wraps it in a `File`, and runs it through the same validation pipeline.
+   * Network requests are subject to the remote server's CORS policy.
+   */
+  async onUrlSubmit(): Promise<void> {
+    const value = this.urlOrFileName().trim();
+    if (!value) {
+      return;
+    }
+
+    let url: URL;
+    try {
+      url = new URL(value);
+    } catch {
+      this.validationError.emit(
+        `<code>${escapeHtml(value)}</code> is not a valid URL.`,
+      );
+      return;
+    }
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        this.validationError.emit(
+          `Could not fetch <code>${escapeHtml(value)}</code> (HTTP ${response.status}).`,
+        );
+        return;
+      }
+      const blob = await response.blob();
+      const file = new File([blob], filenameFromUrl(url), {
+        type: blob.type || 'text/csv',
+      });
+      this.handleFile(file);
+    } catch {
+      this.validationError.emit(
+        `Could not fetch <code>${escapeHtml(value)}</code>. Check the URL and that the host allows CORS.`,
+      );
+    }
   }
 
   /** Allows the drop zone to receive a file and shows the active state. */
@@ -103,6 +160,7 @@ export class FileUploadComponent {
     if (error) {
       this.validationError.emit(error);
     } else {
+      this.urlOrFileName.set(file.name);
       this.fileSelected.emit(file);
     }
   }
@@ -112,14 +170,30 @@ export class FileUploadComponent {
     const isCsv =
       file.name.toLowerCase().endsWith('.csv') || CSV_MIME_TYPES.has(file.type);
     if (!isCsv) {
-      return `“${file.name}” is not a CSV file. Please upload a .csv file.`;
+      return `<code>${file.name}</code> is not a CSV file. Please upload a .csv file.`;
     }
 
     if (file.size > MAX_BYTES) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      return `“${file.name}” is ${sizeMb} MB, which exceeds the 2 MB limit.`;
+      return `<code>${file.name}</code> is ${sizeMb} MB, which exceeds the 2 MB limit.`;
     }
 
     return null;
   }
+}
+
+/** Minimal HTML escape for values we inject into error messages as `<code>`. */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/** Derives a filename from the last path segment of a URL, falling back if absent. */
+function filenameFromUrl(url: URL): string {
+  const last = url.pathname.split('/').filter(Boolean).pop();
+  return last || 'remote.csv';
 }

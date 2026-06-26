@@ -1,7 +1,7 @@
 .upload {
   display: flex;
   flex-direction: column;
-  gap: var(--space-75);
+  gap: var(--space-400);
   align-items: flex-start;
 }
 
@@ -16,9 +16,7 @@
   border-radius: var(--border-radius-300);
   background-color: var(--color-neutral-100);
   text-align: center;
-  transition:
-    border-color 0.15s ease,
-    background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .upload__dropzone--dragging {
@@ -27,12 +25,55 @@
 }
 
 .upload__dropzone-icon {
-  color: var(--color-secondary);
+  color: var(--color-neutral-700);
 }
 
 .upload__dropzone-text {
   margin: 0;
   color: var(--color-neutral-700);
+}
+
+/*
+ * Unified URL/file-location field: a single visual control where the wrapper owns
+ * the border and the browse button sits flush on the right (like a search box).
+ */
+.upload__field {
+  display: flex;
+  align-items: stretch;
+  width: min(28rem, 100%);
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--border-radius-200);
+  background-color: var(--color-neutral-white);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.upload__field:focus-within {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px var(--color-secondary-200);
+}
+
+.upload__url-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--space-200);
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--color-neutral-black);
+  outline: none;
+}
+
+.upload__url-input::placeholder {
+  color: var(--color-neutral-600);
+}
+
+/* Square off the inside edge and drop the directive's own border so the field
+   reads as a single control. */
+.upload__field .upload__button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 1px solid var(--color-neutral-black);
 }
 
 /*
@@ -50,10 +91,6 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
-}
-
-.upload:focus-within .upload__button[data-variant="primary"] {
-  --_outline-color: var(--_bg-color);
 }
 
 .upload__hint {
