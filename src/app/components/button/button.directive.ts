@@ -21,18 +21,19 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
  * Visual styling lives in a global stylesheet (`button.scss`, registered in
  * angular.json) because directives have no encapsulated styles — the standard
  * pattern for a design-system control applied across many host elements.
+ *
+ * The `variant`/`size` inputs are reflected to `data-*` attributes (rather than
+ * modifier classes) so the stylesheet can target `[appButton][data-variant=…]`.
+ * Reflecting via host bindings — instead of relying on the author's literal
+ * attribute — means it works for bound usage (`[variant]="x"`) and defaults too,
+ * not just static strings.
  */
 @Directive({
   selector: '[appButton]',
   standalone: true,
   host: {
-    class: 'btn',
-    '[class.btn--primary]': "variant() === 'primary'",
-    '[class.btn--secondary]': "variant() === 'secondary'",
-    '[class.btn--ghost]': "variant() === 'ghost'",
-    '[class.btn--sm]': "size() === 'sm'",
-    '[class.btn--md]': "size() === 'md'",
-    '[class.btn--lg]': "size() === 'lg'",
+    '[attr.data-variant]': 'variant()',
+    '[attr.data-size]': 'size()',
   },
 })
 export class ButtonDirective {

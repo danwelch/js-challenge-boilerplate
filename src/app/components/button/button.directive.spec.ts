@@ -31,37 +31,35 @@ describe('ButtonDirective', () => {
     fixture.detectChanges();
   });
 
-  it('applies the base class plus default variant and size', () => {
+  it('reflects default variant and size as data attributes', () => {
     const btn = query<HTMLButtonElement>('button');
-    expect(btn.classList).toContain('btn');
-    expect(btn.classList).toContain('btn--primary');
-    expect(btn.classList).toContain('btn--md');
+    expect(btn.hasAttribute('appButton')).toBe(true);
+    expect(btn.getAttribute('data-variant')).toBe('primary');
+    expect(btn.getAttribute('data-size')).toBe('md');
   });
 
-  it('reflects variant and size inputs reactively', () => {
+  it('updates the data attributes when inputs change', () => {
     host.variant = 'secondary';
     host.size = 'sm';
     fixture.detectChanges();
 
     const btn = query<HTMLButtonElement>('button');
-    expect(btn.classList).toContain('btn--secondary');
-    expect(btn.classList).toContain('btn--sm');
-    expect(btn.classList).not.toContain('btn--primary');
-    expect(btn.classList).not.toContain('btn--md');
+    expect(btn.getAttribute('data-variant')).toBe('secondary');
+    expect(btn.getAttribute('data-size')).toBe('sm');
   });
 
   it('works on an anchor host element (as-style)', () => {
     const anchor = query<HTMLAnchorElement>('a');
-    expect(anchor.classList).toContain('btn');
-    expect(anchor.classList).toContain('btn--ghost');
-    expect(anchor.classList).toContain('btn--lg');
+    expect(anchor.hasAttribute('appButton')).toBe(true);
+    expect(anchor.getAttribute('data-variant')).toBe('ghost');
+    expect(anchor.getAttribute('data-size')).toBe('lg');
   });
 
   it('works on a label host element (as-style)', () => {
     const label = query<HTMLLabelElement>('label');
-    expect(label.classList).toContain('btn');
-    expect(label.classList).toContain('btn--secondary');
+    expect(label.hasAttribute('appButton')).toBe(true);
+    expect(label.getAttribute('data-variant')).toBe('secondary');
     // size defaults to md when not provided
-    expect(label.classList).toContain('btn--md');
+    expect(label.getAttribute('data-size')).toBe('md');
   });
 });
