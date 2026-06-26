@@ -1,24 +1,124 @@
-# KinOcr
+# Kin OCR
 
-## Instructions
+A small Angular app for the **Kinsurance OCR** challenge. A scanning machine exports a CSV
+of policy numbers; this app lets a user upload that CSV, view the numbers in a table, and
+(in later stories) validate and submit them.
 
-Your Kin recruiting contact should have sent you a set of instructions for this test.
+Built on the provided Angular 21 boilerplate. The work is delivered story by story, each on
+its own branch and squash-merged into `main`.
 
-## How to use this boilerplate
+| User story | Scope | Status |
+| ---------- | ----- | ------ |
+| **US1** | Upload a CSV (validated: CSV type, ≤ 2 MB) and list the policy numbers in a table | ✅ Done |
+| **US2** | Validate each number via a mod‑11 checksum and show valid/invalid status | ⏳ Planned |
+| **US3** | POST the processed array to a mock API and report success/failure with the returned id | ⏳ Planned |
+| **US4** | Auto‑correct mis‑scanned digits (`valid` / `corrected` / `AMB` / `error`) | 📝 Outline only — to be paired on (`docs/user-story-4-approach.md`, to be added) |
 
-We are a Typescript-first shop and value your understanding of TS/JS over Angular. If you have never used Angular before, you can find the framework documentation here: https://angular.dev/overview.
+---
 
-All of our applications are using the modern versions of Angular, so feel free to use [standalone components](https://angular.dev/essentials/components) and the [new control flow syntax](https://blog.angular.io/meet-angulars-new-control-flow-a02c6eee7843) to make it feel more like React, Vue or Svelt if that's what you are used to.
+## Tech stack
 
-Feel free to remove routing or upgrade any of the dependencies if you need to.
+- **Angular 21**, standalone components, OnPush change detection
+- **Signals** for state (a small signal‑based store) — see [Design decisions](#design-decisions--assumptions)
+- **Vitest** for unit tests (migrated off the boilerplate's deprecated Karma)
+- **Playwright** for end‑to‑end tests
+- **SCSS** with the provided color‑palette CSS variables (`src/styles.scss`)
 
-Please use the `./sample.csv` file as input into your application.
+## Prerequisites
 
-## Running this boilerplate
+- **Node `v22`** (pinned in `.nvmrc`; CI uses it). Angular 21 supports Node `^20.19`, `^22.12`,
+  or `^24` — **not** the odd‑numbered v25. If you use a version manager:
+  ```bash
+  fnm use      # or: nvm use
+  ```
+- **npm** ≥ 9.6.7
 
-The app will default to running on localhost:4200.
+## Install
 
-To run the app, enter the command ```npm start``` in the terminal. 
+```bash
+npm install
+```
 
-To run tests, enter the command ```npm test```.
+## Run
 
+```bash
+npm start
+```
+Then open <http://localhost:4200>. Use the provided `./sample.csv` as input.
+
+## Test
+
+```bash
+npm test       # Vitest unit tests (headless, single run)
+npm run e2e    # Playwright end-to-end tests (starts/reuses the dev server)
+```
+The first `npm run e2e` will download the Chromium browser if it isn't already installed
+(`npx playwright install chromium`).
+
+## Build
+
+```bash
+npm run build  # production build to dist/kin-ocr
+```
+
+---
+
+## Project structure
+
+```
+src/app/
+  models/policy.model.ts              # PolicyRecord interface
+  services/csv-parser.service.ts      # hand-rolled CSV → string[] tokens
+  store/policy-store.service.ts       # signal-based state (single source of truth)
+  components/
+    file-upload/                      # accessible CSV input + validation
+    policy-table/                     # responsive results table
+  app.component.*                     # thin orchestrator: upload → parse → store → table
+e2e/                                  # Playwright specs (*.e2e.ts) + fixtures
+```
+
+Data flow is one‑directional: the upload component emits a validated `File` (or a validation
+error); the orchestrator reads and parses it; the store holds the result as signals; the
+table renders from the store. Each later story adds a service/signal rather than reshaping
+this flow.
+
+## Design decisions & assumptions
+
+- **Policy numbers are stored as `string`, not `number`.** They are fixed‑width 9‑digit
+  identifiers where leading zeros are significant (e.g. `000011111`), and US2's checksum is
+  positional over the digit string. A JS `number` would drop leading zeros and risk
+  precision issues. (Trade‑off: callers must not do arithmetic on them — which we never do.)
+- **Hand‑rolled CSV parser over a library.** The export is a single line (or one value per
+  line) of plain numbers — no quoting/escaping — so a tiny, dependency‑free, fully‑tested
+  parser is clearer and lighter. If the format ever gained quoted fields or embedded commas,
+  a dedicated library (e.g. PapaParse) would be the right call.
+- **Signals over RxJS** for state. The state here is local and synchronous; signals keep the
+  store terse and the components free of subscriptions. RxJS would shine if we introduced
+  streams/async orchestration (US3's HTTP call is a single request, handled simply).
+- **Vitest over Karma/Jasmine.** Karma is deprecated by the Angular team; Angular 21 ships a
+  built‑in Vitest runner (`@angular/build:unit-test`). Vitest is faster and ESM‑native. The
+  existing Jasmine‑style specs run unchanged thanks to Vitest's compatible matchers.
+- **Validation assumption (US1):** a file counts as CSV if its extension is `.csv` or its
+  MIME type is a known CSV type; the size limit is 2 MB (`2 × 1024 × 1024` bytes, inclusive).
+  Empty/whitespace tokens (e.g. a trailing comma) are dropped; **duplicates are preserved**
+  because the scanner can legitimately read the same policy twice.
+- **Unit vs e2e split.** `File.text()` is a browser API that jsdom doesn't implement, so the
+  parse/load logic is unit‑tested via a text‑in method and the real file‑read path is covered
+  by Playwright in a real browser.
+
+## Accessibility & responsiveness
+
+- Labelled file control that stays keyboard‑focusable (visually hidden, not removed), with a
+  visible focus ring via `:focus-within`.
+- Validation errors render in a `role="alert"` region and are wired to the input with
+  `aria-describedby` / `aria-invalid`.
+- Semantic results table with `<caption>` and scoped column headers; horizontal‑scroll guard
+  for narrow screens; fluid spacing via `clamp()`.
+- Colors come exclusively from the provided palette variables.
+
+## Future improvements
+
+- Drag‑and‑drop upload and a parse summary (counts, duplicates).
+- Surface row‑level parse warnings (e.g. tokens that aren't 9 digits) ahead of US2.
+- Optional CI job for Playwright e2e (the current CI runs build + unit tests).
+- Virtualized table if exports grow to thousands of rows.
