@@ -1,31 +1,58 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { PolicyStore } from './store/policy-store.service';
 
 describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-    }).compileComponents();
-  });
+  let fixture: ComponentFixture<AppComponent>;
+  let component: AppComponent;
+  let store: PolicyStore;
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it(`should have the 'kin-ocr' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('kin-ocr');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [AppComponent] });
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    store = TestBed.inject(PolicyStore);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Hello, Kin OCR'
-    );
+  });
+
+  it('creates the app', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('renders the application title', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('h1')?.textContent).toContain('Kinsurance OCR');
+  });
+
+  it('shows the empty state and no table before any upload', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.app__empty')).not.toBeNull();
+    expect(el.querySelector('app-policy-table')).toBeNull();
+  });
+
+  it('renders the table once policies are loaded', () => {
+    store.setPolicies(['457508000', '123456789']);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-policy-table')).not.toBeNull();
+    expect(el.querySelectorAll('tbody tr')).toHaveLength(2);
+  });
+
+  it('parses CSV text into the store', () => {
+    component.loadFromText('457508000,123456789', 'policies.csv');
+    fixture.detectChanges();
+
+    expect(store.policies()).toEqual([
+      { policyNumber: '457508000' },
+      { policyNumber: '123456789' },
+    ]);
+  });
+
+  it('reports an error when the CSV has no policy numbers', () => {
+    component.loadFromText('  , \n ', 'empty.csv');
+
+    expect(store.uploadError()).toContain('did not contain any policy numbers');
+    expect(store.hasPolicies()).toBe(false);
   });
 });

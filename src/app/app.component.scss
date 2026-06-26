@@ -1,0 +1,43 @@
+.app {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.app__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  color: var(--color-secondary);
+}
+
+.app__subtitle {
+  margin: 0;
+  color: var(--color-neutral-700);
+}
+
+.app__panel {
+  padding: clamp(1rem, 3vw, 1.75rem);
+  background-color: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 0.75rem;
+}
+
+.app__panel-title {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  color: var(--color-neutral-800);
+}
+
+.app__empty {
+  margin: 0;
+  color: var(--color-neutral-600);
+}

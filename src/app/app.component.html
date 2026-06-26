@@ -1,1 +1,28 @@
-<h1>Hello, Kin OCR</h1>
+<main class="app">
+  <header class="app__header">
+    <h1 class="app__title">Kinsurance OCR</h1>
+    <p class="app__subtitle">
+      Upload the scanner’s CSV export to review the policy numbers it captured.
+    </p>
+  </header>
+
+  <section class="app__panel" aria-labelledby="upload-heading">
+    <h2 id="upload-heading" class="app__panel-title">Upload</h2>
+    <app-file-upload
+      [error]="store.uploadError()"
+      (fileSelected)="onFileSelected($event)"
+      (validationError)="store.setError($event)"
+    />
+  </section>
+
+  <section class="app__panel" aria-labelledby="results-heading">
+    <h2 id="results-heading" class="app__panel-title">Results</h2>
+    @if (store.hasPolicies()) {
+      <app-policy-table [policies]="store.policies()" />
+    } @else {
+      <p class="app__empty">
+        No policy numbers loaded yet. Upload a CSV to get started.
+      </p>
+    }
+  </section>
+</main>
