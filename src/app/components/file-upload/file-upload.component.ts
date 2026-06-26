@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { LucideAngularModule, Upload } from 'lucide-angular';
 import { AlertComponent } from '../alert/alert.component';
 import { ButtonDirective } from '../button/button.directive';
@@ -17,6 +23,11 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
  * remains the single source of truth: this component emits validation outcomes
  * upward and renders whatever error the store feeds back down. Valid files are
  * emitted via `fileSelected`; the parent reads and parses them.
+ *
+ * Drag-and-drop is a progressive enhancement: dropping a file runs the exact
+ * same validation/emit path as the picker. Because drag-and-drop is mouse-only,
+ * the visually-hidden `<input>` + `<label>` remain the keyboard/AT-accessible way
+ * to choose a file.
  *
  * Accessibility notes:
  *  - The native `<input type="file">` is visually hidden but stays in the tab
@@ -46,22 +57,54 @@ export class FileUploadComponent {
   /** Emits a human-readable message when the chosen file fails validation. */
   readonly validationError = output<string>();
 
-  /** Handles a file being chosen, validating before emitting. */
+  /** Whether a file is currently being dragged over the drop zone. */
+  readonly isDragging = signal(false);
+
+  /** Handles a file chosen via the file picker. */
   onFileChange(event: Event): void {
     const inputEl = event.target as HTMLInputElement;
     const file = inputEl.files?.[0];
-
     if (file) {
-      const error = this.validate(file);
-      if (error) {
-        this.validationError.emit(error);
-      } else {
-        this.fileSelected.emit(file);
-      }
+      this.handleFile(file);
     }
-
     // Clear the value so re-selecting the same file fires `change` again.
     inputEl.value = '';
+  }
+
+  /** Allows the drop zone to receive a file and shows the active state. */
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging.set(true);
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    // Ignore dragleave events fired while moving onto a child of the drop zone.
+    const related = event.relatedTarget as Node | null;
+    if (related && (event.currentTarget as HTMLElement).contains(related)) {
+      return;
+    }
+    this.isDragging.set(false);
+  }
+
+  /** Handles a file dropped onto the drop zone (same path as the picker). */
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging.set(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (file) {
+      this.handleFile(file);
+    }
+  }
+
+  /** Validates a file and emits either the file or a validation error. */
+  private handleFile(file: File): void {
+    const error = this.validate(file);
+    if (error) {
+      this.validationError.emit(error);
+    } else {
+      this.fileSelected.emit(file);
+    }
   }
 
   /** Returns an error message if the file is not an acceptable CSV, else `null`. */

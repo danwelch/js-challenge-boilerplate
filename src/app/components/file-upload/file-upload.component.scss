@@ -5,6 +5,36 @@
   align-items: flex-start;
 }
 
+.upload__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-100);
+  width: 100%;
+  padding: var(--space-500) var(--space-300);
+  border: 2px dashed var(--color-neutral-400);
+  border-radius: var(--border-radius-300);
+  background-color: var(--color-neutral-100);
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.upload__dropzone--dragging {
+  border-color: var(--color-secondary);
+  background-color: var(--color-secondary-100);
+}
+
+.upload__dropzone-icon {
+  color: var(--color-secondary);
+}
+
+.upload__dropzone-text {
+  margin: 0;
+  color: var(--color-neutral-700);
+}
+
 /*
  * Visually hide the native input but keep it focusable and in the tab order
  * (no display:none / visibility:hidden). The <label appButton> is the visible

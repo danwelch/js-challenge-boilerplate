@@ -1,20 +1,36 @@
 <div class="upload">
-  <label appButton variant="primary" class="upload__button" for="policy-file">
-    <lucide-icon [img]="UploadIcon" aria-hidden="true" />
-    <span>Upload policy CSV</span>
-  </label>
+  <div
+    class="upload__dropzone"
+    [class.upload__dropzone--dragging]="isDragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+  >
+    <lucide-icon
+      [img]="UploadIcon"
+      [size]="28"
+      aria-hidden="true"
+      class="upload__dropzone-icon"
+    />
+    <p class="upload__dropzone-text">Drag &amp; drop a CSV file here, or</p>
 
-  <input
-    id="policy-file"
-    class="upload__input"
-    type="file"
-    accept=".csv,text/csv"
-    (change)="onFileChange($event)"
-    [attr.aria-describedby]="error() ? 'upload-hint upload-error' : 'upload-hint'"
-    [attr.aria-invalid]="error() ? 'true' : null"
-  />
+    <label appButton variant="primary" class="upload__button" for="policy-file">
+      <lucide-icon [img]="UploadIcon" aria-hidden="true" />
+      <span>Upload policy CSV</span>
+    </label>
 
-  <p class="upload__hint" id="upload-hint">CSV file only, up to 2 MB.</p>
+    <input
+      id="policy-file"
+      class="upload__input"
+      type="file"
+      accept=".csv,text/csv"
+      (change)="onFileChange($event)"
+      [attr.aria-describedby]="error() ? 'upload-hint upload-error' : 'upload-hint'"
+      [attr.aria-invalid]="error() ? 'true' : null"
+    />
+
+    <p class="upload__hint" id="upload-hint">CSV file only, up to 2 MB.</p>
+  </div>
 
   @if (error(); as message) {
     <app-alert id="upload-error" variant="error">{{ message }}</app-alert>

@@ -12,6 +12,28 @@ function changeEventFor(file: File | null): Event {
   return { target: inputEl } as unknown as Event;
 }
 
+/** Simulates a drop event whose dataTransfer carries the given file. */
+function dropEventFor(file: File | null): DragEvent {
+  return {
+    preventDefault: () => {},
+    dataTransfer: { files: file ? [file] : [] },
+  } as unknown as DragEvent;
+}
+
+/** Simulates a dragover event. */
+function dragOverEvent(): DragEvent {
+  return { preventDefault: () => {} } as unknown as DragEvent;
+}
+
+/** Simulates a dragleave event, optionally moving onto a child of the zone. */
+function dragLeaveEvent(opts: { related: Node | null; insideZone: boolean }): DragEvent {
+  return {
+    preventDefault: () => {},
+    relatedTarget: opts.related,
+    currentTarget: { contains: () => opts.insideZone },
+  } as unknown as DragEvent;
+}
+
 const TWO_MB = 2 * 1024 * 1024;
 
 describe('FileUploadComponent', () => {
@@ -100,5 +122,58 @@ describe('FileUploadComponent', () => {
     const alert: HTMLElement | null =
       fixture.nativeElement.querySelector('[role="alert"]');
     expect(alert?.textContent).toContain('File must be a .csv');
+  });
+
+  describe('drag and drop', () => {
+    it('emits the file when a valid CSV is dropped', () => {
+      const file = makeFile('policies.csv', 100);
+      let emitted: File | undefined;
+      component.fileSelected.subscribe((f) => (emitted = f));
+
+      component.onDrop(dropEventFor(file));
+
+      expect(emitted).toBe(file);
+      expect(component.isDragging()).toBe(false);
+    });
+
+    it('runs the same validation for a dropped non-CSV file', () => {
+      const file = makeFile('notes.txt', 100, 'text/plain');
+      let message: string | undefined;
+      component.validationError.subscribe((m) => (message = m));
+
+      component.onDrop(dropEventFor(file));
+
+      expect(message).toContain('not a CSV');
+    });
+
+    it('does nothing when a drop carries no file', () => {
+      let emittedValid = false;
+      let errored = false;
+      component.fileSelected.subscribe(() => (emittedValid = true));
+      component.validationError.subscribe(() => (errored = true));
+
+      component.onDrop(dropEventFor(null));
+
+      expect(emittedValid).toBe(false);
+      expect(errored).toBe(false);
+    });
+
+    it('flags drag state on dragover and clears it when leaving the zone', () => {
+      component.onDragOver(dragOverEvent());
+      expect(component.isDragging()).toBe(true);
+
+      component.onDragLeave(dragLeaveEvent({ related: null, insideZone: false }));
+      expect(component.isDragging()).toBe(false);
+    });
+
+    it('keeps drag state while moving onto a child of the drop zone', () => {
+      component.onDragOver(dragOverEvent());
+
+      component.onDragLeave(
+        dragLeaveEvent({ related: document.createElement('span'), insideZone: true }),
+      );
+
+      expect(component.isDragging()).toBe(true);
+    });
   });
 });

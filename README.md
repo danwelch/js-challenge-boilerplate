@@ -141,7 +141,7 @@ this flow.
 
 ## Future improvements
 
-- Drag‑and‑drop upload and a parse summary (counts, duplicates).
+- A parse summary (counts, duplicates) after upload.
 - Surface row‑level parse warnings (e.g. tokens that aren't 9 digits) ahead of US2.
 - Optional CI job for Playwright e2e (the current CI runs build + unit tests).
 - Virtualized table if exports grow to thousands of rows.
