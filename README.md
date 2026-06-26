@@ -85,6 +85,7 @@ src/app/
   services/csv-parser.service.ts      # hand-rolled CSV → string[] tokens
   store/policy-store.service.ts       # signal-based state (single source of truth)
   components/
+    alert/                            # status message (success/warning/error variants)
     button/                           # appButton directive + global button styles
     file-upload/                      # accessible CSV input + validation
     policy-table/                     # responsive results table

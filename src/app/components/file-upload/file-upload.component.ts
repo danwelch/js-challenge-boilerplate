@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { LucideAngularModule, TriangleAlert, Upload } from 'lucide-angular';
+import { LucideAngularModule, Upload } from 'lucide-angular';
+import { AlertComponent } from '../alert/alert.component';
 import { ButtonDirective } from '../button/button.directive';
 
 /** Maximum accepted file size: 2 MB, expressed in bytes. */
@@ -28,14 +29,13 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
   selector: 'app-file-upload',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule, ButtonDirective],
+  imports: [LucideAngularModule, ButtonDirective, AlertComponent],
   templateUrl: './file-upload.component.html',
   styleUrl: './file-upload.component.scss',
 })
 export class FileUploadComponent {
-  /** Lucide icons used in the template. */
+  /** Lucide icon used for the upload button. */
   protected readonly UploadIcon = Upload;
-  protected readonly AlertIcon = TriangleAlert;
 
   /** Error message to display (driven by the store), or `null` when clear. */
   readonly error = input<string | null>(null);

@@ -1,6 +1,6 @@
 <div class="upload">
-  <label appButton class="upload__button" for="policy-file">
-    <lucide-icon [img]="UploadIcon" [size]="18" aria-hidden="true" />
+  <label appButton variant="primary" class="upload__button" for="policy-file">
+    <lucide-icon [img]="UploadIcon" aria-hidden="true" />
     <span>Upload policy CSV</span>
   </label>
 
@@ -17,9 +17,6 @@
   <p class="upload__hint" id="upload-hint">CSV file only, up to 2 MB.</p>
 
   @if (error(); as message) {
-    <p class="upload__error" id="upload-error" role="alert">
-      <lucide-icon [img]="AlertIcon" [size]="18" aria-hidden="true" />
-      <span>{{ message }}</span>
-    </p>
+    <app-alert id="upload-error" variant="error">{{ message }}</app-alert>
   }
 </div>

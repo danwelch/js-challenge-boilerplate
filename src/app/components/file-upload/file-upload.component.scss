@@ -22,22 +22,12 @@
   border: 0;
 }
 
-.upload:focus-within .upload__button {
-  outline: 3px solid var(--color-secondary-200);
-  outline-offset: 2px;
+.upload:focus-within .upload__button[data-variant="primary"] {
+  --_outline-color: var(--_bg-color);
 }
 
 .upload__hint {
   margin: 0;
   font-size: var(--text-body-sm);
   color: var(--color-neutral-600);
-}
-
-.upload__error {
-  display: flex;
-  align-items: center;
-  gap: var(--space-75);
-  margin: 0;
-  font-weight: var(--font-weight-600);
-  color: var(--color-warning);
 }
