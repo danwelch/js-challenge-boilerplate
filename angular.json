@@ -81,7 +81,8 @@
           "options": {
             "tsConfig": "tsconfig.spec.json",
             "buildTarget": "kin-ocr:build:development",
-            "runner": "vitest"
+            "runner": "vitest",
+            "include": ["src/**/*.spec.ts"]
           }
         }
       }

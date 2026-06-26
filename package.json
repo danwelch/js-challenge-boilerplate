@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --no-watch"
+    "test": "ng test --no-watch",
+    "e2e": "playwright test"
   },
   "private": true,
   "engines": {
@@ -30,6 +31,7 @@
     "@angular/build": "^21.2.7",
     "@angular/cli": "^21.2.7",
     "@angular/compiler-cli": "^21.2.9",
+    "@playwright/test": "^1.61.1",
     "jsdom": "^25.0.1",
     "typescript": "5.9.3",
     "vitest": "^4.0.8"

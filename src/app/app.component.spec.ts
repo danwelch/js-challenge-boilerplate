@@ -21,7 +21,7 @@ describe('AppComponent', () => {
 
   it('renders the application title', () => {
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('h1')?.textContent).toContain('Kinsurance OCR');
+    expect(el.querySelector('h1')?.textContent).toContain('OCR');
   });
 
   it('shows the empty state and no table before any upload', () => {
