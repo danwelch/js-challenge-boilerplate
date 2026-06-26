@@ -1,43 +1,47 @@
 .app {
-  max-width: 56rem;
+  max-width: 80rem;
   margin: 0 auto;
-  padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  padding: var(--space-400);
+  display: grid;
+  gap: var(--space-400);
+  min-height: 100vh;
+  grid-template-rows: auto auto 1fr;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 3fr 5fr;
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    gap: var(--space-400);
+  }
 }
 
 .app__header {
   display: flex;
+  grid-column: 1 / -1;
   flex-direction: column;
   gap: 0.5rem;
 }
 
 .app__title {
   margin: 0;
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
-  color: var(--color-secondary);
+  font-size: var(--text-heading-xl);
+  color: var(--color-neutral-black);
 }
 
-.app__subtitle {
+/*
+ * Structural panel styles live in PanelComponent. The rules below style content
+ * projected into the panel's slots, so they stay with the consumer (AppComponent)
+ * because emulated view encapsulation scopes them to this view.
+ */
+.app__panel-subtitle {
   margin: 0;
   color: var(--color-neutral-700);
+  text-wrap: pretty;
 }
 
-.app__panel {
-  padding: clamp(1rem, 3vw, 1.75rem);
-  background-color: var(--color-neutral-white);
-  border: 1px solid var(--color-neutral-300);
-  border-radius: 0.75rem;
-}
-
-.app__panel-title {
-  margin: 0 0 1rem;
-  font-size: 1.125rem;
-  color: var(--color-neutral-800);
-}
-
-.app__empty {
-  margin: 0;
+.app__panel-title-count {
+  margin-left: var(--space-100);
   color: var(--color-neutral-600);
+  font-weight: var(--font-weight-400);
+  font-size: var(--text-body-md);
 }

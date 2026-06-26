@@ -1,0 +1,32 @@
+/*
+ * Host styles for the panel. Modifier classes (`app__panel--upload`,
+ * `app__panel--results`) are applied by the component via host bindings, so we
+ * target them with `:host(.<modifier>)` and consumers can also style them from
+ * a parent stylesheet under the same BEM names if they need to.
+ */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+  padding: var(--space-400);
+  background-color: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-400);
+}
+
+:host(.app__panel--results) {
+  align-self: stretch;
+}
+
+.app__panel-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-75);
+}
+
+.app__panel-title {
+  margin: 0;
+  font-size: var(--text-heading-md);
+  line-height: var(--line-height-100);
+  color: var(--color-neutral-800);
+}

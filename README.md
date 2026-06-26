@@ -88,6 +88,7 @@ src/app/
     alert/                            # status message (success/warning/error variants)
     button/                           # appButton directive + global button styles
     file-upload/                      # accessible CSV input + validation
+    panel/                            # labelled-region card with BEM variant classes
     policy-table/                     # responsive results table
   app.component.*                     # thin orchestrator: upload → parse → store → table
 e2e/                                  # Playwright specs (*.e2e.ts) + fixtures

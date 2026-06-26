@@ -1,0 +1,9 @@
+<header class="app__panel-heading">
+  <h2 [id]="titleId" class="app__panel-title">
+    {{ title() }}
+    <ng-content select="[panel-title-extra]" />
+  </h2>
+  <ng-content select="[panel-subtitle]" />
+</header>
+
+<ng-content />

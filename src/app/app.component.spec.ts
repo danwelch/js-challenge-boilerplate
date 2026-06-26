@@ -26,17 +26,21 @@ describe('AppComponent', () => {
 
   it('shows the empty state and no table before any upload', () => {
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.app__empty')).not.toBeNull();
+    const resultsPanel = el.querySelector('app-panel.app__panel--results')!;
+    expect(resultsPanel.textContent).toContain('No policy numbers loaded yet');
     expect(el.querySelector('app-policy-table')).toBeNull();
   });
 
   it('renders the table once policies are loaded', () => {
-    store.setPolicies(['457508000', '123456789']);
+    store.setPolicies(['457508000', '123456789'], 'policies.csv');
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('app-policy-table')).not.toBeNull();
     expect(el.querySelectorAll('tbody tr')).toHaveLength(2);
+    expect(el.querySelector('.app__panel-title-count')?.textContent).toContain(
+      'policies.csv',
+    );
   });
 
   it('parses CSV text into the store', () => {

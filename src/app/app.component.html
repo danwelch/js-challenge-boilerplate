@@ -3,9 +3,8 @@
     <h1 class="app__title">Kin OCR</h1>
   </header>
 
-  <section class="app__panel" aria-labelledby="upload-heading">
-    <h2 id="upload-heading" class="app__panel-title">OCR File Upload</h2>
-    <p class="app__subtitle">
+  <app-panel variant="upload" title="OCR File Upload">
+    <p class="app__panel-subtitle" panel-subtitle>
       Upload the scanner’s CSV export to review the policy numbers it captured.
     </p>
     <app-file-upload
@@ -13,16 +12,21 @@
       (fileSelected)="onFileSelected($event)"
       (validationError)="store.setError($event)"
     />
-  </section>
+  </app-panel>
 
-  <section class="app__panel" aria-labelledby="results-heading">
-    <h2 id="results-heading" class="app__panel-title">Results</h2>
+  <app-panel variant="results" title="Results">
     @if (store.hasPolicies()) {
-      <app-policy-table [policies]="store.policies()" />
+      <span class="app__panel-title-count" panel-title-extra
+        >for {{ store.sourceName() }}</span
+      >
     } @else {
-      <p class="app__empty">
+      <p class="app__panel-subtitle" panel-subtitle>
         No policy numbers loaded yet. Upload a CSV to get started.
       </p>
     }
-  </section>
+
+    @if (store.hasPolicies()) {
+      <app-policy-table [policies]="store.policies()" />
+    }
+  </app-panel>
 </main>

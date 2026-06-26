@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
+import { PanelComponent } from './components/panel/panel.component';
 import { PolicyTableComponent } from './components/policy-table/policy-table.component';
 import { CsvParserService } from './services/csv-parser.service';
 import { PolicyStore } from './store/policy-store.service';
@@ -16,7 +17,7 @@ import { PolicyStore } from './store/policy-store.service';
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FileUploadComponent, PolicyTableComponent],
+  imports: [FileUploadComponent, PanelComponent, PolicyTableComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -44,9 +45,9 @@ export class AppComponent {
   loadFromText(text: string, sourceName: string): void {
     const tokens = this.csvParser.parse(text);
     if (tokens.length === 0) {
-      this.store.setError(`“${sourceName}” did not contain any policy numbers.`);
+      this.store.setError(`<code>${sourceName}</code> did not contain any policy numbers.`);
       return;
     }
-    this.store.setPolicies(tokens);
+    this.store.setPolicies(tokens, sourceName);
   }
 }
