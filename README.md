@@ -22,7 +22,9 @@ its own branch and squash-merged into `main`.
 - **Signals** for state (a small signal‑based store) — see [Design decisions](#design-decisions--assumptions)
 - **Vitest** for unit tests (migrated off the boilerplate's deprecated Karma)
 - **Playwright** for end‑to‑end tests
-- **SCSS** with the provided color‑palette CSS variables (`src/styles.scss`)
+- **lucide-angular** for icons (no emoji)
+- **SCSS** with the provided color‑palette CSS variables plus Kin design tokens
+  (typography, spacing, radius) in `src/styles.scss`
 
 ## Prerequisites
 
@@ -71,6 +73,7 @@ src/app/
   services/csv-parser.service.ts      # hand-rolled CSV → string[] tokens
   store/policy-store.service.ts       # signal-based state (single source of truth)
   components/
+    button/                           # appButton directive + global button styles
     file-upload/                      # accessible CSV input + validation
     policy-table/                     # responsive results table
   app.component.*                     # thin orchestrator: upload → parse → store → table
@@ -105,6 +108,12 @@ this flow.
 - **Unit vs e2e split.** `File.text()` is a browser API that jsdom doesn't implement, so the
   parse/load logic is unit‑tested via a text‑in method and the real file‑read path is covered
   by Playwright in a real browser.
+- **`ButtonDirective` (`appButton`) over a `<app-button>` component.** A directive is
+  Angular's idiomatic equivalent of React's `as` prop: the consumer applies it to the correct
+  semantic element (`<button>`, `<a href>`, or — for the upload — `<label for>`) and gets
+  variant/size styling, without a component re‑implementing each element's semantics. Same
+  pattern as Angular Material's button. Trade‑off: its styles are global (a directive has no
+  encapsulated stylesheet), which is the norm for design‑system controls.
 
 ## Accessibility & responsiveness
 
