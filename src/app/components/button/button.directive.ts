@@ -1,6 +1,6 @@
 import { Directive, input } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
