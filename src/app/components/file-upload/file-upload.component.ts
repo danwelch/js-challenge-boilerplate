@@ -6,6 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import {
+  FileCheck,
   FileSpreadsheet,
   LoaderCircle,
   LucideAngularModule,
@@ -61,6 +62,7 @@ export class FileUploadComponent {
   /** Lucide icons used in the template. */
   protected readonly UploadIcon = Upload;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
+  protected readonly FileCheckIcon = FileCheck;
   protected readonly ResetIcon = RotateCcw;
   protected readonly SpinnerIcon = LoaderCircle;
 
