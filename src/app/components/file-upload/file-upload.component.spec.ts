@@ -176,4 +176,57 @@ describe('FileUploadComponent', () => {
       expect(component.isDragging()).toBe(true);
     });
   });
+
+  describe('collapsed (current file) mode', () => {
+    function setCurrentFile(name: string | null): void {
+      fixture.componentRef.setInput('currentFile', name);
+      fixture.detectChanges();
+    }
+
+    it('renders the drop zone when no current file is set', () => {
+      setCurrentFile(null);
+
+      const root = fixture.nativeElement as HTMLElement;
+      expect(root.querySelector('.upload__dropzone')).not.toBeNull();
+      expect(root.querySelector('.upload__current')).toBeNull();
+    });
+
+    it('renders the current-file panel and Reset button when a file is loaded', () => {
+      setCurrentFile('sample.csv');
+
+      const root = fixture.nativeElement as HTMLElement;
+      expect(root.querySelector('.upload__dropzone')).toBeNull();
+      expect(root.querySelector('.upload__current')?.textContent).toContain(
+        'sample.csv',
+      );
+      const resetBtn = root.querySelector(
+        'button[appButton]',
+      ) as HTMLButtonElement | null;
+      expect(resetBtn?.textContent).toContain('Reset');
+    });
+
+    it('emits reset when the Reset button is clicked', () => {
+      setCurrentFile('sample.csv');
+      let resetCount = 0;
+      component.reset.subscribe(() => resetCount++);
+
+      const resetBtn = fixture.nativeElement.querySelector(
+        'button[appButton]',
+      ) as HTMLButtonElement;
+      resetBtn.click();
+
+      expect(resetCount).toBe(1);
+    });
+
+    it('still emits fileSelected when a new file is picked while collapsed', () => {
+      setCurrentFile('sample.csv');
+      const next = makeFile('newer.csv', 100);
+      let emitted: File | undefined;
+      component.fileSelected.subscribe((f) => (emitted = f));
+
+      component.onFileChange(changeEventFor(next));
+
+      expect(emitted).toBe(next);
+    });
+  });
 });

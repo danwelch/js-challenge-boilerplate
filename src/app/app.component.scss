@@ -1,11 +1,16 @@
 .app {
   max-width: 80rem;
   margin: 0 auto;
-  padding: var(--space-400);
+  padding: var(--space-200);
   display: grid;
-  gap: var(--space-400);
+  gap: var(--space-200);
   min-height: 100vh;
   grid-template-rows: auto auto 1fr;
+
+  @media (min-width: 480px) {
+    padding: var(--space-400);
+    gap: var(--space-400);
+  }
 
   @media (min-width: 1024px) {
     grid-template-columns: 3fr 5fr;
@@ -41,11 +46,4 @@ app-panel[data-variant='results'] {
   margin: 0;
   color: var(--color-neutral-700);
   text-wrap: pretty;
-}
-
-.panel-title-count {
-  margin-left: var(--space-100);
-  color: var(--color-neutral-600);
-  font-weight: var(--font-weight-400);
-  font-size: var(--text-body-md);
 }

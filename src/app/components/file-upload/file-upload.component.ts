@@ -5,7 +5,12 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { LucideAngularModule, Upload, FileSpreadsheet } from 'lucide-angular';
+import {
+  FileSpreadsheet,
+  LucideAngularModule,
+  RotateCcw,
+  Upload,
+} from 'lucide-angular';
 import { AlertComponent } from '../alert/alert.component';
 import { ButtonDirective } from '../button/button.directive';
 
@@ -29,6 +34,13 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
  * the visually-hidden `<input>` + `<label>` remain the keyboard/AT-accessible way
  * to choose a file.
  *
+ * The component is fully controlled by its inputs: passing a non-null
+ * `currentFile` switches the UI to a compact "loaded file" state with a smaller
+ * "Choose another file" button and a secondary "Reset" button. The parent owns
+ * what `currentFile` means (typically the store's source filename) and decides
+ * what `reset` does (typically `store.reset()`), so this component stays
+ * presentational and the store remains the single source of truth.
+ *
  * Accessibility notes:
  *  - The native `<input type="file">` is visually hidden but stays in the tab
  *    order; the `<label appButton>` shows a focus ring via `:focus-within`.
@@ -45,18 +57,29 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
   styleUrl: './file-upload.component.scss',
 })
 export class FileUploadComponent {
-  /** Lucide icon used for the upload button. */
+  /** Lucide icons used in the template. */
   protected readonly UploadIcon = Upload;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
+  protected readonly ResetIcon = RotateCcw;
 
   /** Error message to display (driven by the store), or `null` when clear. */
   readonly error = input<string | null>(null);
+
+  /**
+   * Name of the file currently loaded into the parent's state, or `null`.
+   * When set, the component renders the compact "loaded" state instead of the
+   * full drop zone.
+   */
+  readonly currentFile = input<string | null>(null);
 
   /** Emits the validated `File` when a valid CSV is chosen. */
   readonly fileSelected = output<File>();
 
   /** Emits a human-readable message when the chosen file fails validation. */
   readonly validationError = output<string>();
+
+  /** Emits when the user clicks "Reset" in the collapsed state. */
+  readonly reset = output<void>();
 
   /** Whether a file is currently being dragged over the drop zone. */
   readonly isDragging = signal(false);
@@ -96,6 +119,11 @@ export class FileUploadComponent {
     if (file) {
       this.handleFile(file);
     }
+  }
+
+  /** Clears the loaded file and re-expands the upload control. */
+  onReset(): void {
+    this.reset.emit();
   }
 
   /** Validates a file and emits either the file or a validation error. */

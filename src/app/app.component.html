@@ -9,17 +9,15 @@
     </p>
     <app-file-upload
       [error]="store.uploadError()"
+      [currentFile]="store.sourceName()"
       (fileSelected)="onFileSelected($event)"
       (validationError)="store.setError($event)"
+      (reset)="store.reset()"
     />
   </app-panel>
 
   <app-panel data-variant="results" title="Results">
-    @if (store.hasPolicies()) {
-      <span class="panel-title-count" panel-title-extra
-        >for {{ store.sourceName() }}</span
-      >
-    } @else {
+    @if (!store.hasPolicies()) {
       <p class="panel-subtitle" panel-subtitle>
         No policy numbers loaded yet. Upload a CSV to get started.
       </p>

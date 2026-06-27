@@ -38,9 +38,34 @@ describe('AppComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('app-policy-table')).not.toBeNull();
     expect(el.querySelectorAll('tbody tr')).toHaveLength(2);
-    expect(el.querySelector('.panel-title-count')?.textContent).toContain(
+  });
+
+  it('shows the current file in the upload panel when one is loaded', () => {
+    store.setPolicies(['457508000'], 'policies.csv');
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.upload__current')?.textContent).toContain(
       'policies.csv',
     );
+    expect(el.querySelector('.upload__dropzone')).toBeNull();
+  });
+
+  it('reset from the upload control clears the store and re-expands', () => {
+    store.setPolicies(['457508000'], 'policies.csv');
+    fixture.detectChanges();
+
+    const resetBtn = fixture.nativeElement.querySelector(
+      '.upload__actions button[appButton]',
+    ) as HTMLButtonElement;
+    resetBtn.click();
+    fixture.detectChanges();
+
+    expect(store.sourceName()).toBeNull();
+    expect(store.hasPolicies()).toBe(false);
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('.upload__dropzone'),
+    ).not.toBeNull();
   });
 
   it('parses CSV text into the store', () => {

@@ -1,7 +1,7 @@
 .upload {
   display: flex;
   flex-direction: column;
-  gap: var(--space-400);
+  gap: var(--space-200);
   align-items: flex-start;
 }
 
@@ -31,6 +31,39 @@
 .upload__dropzone-text {
   margin: 0;
   color: var(--color-neutral-700);
+}
+
+/* Collapsed "current file" state — shown when a file is loaded. */
+.upload__current {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  width: 100%;
+  padding: var(--space-200) var(--space-300);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-300);
+  background-color: var(--color-success-100);
+  color: var(--color-success-600);
+}
+
+.upload__current-icon {
+  flex-shrink: 0;
+}
+
+.upload__current-label {
+  font-weight: var(--font-weight-600);
+}
+
+.upload__current-name {
+  font-family: var(--font-system-mono);
+  color: var(--color-neutral-800);
+  word-break: break-all;
+}
+
+.upload__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-200);
 }
 
 /*
