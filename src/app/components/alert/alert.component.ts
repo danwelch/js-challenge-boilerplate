@@ -15,6 +15,13 @@ const VARIANT_ICONS: Record<AlertVariant, typeof OctagonAlert> = {
   error: OctagonAlert,
 };
 
+/** Label shown for each variant. */
+const VARIANT_LABELS: Record<AlertVariant, string> = {
+  success: 'Success',
+  warning: 'Warning',
+  error: 'Error',
+};
+
 /**
  * Inline status message with `success` / `warning` / `error` variants.
  *
@@ -46,7 +53,8 @@ export class AlertComponent {
   readonly variant = input.required<AlertVariant>();
 
   protected readonly icon = computed(() => VARIANT_ICONS[this.variant()]);
-
+  protected readonly label = computed(() => VARIANT_LABELS[this.variant()]);
+  
   protected readonly role = computed(() =>
     this.variant() === 'error' ? 'alert' : 'status',
   );
