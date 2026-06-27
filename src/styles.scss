@@ -50,18 +50,7 @@
 
   // More design tokens pulled from the Kin site
   --font-webfont: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-system-sans: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
-  --font-system-serif: Iowan Old Style, Apple Garamond, Baskerville, Times New Roman, Droid Serif, Times, Source Serif Pro, serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
-  --font-system-mono: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
-  --font-body: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
-  --font-header: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
-  --font-public: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-weight-200: 200;
-  --font-weight-300: 300;
-  --font-weight-400: 400;
-  --font-weight-500: 500;
-  --font-weight-600: 600;
-  --font-weight-700: 700;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --text-0: 0.75rem;
   --text-50: 0.875rem;
   --text-100: 1rem;
@@ -108,6 +97,7 @@
   --space-50: calc(var(--space-base) * 0.25);
   --space-75: calc(var(--space-base) * 0.5);
   --space-100: calc(var(--space-base) * 1);
+  --space-150: calc(var(--space-base) * 1.25);
   --space-200: calc(var(--space-base) * 1.5);
   --space-300: calc(var(--space-base) * 2);
   --space-400: calc(var(--space-base) * 3);
@@ -135,8 +125,15 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: var(--font-public);
-  line-height: 1.5;
+  font-family: var(--font-webfont);
+  line-height: var(--line-height-400);
   color: var(--color-neutral-black);
   background-color: var(--color-neutral-200);
+}
+
+/* Lucide icons - center the icon within the wrapping element */
+lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
