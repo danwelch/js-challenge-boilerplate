@@ -229,4 +229,42 @@ describe('FileUploadComponent', () => {
       expect(emitted).toBe(next);
     });
   });
+
+  describe('processing state', () => {
+    function setProcessing(value: boolean): void {
+      fixture.componentRef.setInput('processing', value);
+      fixture.detectChanges();
+    }
+
+    it('does not flag the wrapper as busy when idle', () => {
+      setProcessing(false);
+      const wrapper = fixture.nativeElement.querySelector('.upload') as HTMLElement;
+      expect(wrapper.classList.contains('upload--processing')).toBe(false);
+      expect(wrapper.getAttribute('aria-busy')).toBeNull();
+    });
+
+    it('grays out the form and marks it busy while processing', () => {
+      setProcessing(true);
+      const wrapper = fixture.nativeElement.querySelector('.upload') as HTMLElement;
+      expect(wrapper.classList.contains('upload--processing')).toBe(true);
+      expect(wrapper.getAttribute('aria-busy')).toBe('true');
+    });
+
+    it('swaps the upload-button icon for a spinner and labels it "Processing…"', () => {
+      setProcessing(true);
+      const root = fixture.nativeElement as HTMLElement;
+      const label = root.querySelector('label[appButton]') as HTMLLabelElement;
+      expect(label.querySelector('.upload__spinner')).not.toBeNull();
+      expect(label.textContent).toContain('Processing');
+    });
+
+    it('renders the spinner in the collapsed mode too', () => {
+      fixture.componentRef.setInput('currentFile', 'sample.csv');
+      setProcessing(true);
+      const label = fixture.nativeElement.querySelector(
+        'label[appButton]',
+      ) as HTMLLabelElement;
+      expect(label.querySelector('.upload__spinner')).not.toBeNull();
+    });
+  });
 });

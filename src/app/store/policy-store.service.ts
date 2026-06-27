@@ -18,6 +18,8 @@ import { PolicyRecord } from '../models/policy.model';
 export class PolicyStore {
   private readonly _policies = signal<PolicyRecord[]>([]);
   private readonly _uploadError = signal<string | null>(null);
+  private readonly _sourceName = signal<string | null>(null);
+  private readonly _processing = signal(false);
 
   /** Policy records loaded from the most recent successful upload. */
   readonly policies = this._policies.asReadonly();
@@ -25,24 +27,44 @@ export class PolicyStore {
   /** Human-readable error from the most recent failed upload, or `null`. */
   readonly uploadError = this._uploadError.asReadonly();
 
+  /** Filename of the CSV that produced the current policies, or `null`. */
+  readonly sourceName = this._sourceName.asReadonly();
+
+  /**
+   * Whether an upload is currently being processed (file is being read/parsed).
+   * Story 3 can extend this hook for API submission without changing consumers.
+   */
+  readonly processing = this._processing.asReadonly();
+
   /** Whether there are any policies currently loaded. */
   readonly hasPolicies = computed(() => this._policies().length > 0);
 
-  /** Load policies from parsed CSV tokens, clearing any previous error. */
-  setPolicies(tokens: string[]): void {
-    this._policies.set(tokens.map((policyNumber) => ({ policyNumber })));
-    this._uploadError.set(null);
+  /** Flag the start of an upload so the UI can show its processing state. */
+  beginProcessing(): void {
+    this._processing.set(true);
   }
 
-  /** Record an upload error, clearing any previously loaded policies. */
+  /** Load policies from parsed CSV tokens; clears errors and the processing flag. */
+  setPolicies(tokens: string[], sourceName: string): void {
+    this._policies.set(tokens.map((policyNumber) => ({ policyNumber })));
+    this._sourceName.set(sourceName);
+    this._uploadError.set(null);
+    this._processing.set(false);
+  }
+
+  /** Record an upload error; clears any loaded policies and the processing flag. */
   setError(message: string): void {
     this._uploadError.set(message);
     this._policies.set([]);
+    this._sourceName.set(null);
+    this._processing.set(false);
   }
 
   /** Reset the store to its initial empty state. */
   reset(): void {
     this._policies.set([]);
     this._uploadError.set(null);
+    this._sourceName.set(null);
+    this._processing.set(false);
   }
 }

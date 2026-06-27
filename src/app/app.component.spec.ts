@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { AppComponent } from './app.component';
 import { PolicyStore } from './store/policy-store.service';
 
@@ -49,6 +50,35 @@ describe('AppComponent', () => {
       'policies.csv',
     );
     expect(el.querySelector('.upload__dropzone')).toBeNull();
+  });
+
+  it('flips processing on, waits for the demo delay, then loads the file', async () => {
+    vi.useFakeTimers();
+
+    // Stub File.text() — jsdom doesn't implement it.
+    const file = new File(['457508000,123456789'], 'sample.csv', { type: 'text/csv' });
+    Object.defineProperty(file, 'text', {
+      value: () => Promise.resolve('457508000,123456789'),
+    });
+
+    try {
+      const pending = component.onFileSelected(file);
+
+      // Immediately after kickoff: processing is on, store has no policies yet.
+      await Promise.resolve();
+      expect(store.processing()).toBe(true);
+      expect(store.hasPolicies()).toBe(false);
+
+      // Fast-forward past the demo delay and let the resulting microtasks settle.
+      await vi.advanceTimersByTimeAsync(1000);
+      await pending;
+
+      expect(store.processing()).toBe(false);
+      expect(store.hasPolicies()).toBe(true);
+      expect(store.sourceName()).toBe('sample.csv');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('reset from the upload control clears the store and re-expands', () => {

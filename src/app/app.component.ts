@@ -25,8 +25,18 @@ export class AppComponent {
   protected readonly store = inject(PolicyStore);
   private readonly csvParser = inject(CsvParserService);
 
+  /**
+   * Artificial delay (ms) inserted between reading the file and parsing it so
+   * the processing state is visible in the demo. Real CSVs of this size parse
+   * in microseconds — without this pause the loading state would flash by too
+   * fast to be perceived. Remove (or set to 0) for production.
+   */
+  private readonly DEMO_PROCESSING_DELAY_MS = 1000;
+
   /** Reads a validated CSV file (browser I/O), then hands the text off to be parsed. */
   async onFileSelected(file: File): Promise<void> {
+    this.store.beginProcessing();
+
     let text: string;
     try {
       text = await file.text();
@@ -34,6 +44,12 @@ export class AppComponent {
       this.store.setError(`“${file.name}” could not be read. Please try again.`);
       return;
     }
+
+    // See DEMO_PROCESSING_DELAY_MS above.
+    await new Promise((resolve) =>
+      setTimeout(resolve, this.DEMO_PROCESSING_DELAY_MS),
+    );
+
     this.loadFromText(text, file.name);
   }
 

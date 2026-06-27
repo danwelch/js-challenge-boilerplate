@@ -3,6 +3,35 @@
   flex-direction: column;
   gap: var(--space-200);
   align-items: flex-start;
+  transition: opacity 0.15s ease;
+}
+
+/*
+ * Processing state: gray out the whole form and make it inert. We rely on
+ * pointer-events: none on the wrapper rather than disabling individual controls
+ * so the file picker, drop zone, drag handlers, and any future inputs are all
+ * inert in one place.
+ */
+.upload--processing {
+  opacity: 0.55;
+  pointer-events: none;
+
+  /* The spinner button still needs to look alive even though the form is dimmed. */
+  .upload__button {
+    opacity: 1;
+  }
+}
+
+@keyframes upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.upload__spinner {
+  animation: upload-spin 0.9s linear infinite;
+  /* Hint the browser this property changes often so it can compositor-only update. */
+  will-change: transform;
 }
 
 .upload__dropzone {

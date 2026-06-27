@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import {
   FileSpreadsheet,
+  LoaderCircle,
   LucideAngularModule,
   RotateCcw,
   Upload,
@@ -61,6 +62,7 @@ export class FileUploadComponent {
   protected readonly UploadIcon = Upload;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly ResetIcon = RotateCcw;
+  protected readonly SpinnerIcon = LoaderCircle;
 
   /** Error message to display (driven by the store), or `null` when clear. */
   readonly error = input<string | null>(null);
@@ -71,6 +73,13 @@ export class FileUploadComponent {
    * full drop zone.
    */
   readonly currentFile = input<string | null>(null);
+
+  /**
+   * Whether an upload is currently being processed. When `true`, the upload
+   * button shows a spinner and the form is grayed out / inert so the user
+   * can't start a second pick while the first one is in flight.
+   */
+  readonly processing = input<boolean>(false);
 
   /** Emits the validated `File` when a valid CSV is chosen. */
   readonly fileSelected = output<File>();

@@ -1,4 +1,8 @@
-<div class="upload">
+<div
+  class="upload"
+  [class.upload--processing]="processing()"
+  [attr.aria-busy]="processing() ? 'true' : null"
+>
   @if (currentFile(); as fileName) {
     <div class="upload__current">
       <lucide-icon
@@ -13,8 +17,13 @@
 
     <div class="upload__actions">
       <label appButton size="sm" variant="primary" class="upload__button" for="policy-file">
-        <lucide-icon [img]="UploadIcon" aria-hidden="true" />
-        <span>Choose another file</span>
+        @if (processing()) {
+          <lucide-icon [img]="SpinnerIcon" aria-hidden="true" class="upload__spinner" />
+          <span>Processing…</span>
+        } @else {
+          <lucide-icon [img]="UploadIcon" aria-hidden="true" />
+          <span>Choose another file</span>
+        }
       </label>
       <button
         type="button"
@@ -44,8 +53,13 @@
       <p class="upload__dropzone-text">Drag &amp; drop a CSV file here, or</p>
 
       <label appButton size="sm" variant="primary" class="upload__button" for="policy-file">
-        <lucide-icon [img]="UploadIcon" aria-hidden="true" />
-        <span>Upload policy CSV</span>
+        @if (processing()) {
+          <lucide-icon [img]="SpinnerIcon" aria-hidden="true" class="upload__spinner" />
+          <span>Processing…</span>
+        } @else {
+          <lucide-icon [img]="UploadIcon" aria-hidden="true" />
+          <span>Upload policy CSV</span>
+        }
       </label>
 
       <p class="upload__hint" id="upload-hint">CSV file only, up to 2 MB.</p>
