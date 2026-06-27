@@ -7,7 +7,7 @@ import { ButtonDirective, ButtonSize, ButtonVariant } from './button.directive';
   imports: [ButtonDirective],
   template: `
     <button appButton [variant]="variant" [size]="size">Button</button>
-    <a appButton variant="ghost" size="lg" href="#">Anchor</a>
+    <a appButton variant="primary" size="lg" href="#">Anchor</a>
     <label appButton variant="secondary">Label</label>
   `,
 })
@@ -51,7 +51,7 @@ describe('ButtonDirective', () => {
   it('works on an anchor host element (as-style)', () => {
     const anchor = query<HTMLAnchorElement>('a');
     expect(anchor.hasAttribute('appButton')).toBe(true);
-    expect(anchor.getAttribute('data-variant')).toBe('ghost');
+    expect(anchor.getAttribute('data-variant')).toBe('primary');
     expect(anchor.getAttribute('data-size')).toBe('lg');
   });
 
