@@ -129,6 +129,20 @@ this flow.
   variant/size styling, without a component re‑implementing each element's semantics. Same
   pattern as Angular Material's button. Trade‑off: its styles are global (a directive has no
   encapsulated stylesheet), which is the norm for design‑system controls.
+- **Component root styling: `:host` vs. a wrapper class.** When the component's host element
+  *is* the box (a single card/region that maps 1:1 to its tag — `PanelComponent`,
+  `AlertComponent`), we style `:host` and put class/role/aria on `host: {}`, avoiding a
+  redundant wrapper `<div>`. When the root needs to be a specific semantic or grouping element
+  the host tag can't be (`<main>` in `AppComponent`, the scroll‑`<div>` + `<table>` in
+  `PolicyTableComponent`), the host stays layout‑neutral and we style a class on that inner
+  element. (`:host` defaults to `display: inline`, so host‑styled components must set
+  `display` explicitly.)
+- **A component styles only its own template — never projected content.** Under emulated view
+  encapsulation, styles are scoped to the elements a component declares; content projected
+  through `<ng-content>` keeps the *consumer's* encapsulation id, so a child's styles can't
+  reach it. Either style projected content from the consumer's stylesheet, or make the element
+  the component's own (e.g. `PanelComponent`'s subtitle is a `subtitle` input it renders and
+  styles itself, not a projection slot).
 
 ## Accessibility & responsiveness
 
