@@ -119,3 +119,8 @@
   font-size: var(--text-body-sm);
   color: var(--color-neutral-600);
 }
+
+.upload__error-filename {
+  font-family: var(--font-mono);
+  word-break: break-all;
+}

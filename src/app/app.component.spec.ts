@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { AppComponent } from './app.component';
+import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { PolicyStore } from './store/policy-store.service';
 
 describe('AppComponent', () => {
@@ -81,6 +83,22 @@ describe('AppComponent', () => {
     }
   });
 
+  it('records an error when the file cannot be read', async () => {
+    const file = new File([''], 'unreadable.csv', { type: 'text/csv' });
+    Object.defineProperty(file, 'text', {
+      value: () => Promise.reject(new Error('boom')),
+    });
+
+    await component.onFileSelected(file);
+
+    expect(store.uploadError()).toEqual({
+      filename: 'unreadable.csv',
+      message: 'could not be read. Please try again.',
+    });
+    expect(store.processing()).toBe(false);
+    expect(store.hasPolicies()).toBe(false);
+  });
+
   it('reset from the upload control clears the store and re-expands', () => {
     store.setPolicies(['457508000'], 'policies.csv');
     fixture.detectChanges();
@@ -111,7 +129,27 @@ describe('AppComponent', () => {
   it('reports an error when the CSV has no policy numbers', () => {
     component.loadFromText('  , \n ', 'empty.csv');
 
-    expect(store.uploadError()).toContain('did not contain any policy numbers');
+    expect(store.uploadError()).toEqual({
+      filename: 'empty.csv',
+      message: 'did not contain any policy numbers.',
+    });
     expect(store.hasPolicies()).toBe(false);
+  });
+
+  it('wires the upload control\'s validationError into the store', () => {
+    const uploadCmp = fixture.debugElement.query(
+      By.directive(FileUploadComponent),
+    ).componentInstance as FileUploadComponent;
+
+    uploadCmp.validationError.emit({
+      filename: 'notes.txt',
+      message: 'is not a CSV file.',
+    });
+    fixture.detectChanges();
+
+    expect(store.uploadError()).toEqual({
+      filename: 'notes.txt',
+      message: 'is not a CSV file.',
+    });
   });
 });

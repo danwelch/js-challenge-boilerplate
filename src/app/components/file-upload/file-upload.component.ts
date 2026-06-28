@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Upload,
 } from 'lucide-angular';
+import { UploadError } from '../../models/upload-error.model';
 import { AlertComponent } from '../alert/alert.component';
 import { ButtonDirective } from '../button/button.directive';
 
@@ -66,8 +67,8 @@ export class FileUploadComponent {
   protected readonly ResetIcon = RotateCcw;
   protected readonly SpinnerIcon = LoaderCircle;
 
-  /** Error message to display (driven by the store), or `null` when clear. */
-  readonly error = input<string | null>(null);
+  /** Error to display (driven by the store), or `null` when clear. */
+  readonly error = input<UploadError | null>(null);
 
   /**
    * Name of the file currently loaded into the parent's state, or `null`.
@@ -86,8 +87,8 @@ export class FileUploadComponent {
   /** Emits the validated `File` when a valid CSV is chosen. */
   readonly fileSelected = output<File>();
 
-  /** Emits a human-readable message when the chosen file fails validation. */
-  readonly validationError = output<string>();
+  /** Emits a structured error when the chosen file fails validation. */
+  readonly validationError = output<UploadError>();
 
   /** Emits when the user clicks "Reset" in the collapsed state. */
   readonly reset = output<void>();
@@ -147,17 +148,23 @@ export class FileUploadComponent {
     }
   }
 
-  /** Returns an error message if the file is not an acceptable CSV, else `null`. */
-  private validate(file: File): string | null {
+  /** Returns a structured error if the file is not an acceptable CSV, else `null`. */
+  private validate(file: File): UploadError | null {
     const isCsv =
       file.name.toLowerCase().endsWith('.csv') || CSV_MIME_TYPES.has(file.type);
     if (!isCsv) {
-      return `<code>${file.name}</code> is not a CSV file. Please upload a .csv file.`;
+      return {
+        filename: file.name,
+        message: 'is not a CSV file. Please upload a .csv file.',
+      };
     }
 
     if (file.size > MAX_BYTES) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      return `<code>${file.name}</code> is ${sizeMb} MB, which exceeds the 2 MB limit.`;
+      return {
+        filename: file.name,
+        message: `is ${sizeMb} MB, which exceeds the 2 MB limit.`,
+      };
     }
 
     return null;

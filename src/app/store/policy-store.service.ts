@@ -1,5 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { PolicyRecord } from '../models/policy.model';
+import { UploadError } from '../models/upload-error.model';
 
 /**
  * Single source of truth for the policy upload feature, built on Angular signals.
@@ -17,14 +18,14 @@ import { PolicyRecord } from '../models/policy.model';
 @Injectable({ providedIn: 'root' })
 export class PolicyStore {
   private readonly _policies = signal<PolicyRecord[]>([]);
-  private readonly _uploadError = signal<string | null>(null);
+  private readonly _uploadError = signal<UploadError | null>(null);
   private readonly _sourceName = signal<string | null>(null);
   private readonly _processing = signal(false);
 
   /** Policy records loaded from the most recent successful upload. */
   readonly policies = this._policies.asReadonly();
 
-  /** Human-readable error from the most recent failed upload, or `null`. */
+  /** Structured error from the most recent failed upload, or `null`. */
   readonly uploadError = this._uploadError.asReadonly();
 
   /** Filename of the CSV that produced the current policies, or `null`. */
@@ -53,8 +54,8 @@ export class PolicyStore {
   }
 
   /** Record an upload error; clears any loaded policies and the processing flag. */
-  setError(message: string): void {
-    this._uploadError.set(message);
+  setError(error: UploadError): void {
+    this._uploadError.set(error);
     this._policies.set([]);
     this._sourceName.set(null);
     this._processing.set(false);

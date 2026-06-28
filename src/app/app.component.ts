@@ -41,7 +41,10 @@ export class AppComponent {
     try {
       text = await file.text();
     } catch {
-      this.store.setError(`“${file.name}” could not be read. Please try again.`);
+      this.store.setError({
+        filename: file.name,
+        message: 'could not be read. Please try again.',
+      });
       return;
     }
 
@@ -61,7 +64,10 @@ export class AppComponent {
   loadFromText(text: string, sourceName: string): void {
     const tokens = this.csvParser.parse(text);
     if (tokens.length === 0) {
-      this.store.setError(`<code>${sourceName}</code> did not contain any policy numbers.`);
+      this.store.setError({
+        filename: sourceName,
+        message: 'did not contain any policy numbers.',
+      });
       return;
     }
     this.store.setPolicies(tokens, sourceName);

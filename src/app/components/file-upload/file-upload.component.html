@@ -80,9 +80,12 @@
     [attr.aria-invalid]="error() ? 'true' : null"
   />
 
-  @if (error(); as message) {
+  @if (error(); as err) {
     <app-alert id="upload-error" variant="error">
-      <span [innerHTML]="message"></span>
+      @if (err.filename) {
+        <code class="upload__error-filename">{{ err.filename }}</code>
+      }
+      {{ err.message }}
     </app-alert>
   }
 </div>

@@ -17,7 +17,7 @@ describe('PolicyStore', () => {
   });
 
   it('maps tokens into PolicyRecords and clears any error', () => {
-    store.setError('previous problem');
+    store.setError({ message: 'previous problem' });
 
     store.setPolicies(['457508000', '123456789'], 'policies.csv');
 
@@ -33,9 +33,12 @@ describe('PolicyStore', () => {
   it('records an error and clears any loaded policies', () => {
     store.setPolicies(['457508000'], 'policies.csv');
 
-    store.setError('File must be a .csv');
+    store.setError({ filename: 'notes.txt', message: 'is not a CSV file.' });
 
-    expect(store.uploadError()).toBe('File must be a .csv');
+    expect(store.uploadError()).toEqual({
+      filename: 'notes.txt',
+      message: 'is not a CSV file.',
+    });
     expect(store.policies()).toEqual([]);
     expect(store.sourceName()).toBeNull();
     expect(store.hasPolicies()).toBe(false);
@@ -66,7 +69,7 @@ describe('PolicyStore', () => {
 
     it('setError() ends the processing state on failure', () => {
       store.beginProcessing();
-      store.setError('File must be a .csv');
+      store.setError({ message: 'File must be a .csv' });
       expect(store.processing()).toBe(false);
     });
 

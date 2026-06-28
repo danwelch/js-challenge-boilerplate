@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { UploadError } from '../../models/upload-error.model';
 import { FileUploadComponent } from './file-upload.component';
 
 /** Builds a File of an exact byte size with the given name/type. */
@@ -70,27 +71,41 @@ describe('FileUploadComponent', () => {
     expect(emitted).toBe(file);
   });
 
-  it('rejects a non-CSV file with a descriptive error', () => {
-    const file = makeFile('policies.txt', 100, 'text/plain');
-    let message: string | undefined;
+  it('accepts a .csv reported as application/vnd.ms-excel', () => {
+    const file = makeFile('policies.csv', 100, 'application/vnd.ms-excel');
+    let emitted: File | undefined;
+    component.fileSelected.subscribe((f) => (emitted = f));
+
+    component.onFileChange(changeEventFor(file));
+
+    expect(emitted).toBe(file);
+  });
+
+  it('rejects a non-CSV file with a structured error naming the file', () => {
+    const file = makeFile('notes.txt', 100, 'text/plain');
+    let error: UploadError | undefined;
     let emittedValid = false;
-    component.validationError.subscribe((m) => (message = m));
+    component.validationError.subscribe((e) => (error = e));
     component.fileSelected.subscribe(() => (emittedValid = true));
 
     component.onFileChange(changeEventFor(file));
 
-    expect(message).toContain('not a CSV');
+    expect(error).toEqual({
+      filename: 'notes.txt',
+      message: 'is not a CSV file. Please upload a .csv file.',
+    });
     expect(emittedValid).toBe(false);
   });
 
-  it('rejects a CSV larger than 2 MB', () => {
+  it('rejects a CSV larger than 2 MB with the actual size in the message', () => {
     const file = makeFile('big.csv', TWO_MB + 1);
-    let message: string | undefined;
-    component.validationError.subscribe((m) => (message = m));
+    let error: UploadError | undefined;
+    component.validationError.subscribe((e) => (error = e));
 
     component.onFileChange(changeEventFor(file));
 
-    expect(message).toContain('2 MB');
+    expect(error?.filename).toBe('big.csv');
+    expect(error?.message).toContain('2 MB');
   });
 
   it('accepts a CSV of exactly 2 MB (boundary)', () => {
@@ -116,12 +131,32 @@ describe('FileUploadComponent', () => {
   });
 
   it('renders the error input in an assertive alert region', () => {
-    fixture.componentRef.setInput('error', 'File must be a .csv');
+    fixture.componentRef.setInput('error', {
+      filename: 'notes.txt',
+      message: 'is not a CSV file.',
+    });
     fixture.detectChanges();
 
     const alert: HTMLElement | null =
       fixture.nativeElement.querySelector('[role="alert"]');
-    expect(alert?.textContent).toContain('File must be a .csv');
+    expect(alert?.textContent).toContain('notes.txt');
+    expect(alert?.textContent).toContain('is not a CSV file.');
+  });
+
+  it('escapes filenames in errors — never parses them as HTML (XSS guard)', () => {
+    const hostile = '<img src=x onerror=alert(1)>policies.csv';
+    fixture.componentRef.setInput('error', {
+      filename: hostile,
+      message: 'is not a CSV file.',
+    });
+    fixture.detectChanges();
+
+    const alert = fixture.nativeElement.querySelector('[role="alert"]') as HTMLElement;
+    // The hostile filename round-trips as plain text inside a <code> element…
+    const code = alert.querySelector('code') as HTMLElement;
+    expect(code.textContent).toBe(hostile);
+    // …and is never parsed as a real <img> element.
+    expect(alert.querySelector('img')).toBeNull();
   });
 
   describe('drag and drop', () => {
@@ -138,12 +173,13 @@ describe('FileUploadComponent', () => {
 
     it('runs the same validation for a dropped non-CSV file', () => {
       const file = makeFile('notes.txt', 100, 'text/plain');
-      let message: string | undefined;
-      component.validationError.subscribe((m) => (message = m));
+      let error: UploadError | undefined;
+      component.validationError.subscribe((e) => (error = e));
 
       component.onDrop(dropEventFor(file));
 
-      expect(message).toContain('not a CSV');
+      expect(error?.filename).toBe('notes.txt');
+      expect(error?.message).toContain('not a CSV');
     });
 
     it('does nothing when a drop carries no file', () => {
