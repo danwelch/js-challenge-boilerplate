@@ -282,22 +282,29 @@ describe('FileUploadComponent', () => {
       fixture.detectChanges();
     }
 
-    it('does not flag the wrapper as busy when idle', () => {
+    it('does not flag the wrapper as busy or inert when idle', () => {
       setProcessing(false);
       const wrapper = fixture.nativeElement.querySelector(
         '.upload',
       ) as HTMLElement;
       expect(wrapper.classList.contains('upload--processing')).toBe(false);
       expect(wrapper.getAttribute('aria-busy')).toBeNull();
+      // Idle: the control stays keyboard- and AT-reachable.
+      expect(wrapper.getAttribute('inert')).toBeNull();
     });
 
-    it('grays out the form and marks it busy while processing', () => {
+    it('grays out the form and makes it inert (keyboard + AT) while processing', () => {
       setProcessing(true);
       const wrapper = fixture.nativeElement.querySelector(
         '.upload',
       ) as HTMLElement;
       expect(wrapper.classList.contains('upload--processing')).toBe(true);
       expect(wrapper.getAttribute('aria-busy')).toBe('true');
+      // `inert` takes the whole subtree out of the tab order and a11y tree, so a
+      // keyboard user can't reopen the picker mid-upload — not just a mouse guard.
+      // (jsdom doesn't reflect the `.inert` property, so we assert the attribute;
+      // real-browser inert behaviour is covered by the Playwright e2e suite.)
+      expect(wrapper.getAttribute('inert')).toBe('');
     });
 
     it('swaps the upload-button icon for a spinner and labels it "Processing…"', () => {

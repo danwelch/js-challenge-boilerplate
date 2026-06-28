@@ -7,10 +7,11 @@
 }
 
 /*
- * Processing state: gray out the whole form and make it inert. We rely on
- * pointer-events: none on the wrapper rather than disabling individual controls
- * so the file picker, drop zone, drag handlers, and any future inputs are all
- * inert in one place.
+ * Processing state: gray out the whole form. Interactivity is removed by the
+ * `inert` attribute on the wrapper (set in the template), which takes the file
+ * picker, drop zone, drag handlers, and any future inputs out of the tab order,
+ * pointer events, and the a11y tree in one place. `pointer-events: none` is kept
+ * only as a belt-and-suspenders guard for the mouse.
  */
 .upload--processing {
   opacity: 0.55;

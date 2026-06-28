@@ -2,6 +2,7 @@
   class="upload"
   [class.upload--processing]="processing()"
   [attr.aria-busy]="processing() ? 'true' : null"
+  [attr.inert]="processing() ? '' : null"
 >
   @if (currentFile(); as fileName) {
     <div class="upload__current">
