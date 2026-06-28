@@ -29,6 +29,14 @@ test.describe('Policy CSV upload', () => {
     const numbers = page.locator('.policy-table__number');
     await expect(numbers.first()).toHaveText('457500000');
     await expect(numbers.last()).toHaveText('123456789');
+
+    // mod-11 checksum (US2): of the 10 sample numbers, only 457508000 and
+    // 123456789 pass — the caption summary and per-row status reflect that.
+    await expect(page.locator('caption')).toContainText('2 valid, 8 invalid');
+    const statuses = page.locator('.policy-table__status');
+    await expect(statuses.nth(0)).toContainText('Invalid'); // 457500000
+    await expect(statuses.nth(3)).toContainText('Valid'); // 457508000
+    await expect(statuses.nth(9)).toContainText('Valid'); // 123456789
   });
 
   test('locks the form inert while an upload is processing', async ({

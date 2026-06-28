@@ -16,18 +16,38 @@ describe('PolicyStore', () => {
     expect(store.processing()).toBe(false);
   });
 
-  it('maps tokens into PolicyRecords and clears any error', () => {
+  it('maps tokens into PolicyRecords with checksum validity and clears any error', () => {
     store.setError({ message: 'previous problem' });
 
     store.setPolicies(['457508000', '123456789'], 'policies.csv');
 
     expect(store.policies()).toEqual([
-      { policyNumber: '457508000' },
-      { policyNumber: '123456789' },
+      { policyNumber: '457508000', valid: true },
+      { policyNumber: '123456789', valid: true },
     ]);
     expect(store.sourceName()).toBe('policies.csv');
     expect(store.hasPolicies()).toBe(true);
     expect(store.uploadError()).toBeNull();
+  });
+
+  it('flags each record as valid or invalid by its mod-11 checksum', () => {
+    // 457508000 passes the checksum; 457500000 does not.
+    store.setPolicies(['457508000', '457500000'], 'policies.csv');
+
+    expect(store.policies()).toEqual([
+      { policyNumber: '457508000', valid: true },
+      { policyNumber: '457500000', valid: false },
+    ]);
+  });
+
+  it('exposes valid / invalid counts derived from the loaded records', () => {
+    store.setPolicies(
+      ['457508000', '123456789', '457500000'],
+      'policies.csv',
+    );
+
+    expect(store.validCount()).toBe(2);
+    expect(store.invalidCount()).toBe(1);
   });
 
   it('records an error and clears any loaded policies', () => {

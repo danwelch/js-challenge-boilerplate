@@ -17,6 +17,12 @@
   color: var(--color-neutral-700);
 }
 
+/* De-emphasised count breakdown that trails the caption title. */
+.policy-table__summary {
+  font-weight: 400;
+  color: var(--color-neutral-600);
+}
+
 .policy-table th,
 .policy-table td {
   padding: var(--space-150) var(--space-300);
@@ -46,4 +52,23 @@
 .policy-table__number {
   font-family: var(--font-mono);
   letter-spacing: 0.05em;
+}
+
+/* Status cell: icon + label, coloured by validity via the data-valid flag. */
+.policy-table__status {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.policy-table__status[data-valid='true'] {
+  color: var(--color-success-600);
+}
+
+.policy-table__status[data-valid='false'] {
+  color: var(--color-warning);
+}
+
+.policy-table__status-icon {
+  vertical-align: text-bottom;
+  margin-right: var(--space-100);
 }

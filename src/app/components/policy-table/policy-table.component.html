@@ -2,11 +2,15 @@
   <table class="policy-table">
     <caption class="policy-table__caption">
       Scanned policy numbers ({{ policies().length }})
+      <span class="policy-table__summary">
+        — {{ validCount() }} valid, {{ invalidCount() }} invalid
+      </span>
     </caption>
     <thead>
       <tr>
         <th scope="col" class="policy-table__col-index">#</th>
         <th scope="col">Policy number</th>
+        <th scope="col">Status</th>
       </tr>
     </thead>
     <tbody>
@@ -14,6 +18,15 @@
         <tr>
           <td class="policy-table__col-index">{{ $index + 1 }}</td>
           <td class="policy-table__number">{{ policy.policyNumber }}</td>
+          <td class="policy-table__status" [attr.data-valid]="policy.valid">
+            <lucide-icon
+              [img]="policy.valid ? validIcon : invalidIcon"
+              [size]="16"
+              aria-hidden="true"
+              class="policy-table__status-icon"
+            />
+            {{ policy.valid ? 'Valid' : 'Invalid' }}
+          </td>
         </tr>
       }
     </tbody>

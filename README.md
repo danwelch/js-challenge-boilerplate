@@ -10,7 +10,7 @@ its own branch and squash-merged into `main`.
 | User story | Scope | Status |
 | ---------- | ----- | ------ |
 | **US1** | Upload a CSV (validated: CSV type, ≤ 2 MB) and list the policy numbers in a table | ✅ Done |
-| **US2** | Validate each number via a mod‑11 checksum and show valid/invalid status | ⏳ Planned |
+| **US2** | Validate each number via a mod‑11 checksum and show valid/invalid status | ✅ Done |
 | **US3** | POST the processed array to a mock API and report success/failure with the returned id | ⏳ Planned |
 | **US4** | Auto‑correct mis‑scanned digits (`valid` / `corrected` / `AMB` / `error`) | 📝 Outline only — to be paired on |
 
@@ -83,6 +83,7 @@ npm run build  # production build to dist/kin-ocr
 src/app/
   models/policy.model.ts              # PolicyRecord interface
   services/csv-parser.service.ts      # hand-rolled CSV → string[] tokens
+  services/checksum-validator.service.ts # mod-11 checksum: policy number → valid?
   store/policy-store.service.ts       # signal-based state (single source of truth)
   components/
     alert/                            # status message (success/warning/error variants)
@@ -198,6 +199,12 @@ behaviour rather than just displaying it.
   identifiers where leading zeros are significant (e.g. `000011111`), and US2's checksum is
   positional over the digit string. A JS `number` would drop leading zeros and risk
   precision issues. (Trade‑off: callers must not do arithmetic on them — which we never do.)
+- **Checksum lives in its own pure service, validity is attached in the store.** `ChecksumValidator`
+  is a pure `string → boolean` mod‑11 check (no I/O), unit‑testable like the parser. The store —
+  the single source of truth — calls it as it maps tokens into `PolicyRecord`s, so each record
+  carries a `valid` flag and the table stays presentational. A non‑9‑digit or non‑numeric token
+  can't satisfy a positional checksum, so it is simply invalid. (`valid` is a `boolean` for US2's
+  binary split; US4 can widen it to a `valid` / `corrected` / `AMB` / `error` union.)
 - **Hand‑rolled CSV parser over a library.** The export is a single line (or one value per
   line) of plain numbers — no quoting/escaping — so a tiny, dependency‑free, fully‑tested
   parser is clearer and lighter. If the format ever gained quoted fields or embedded commas,
