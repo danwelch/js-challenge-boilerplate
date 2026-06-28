@@ -32,6 +32,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Test
         run: npm test
+      - name: Lint
+        run: npm run lint
   e2e:
     name: E2E
     runs-on: ubuntu-22.04
