@@ -1,4 +1,4 @@
-// Horizontal scroll guard so the table never overflows narrow viewports.
+/* Horizontal scroll guard so the table never overflows narrow viewports. */
 .policy-table__scroll {
   width: 100%;
   overflow-x: auto;
@@ -11,7 +11,7 @@
 }
 
 .policy-table__caption {
-  padding-bottom: 0.75rem;
+  padding-bottom: var(--space-200);
   font-weight: 600;
   text-align: left;
   color: var(--color-neutral-700);
@@ -19,14 +19,14 @@
 
 .policy-table th,
 .policy-table td {
-  padding: 0.625rem 1rem;
+  padding: var(--space-150) var(--space-300);
   text-align: left;
   border-bottom: 1px solid var(--color-neutral-300);
   white-space: nowrap;
 }
 
 .policy-table thead th {
-  font-size: 0.8125rem;
+  font-size: var(--text-body-sm);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--color-neutral-white);
@@ -44,6 +44,6 @@
 }
 
 .policy-table__number {
-  font-family: "SF Mono", "Roboto Mono", "Courier New", monospace;
+  font-family: var(--font-mono);
   letter-spacing: 0.05em;
 }

@@ -17,20 +17,20 @@
   }
 }
 
-.panel-heading {
+.panel__heading {
   display: flex;
   flex-direction: column;
   gap: var(--space-100);
 }
 
-.panel-title {
+.panel__title {
   margin: 0;
   font-size: var(--text-heading-md);
   line-height: var(--line-height-100);
   color: var(--color-neutral-800);
 }
 
-.panel-subtitle {
+.panel__subtitle {
   margin: 0;
   color: var(--color-neutral-700);
   text-wrap: pretty;

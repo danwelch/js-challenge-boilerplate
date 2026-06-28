@@ -48,7 +48,7 @@
   --color-neutral-700: #616161;
   --color-neutral-800: #3e3e3e;
 
-  // More design tokens pulled from the Kin site
+  /* More design tokens pulled from the Kin site */
   --font-webfont:
     "Inter",
     "Inter Fallback",
@@ -96,6 +96,8 @@
   --border-radius-300: 8px;
   --border-radius-400: 16px;
   --border-radius-full: 50%;
+  --transition-duration: 0.2s;
+  --transition-easing: ease-in-out;
   --x-small: 20rem;
   --small: 46.5rem;
   --medium: 61.5rem;

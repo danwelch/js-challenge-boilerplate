@@ -18,7 +18,6 @@
   display: inline-flex;
   width: fit-content;
   height: fit-content;
-  box-sizing: border-box;
   align-items: center;
   gap: var(--_py);
   padding: var(--_py) var(--_px);
@@ -36,7 +35,9 @@
   text-decoration: none;
   outline: 3px solid var(--_outline-color);
   outline-offset: 2px;
-  transition: all 0.2s ease-in-out;
+  transition:
+    background-color var(--transition-duration) var(--transition-easing),
+    outline-color var(--transition-duration) var(--transition-easing);
 
   &:focus-visible {
     --_outline-color: var(--_bg-color);
@@ -44,7 +45,7 @@
 
   &:hover {
     background-color: color-mix(
-      in srgb,
+      in oklab,
       var(--_bg-color) 75%,
       var(--color-neutral-white)
     );

@@ -51,7 +51,7 @@ describe('PanelComponent', () => {
 
   it('renders the subtitle input and projects body content', () => {
     const panel = panelEl();
-    expect(panel.querySelector('.panel-subtitle')?.textContent).toContain(
+    expect(panel.querySelector('.panel__subtitle')?.textContent).toContain(
       'A subtitle',
     );
     expect(panel.querySelector('.body')?.textContent).toContain('body');
@@ -63,7 +63,7 @@ describe('PanelComponent', () => {
     noSubtitle.componentRef.setInput('title', 'Results');
     noSubtitle.detectChanges();
     expect(
-      noSubtitle.nativeElement.querySelector('.panel-subtitle'),
+      noSubtitle.nativeElement.querySelector('.panel__subtitle'),
     ).toBeNull();
   });
 

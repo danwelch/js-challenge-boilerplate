@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: var(--space-200);
   align-items: flex-start;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--transition-duration) var(--transition-easing);
 }
 
 /*
@@ -46,7 +46,9 @@
   border-radius: var(--border-radius-300);
   background-color: var(--color-neutral-100);
   text-align: center;
-  transition: all 0.15s ease;
+  transition:
+    border-color var(--transition-duration) var(--transition-easing),
+    background-color var(--transition-duration) var(--transition-easing);
 }
 
 .upload__dropzone--dragging {
