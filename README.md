@@ -12,7 +12,7 @@ its own branch and squash-merged into `main`.
 | **US1** | Upload a CSV (validated: CSV type, ≤ 2 MB) and list the policy numbers in a table | ✅ Done |
 | **US2** | Validate each number via a mod‑11 checksum and show valid/invalid status | ⏳ Planned |
 | **US3** | POST the processed array to a mock API and report success/failure with the returned id | ⏳ Planned |
-| **US4** | Auto‑correct mis‑scanned digits (`valid` / `corrected` / `AMB` / `error`) | 📝 Outline only — to be paired on (`docs/user-story-4-approach.md`, to be added) |
+| **US4** | Auto‑correct mis‑scanned digits (`valid` / `corrected` / `AMB` / `error`) | 📝 Outline only — to be paired on |
 
 ---
 
@@ -140,9 +140,20 @@ this flow.
   for narrow screens; fluid spacing via `clamp()`.
 - Colors come exclusively from the provided palette variables.
 
+## How I approached US1
+
+The brief asks for a file upload that accepts a CSV, validates it, and lists the policy numbers in a table. That sounds like a form, but the interesting constraint is that the file read itself is an async browser API (`File.text()`) that can fail — so there are actually three distinct failure modes: wrong type, too large, and unreadable at runtime. The design had to make all three feel the same to the user (a single inline error) while keeping the causes separately testable.
+
+The key decision was **keeping I/O and parsing separate**. `AppComponent.onFileSelected()` owns only the async file read; `CsvParserService.parse()` is a pure function on a string. That split means the I/O path is hard to unit-test (jsdom doesn't implement `File.text()`) but trivial to cover with Playwright, while the parsing logic — where the real edge cases live — is covered exhaustively with fast synchronous unit tests. No mocking required for either.
+
+The second consequential call was **no `[innerHTML]`**. Validation errors originally carried pre-formatted HTML strings so the component could render a `<code>` tag around the filename. That's an XSS vector — filenames are user-controlled — so errors are now a `{ filename, message }` object and the template does the markup. The store carries data, not view markup.
+
+Everything else follows from those two: signals over RxJS (state is synchronous), `appButton` directive over a component (semantic flexibility for `<label for>`), hand-rolled CSV parser (single-column plain numbers need six lines, not a library).
+
+---
+
 ## Future improvements
 
 - A parse summary (counts, duplicates) after upload.
 - Surface row‑level parse warnings (e.g. tokens that aren't 9 digits) ahead of US2.
-- Optional CI job for Playwright e2e (the current CI runs build + unit tests).
 - Virtualized table if exports grow to thousands of rows.
