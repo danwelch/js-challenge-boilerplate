@@ -1,0 +1,38 @@
+/*
+ * Host styles for the panel. The component is variant-agnostic — consumers tag
+ * individual panels with their own HTML attributes and target those from their
+ * stylesheet (e.g. `app-panel[data-variant="results"]`).
+ */
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+  padding: var(--space-300) var(--space-200);
+  background-color: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-400);
+
+  @media (min-width: 480px) {
+    padding: var(--space-400);
+  }
+}
+
+.panel__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+}
+
+.panel__title {
+  margin: 0;
+  font-size: var(--text-heading-md);
+  line-height: var(--line-height-100);
+  color: var(--color-neutral-800);
+}
+
+.panel__subtitle {
+  margin: 0;
+  color: var(--color-neutral-700);
+  text-wrap: pretty;
+  line-height: var(--line-height-200);
+}

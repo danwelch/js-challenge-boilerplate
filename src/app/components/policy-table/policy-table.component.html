@@ -1,0 +1,21 @@
+<div class="policy-table__scroll">
+  <table class="policy-table">
+    <caption class="policy-table__caption">
+      Scanned policy numbers ({{ policies().length }})
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" class="policy-table__col-index">#</th>
+        <th scope="col">Policy number</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (policy of policies(); track $index) {
+        <tr>
+          <td class="policy-table__col-index">{{ $index + 1 }}</td>
+          <td class="policy-table__number">{{ policy.policyNumber }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

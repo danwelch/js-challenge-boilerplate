@@ -7,8 +7,8 @@
   --color-primary-900: #7e6115;
 
   --color-secondary: #167c80;
-  --color-secondary-100: #E8F2F3;
-  --color-secondary-200: #D0E0E1;
+  --color-secondary-100: #e8f2f3;
+  --color-secondary-200: #d0e0e1;
   --color-secondary-300: #3193ad;
   --color-secondary-400: var(--color-secondary);
   --color-secondary-500: #126568;
@@ -26,7 +26,7 @@
   --color-blue-100: #dee7ff;
   --color-blue-400: var(--color-blue);
 
-  --color-warning: #B11030;
+  --color-warning: #b11030;
   --color-warning-100: #fae6e8;
   --color-warning-200: #f4cace;
   --color-warning-400: var(--color-warning);
@@ -47,4 +47,104 @@
   --color-neutral-600: #757575;
   --color-neutral-700: #616161;
   --color-neutral-800: #3e3e3e;
+
+  /* More design tokens pulled from the Kin site */
+  --font-webfont:
+    "Inter",
+    "Inter Fallback",
+    ui-sans-serif,
+    system-ui,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --text-0: 0.75rem;
+  --text-50: 0.875rem;
+  --text-100: 1rem;
+  --text-200: clamp(1.13rem, 0.17vw + 1.09rem, 1.25rem);
+  --text-300: clamp(1.25rem, 1.163rem + 0.4348vw, 1.5rem);
+  --text-400: clamp(1.5rem, 1.3243rem + 0.7207vw, 2rem);
+  --text-500: clamp(1.5rem, 1.1522rem + 1.7391vw, 2.5rem);
+  --text-600: clamp(2rem, 1.19vw + 1.76rem, 2.87rem);
+  --text-700: clamp(2.25rem, 1.695vw + 1.91rem, 3.5rem);
+  --text-800: clamp(2.375rem, 1.69vw + 2.03rem, 3.625rem);
+  --text-900: clamp(2.875rem, 1.52vw + 2.57rem, 4rem);
+  --text-1000: clamp(3.5rem, 1.35vw + 3.22rem, 4.5rem);
+  --text-body-xs: 0.75rem;
+  --text-body-sm: 0.875rem;
+  --text-body-md: 1rem;
+  --text-body-lg: clamp(1.13rem, 0.17vw + 1.09rem, 1.25rem);
+  --text-heading-xs: 1rem;
+  --text-heading-sm: clamp(1.13rem, 0.17vw + 1.09rem, 1.25rem);
+  --text-heading-md: clamp(1.25rem, 1.163rem + 0.4348vw, 1.5rem);
+  --text-heading-lg: clamp(1.5rem, 1.3243rem + 0.7207vw, 2rem);
+  --text-heading-xl: clamp(1.5rem, 1.1522rem + 1.7391vw, 2.5rem);
+  --text-heading-xxl: clamp(2rem, 1.19vw + 1.76rem, 2.87rem);
+  --text-display-sm: clamp(2.25rem, 1.695vw + 1.91rem, 3.5rem);
+  --text-display-md: clamp(2.875rem, 1.52vw + 2.57rem, 4rem);
+  --text-display-lg: clamp(3.5rem, 1.35vw + 3.22rem, 4.5rem);
+  --line-height-0: 1;
+  --line-height-100: 1.125;
+  --line-height-200: 1.25;
+  --line-height-300: 1.375;
+  --line-height-400: 1.625;
+  --border-radius-0: 0;
+  --border-radius-100: 2px;
+  --border-radius-200: 4px;
+  --border-radius-300: 8px;
+  --border-radius-400: 16px;
+  --border-radius-full: 50%;
+  --transition-duration: 0.2s;
+  --transition-easing: ease-in-out;
+  --x-small: 20rem;
+  --small: 46.5rem;
+  --medium: 61.5rem;
+  --large: 90rem;
+  --x-large: 100rem;
+  --space-base: 0.5rem;
+  --space-0: calc(var(--space-base) * 0);
+  --space-50: calc(var(--space-base) * 0.25);
+  --space-75: calc(var(--space-base) * 0.5);
+  --space-100: calc(var(--space-base) * 1);
+  --space-150: calc(var(--space-base) * 1.25);
+  --space-200: calc(var(--space-base) * 1.5);
+  --space-300: calc(var(--space-base) * 2);
+  --space-400: calc(var(--space-base) * 3);
+  --space-500: calc(var(--space-base) * 4);
+  --space-600: calc(var(--space-base) * 5);
+  --space-700: calc(var(--space-base) * 6);
+  --space-800: calc(var(--space-base) * 8);
+  --space-900: calc(var(--space-base) * 10);
+  --space-1000: calc(var(--space-base) * 12);
+  --space-1100: calc(var(--space-base) * 14);
+  --space-1150: calc(var(--space-base) * 15);
+}
+
+/* Minimal global base — the palette file ships no reset/typography of its own. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-webfont);
+  line-height: var(--line-height-400);
+  color: var(--color-neutral-black);
+  background-color: var(--color-neutral-200);
+}
+
+/* Lucide icons - center the icon within the wrapping element */
+lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

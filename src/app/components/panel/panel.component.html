@@ -1,0 +1,8 @@
+<header class="panel__heading">
+  <h2 [id]="titleId" class="panel__title">{{ title() }}</h2>
+  @if (subtitle(); as subtitle) {
+    <p class="panel__subtitle">{{ subtitle }}</p>
+  }
+</header>
+
+<ng-content />

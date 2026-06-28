@@ -1,0 +1,111 @@
+.app {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: var(--space-200);
+  display: grid;
+  gap: var(--space-200);
+  min-height: 100vh;
+  grid-template-rows: auto auto 1fr;
+
+  @media (min-width: 480px) {
+    padding: var(--space-400);
+    gap: var(--space-400);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 3fr 5fr;
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    gap: var(--space-400);
+  }
+}
+
+.app__header {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-direction: column;
+  gap: 0.5rem;
+  /* Match the panel's internal horizontal padding so the H1 aligns with the
+     panel titles below (mobile uses --space-200, ≥480px uses --space-400). */
+  padding-inline: var(--space-200);
+
+  @media (min-width: 480px) {
+    padding-inline: var(--space-400);
+  }
+}
+
+.app__title {
+  margin: 0;
+  font-size: var(--text-heading-xl);
+  color: var(--color-neutral-black);
+}
+
+/*
+ * Structural panel styles live in PanelComponent. The rules below style content
+ * projected into the panel's slots, so they stay with the consumer (AppComponent)
+ * because emulated view encapsulation scopes them to this view.
+ */
+app-panel[data-variant="results"] {
+  align-self: stretch;
+}
+
+/*
+ * Empty state for the Results panel: a blurred placeholder table sets the
+ * height and previews what a loaded result looks like, with a prompt overlaid
+ * on top. The preview is aria-hidden and pointer-events: none so it never
+ * reaches assistive tech or the focus order — purely visual scaffolding.
+ */
+.results-empty {
+  position: relative;
+}
+
+.results-empty__preview {
+  filter: blur(2px);
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}
+
+.results-empty__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-200);
+  text-align: center;
+}
+
+/*
+ * Translucent white "card" that holds the prompt, lifting it off the blurred
+ * table behind. Padding scales between 24px (mobile) and 32px (desktop) — both
+ * land in the 24–36px sweet spot the design called for.
+ */
+.results-empty__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-75);
+  padding: clamp(var(--space-400), 4vw, var(--space-500));
+  background-color: color-mix(
+    in oklab,
+    var(--color-neutral-white) 85%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in oklab, var(--color-neutral-400) 50%, transparent);
+  border-radius: var(--border-radius-300);
+  max-width: 24rem;
+}
+
+.results-empty__title {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-neutral-black);
+}
+
+.results-empty__hint {
+  margin: 0;
+  font-size: var(--text-body-sm);
+  color: var(--color-neutral-700);
+  text-wrap: pretty;
+}

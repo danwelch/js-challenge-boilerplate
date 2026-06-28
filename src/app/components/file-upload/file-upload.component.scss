@@ -1,0 +1,129 @@
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  align-items: flex-start;
+  transition: opacity var(--transition-duration) var(--transition-easing);
+}
+
+/*
+ * Processing state: gray out the whole form. Interactivity is removed by the
+ * `inert` attribute on the wrapper (set in the template), which takes the file
+ * picker, drop zone, drag handlers, and any future inputs out of the tab order,
+ * pointer events, and the a11y tree in one place. `pointer-events: none` is kept
+ * only as a belt-and-suspenders guard for the mouse.
+ */
+.upload--processing {
+  opacity: 0.55;
+  pointer-events: none;
+
+  /* The spinner button still needs to look alive even though the form is dimmed. */
+  .upload__button {
+    opacity: 1;
+  }
+}
+
+@keyframes upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.upload__spinner {
+  animation: upload-spin 0.9s linear infinite;
+  /* Hint the browser this property changes often so it can compositor-only update. */
+  will-change: transform;
+}
+
+.upload__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-100);
+  width: 100%;
+  padding: var(--space-500) var(--space-300);
+  border: 2px dashed var(--color-neutral-400);
+  border-radius: var(--border-radius-300);
+  background-color: var(--color-neutral-100);
+  text-align: center;
+  transition:
+    border-color var(--transition-duration) var(--transition-easing),
+    background-color var(--transition-duration) var(--transition-easing);
+}
+
+.upload__dropzone--dragging {
+  border-color: var(--color-secondary);
+  background-color: var(--color-secondary-100);
+}
+
+.upload__dropzone-icon {
+  color: var(--color-neutral-700);
+}
+
+.upload__dropzone-text {
+  margin: 0;
+  color: var(--color-neutral-700);
+}
+
+/* Collapsed "current file" state — shown when a file is loaded. */
+.upload__current {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  width: 100%;
+  padding: var(--space-200) var(--space-300);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-300);
+  background-color: var(--color-neutral-100);
+  color: var(--color-neutral-800);
+  font-size: var(--text-body-sm);
+}
+
+.upload__current-icon {
+  flex-shrink: 0;
+}
+
+.upload__current-label {
+  font-weight: 600;
+  color: var(--color-neutral-black);
+}
+
+.upload__current-name {
+  font-family: var(--font-mono);
+  color: var(--color-neutral-800);
+  word-break: break-all;
+}
+
+.upload__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-200);
+}
+
+/*
+ * Visually hide the native input but keep it focusable and in the tab order
+ * (no display:none / visibility:hidden). The <label appButton> is the visible
+ * control; its focus ring is driven by :focus-within below.
+ */
+.upload__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.upload__hint {
+  margin: 0;
+  font-size: var(--text-body-sm);
+  color: var(--color-neutral-600);
+}
+
+.upload__error-filename {
+  font-family: var(--font-mono);
+  word-break: break-all;
+}

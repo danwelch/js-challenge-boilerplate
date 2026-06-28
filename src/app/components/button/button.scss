@@ -1,0 +1,110 @@
+/*
+ * Global styles for the `appButton` directive. A directive has no encapsulated
+ * stylesheet, so its design-system styles live in this global sheet (registered
+ * in angular.json). Values come from the shared design tokens in `styles.scss`.
+ *
+ * Variants and sizes are selected by the `data-variant` / `data-size` attributes
+ * the directive reflects onto the host, e.g. `[appButton][data-variant="primary"]`.
+ */
+[appButton] {
+  --_bg-color: var(--color-neutral-100);
+  --_color: var(--color-neutral-black);
+  --_border-color: transparent;
+  --_outline-color: transparent;
+  --_px: var(--space-100);
+  --_py: var(--space-300);
+  --_font-size: var(--text-body-md);
+
+  display: inline-flex;
+  width: fit-content;
+  height: fit-content;
+  align-items: center;
+  gap: var(--_py);
+  padding: var(--_py) var(--_px);
+  border: 1px solid var(--_border-color);
+  border-radius: var(--border-radius-200);
+  appearance: none;
+  background-color: var(--_bg-color);
+  color: var(--_color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--_font-size);
+  font-weight: 600;
+  line-height: var(--line-height-0);
+  text-align: center;
+  text-decoration: none;
+  outline: 3px solid var(--_outline-color);
+  outline-offset: 2px;
+  transition:
+    background-color var(--transition-duration) var(--transition-easing),
+    outline-color var(--transition-duration) var(--transition-easing);
+
+  &:focus-visible {
+    --_outline-color: var(--_bg-color);
+  }
+
+  &:hover {
+    background-color: color-mix(
+      in oklab,
+      var(--_bg-color) 75%,
+      var(--color-neutral-white)
+    );
+  }
+
+  /* Icons - size is based on the font size */
+  & svg,
+  lucide-icon {
+    width: var(--_font-size);
+    height: var(--_font-size);
+  }
+
+  /* Sizes */
+  &[data-size="sm"] {
+    --_px: var(--space-200);
+    --_py: var(--space-100);
+    --_font-size: var(--text-body-sm);
+  }
+
+  &[data-size="md"] {
+    --_px: var(--space-300);
+    --_py: var(--space-200);
+    --_font-size: var(--text-body-md);
+  }
+
+  &[data-size="lg"] {
+    --_px: var(--space-400);
+    --_py: var(--space-300);
+    --_font-size: var(--text-body-lg);
+  }
+
+  /* Variants */
+  &[data-variant="primary"] {
+    --_color: var(--color-neutral-black);
+    --_bg-color: var(--color-primary);
+    --_border-color: var(--color-neutral-black);
+  }
+
+  &[data-variant="secondary"] {
+    --_color: var(--color-neutral-white);
+    --_bg-color: var(--color-secondary);
+  }
+
+  &[data-variant="tertiary"] {
+    --_color: var(--color-neutral-white);
+    --_bg-color: var(--color-tertiary);
+  }
+
+  &[data-variant="ghost"] {
+    --_color: var(--color-neutral-black);
+    --_bg-color: transparent;
+
+    /*
+     * The shared :hover above mixes --_bg-color with white — for a transparent
+     * ghost button that yields no visible color, so we override the hover here
+     * with an explicit neutral-300 ("gray-300") wash.
+     */
+    &:hover {
+      background-color: var(--color-neutral-300);
+    }
+  }
+}
