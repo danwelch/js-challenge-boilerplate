@@ -25,6 +25,13 @@
   grid-column: 1 / -1;
   flex-direction: column;
   gap: 0.5rem;
+  /* Match the panel's internal horizontal padding so the H1 aligns with the
+     panel titles below (mobile uses --space-200, ≥480px uses --space-400). */
+  padding-inline: var(--space-200);
+
+  @media (min-width: 480px) {
+    padding-inline: var(--space-400);
+  }
 }
 
 .app__title {
