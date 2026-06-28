@@ -38,7 +38,7 @@ PolicyStore ──▶ PolicyTableComponent renders
   filenames are user‑controlled, so the template does the markup (XSS‑safe).
 
 Key locations: `models/` (interfaces), `services/` (parser, checksum validator), `store/` (signal state),
-`components/` (`alert`, `button`, `chip`, `file-upload`, `panel`, `policy-table`). See the README's
+`components/` (`alert`, `button`, `file-upload`, `panel`, `policy-table`). See the README's
 *Project structure* for the full tree.
 
 ## Environment

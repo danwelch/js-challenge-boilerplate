@@ -88,7 +88,6 @@ src/app/
   components/
     alert/                            # status message (success/warning/error variants)
     button/                           # appButton directive + global button styles
-    chip/                             # small solid status pill (icon + label)
     file-upload/                      # accessible CSV input + validation
     panel/                            # labelled-region card with BEM variant classes
     policy-table/                     # responsive results table

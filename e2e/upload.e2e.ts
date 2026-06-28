@@ -32,9 +32,9 @@ test.describe('Policy CSV upload', () => {
 
     // mod-11 checksum (US2): of the 10 sample numbers, only 457508000 and
     // 123456789 pass — the caption summary and per-row status reflect that.
-    await expect(page.locator('caption')).toContainText('2 valid, 8 invalid');
-    const statuses = page.locator('.policy-table__status');
-    await expect(statuses.nth(0)).toContainText('Invalid'); // 457500000
+    await expect(page.locator('caption')).toContainText('2 valid, 8 errors');
+    const statuses = page.locator('td.policy-table__col-status');
+    await expect(statuses.nth(0)).toContainText('Error'); // 457500000
     await expect(statuses.nth(3)).toContainText('Valid'); // 457508000
     await expect(statuses.nth(9)).toContainText('Valid'); // 123456789
   });

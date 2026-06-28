@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { CircleCheckBig, TriangleAlert } from 'lucide-angular';
+import { LucideAngularModule, Check, X } from 'lucide-angular';
 import type { PolicyRecord } from '../../models/policy.model';
-import { ChipComponent } from '../chip/chip.component';
 
 /**
  * Presentational table of scanned policy numbers.
@@ -18,7 +17,7 @@ import { ChipComponent } from '../chip/chip.component';
   selector: 'app-policy-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ChipComponent],
+  imports: [LucideAngularModule],
   templateUrl: './policy-table.component.html',
   styleUrl: './policy-table.component.scss',
 })
@@ -27,8 +26,8 @@ export class PolicyTableComponent {
   readonly policies = input.required<PolicyRecord[]>();
 
   /** Decorative status icons; the text label carries the meaning for a11y. */
-  protected readonly validIcon = CircleCheckBig;
-  protected readonly invalidIcon = TriangleAlert;
+  protected readonly validIcon = Check;
+  protected readonly invalidIcon = X;
 
   /** Count of rows passing the checksum, derived from the input. */
   protected readonly validCount = computed(

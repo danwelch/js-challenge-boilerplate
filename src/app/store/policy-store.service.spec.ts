@@ -40,16 +40,6 @@ describe('PolicyStore', () => {
     ]);
   });
 
-  it('exposes valid / invalid counts derived from the loaded records', () => {
-    store.setPolicies(
-      ['457508000', '123456789', '457500000'],
-      'policies.csv',
-    );
-
-    expect(store.validCount()).toBe(2);
-    expect(store.invalidCount()).toBe(1);
-  });
-
   it('records an error and clears any loaded policies', () => {
     store.setPolicies(['457508000'], 'policies.csv');
 

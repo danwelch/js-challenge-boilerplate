@@ -49,21 +49,27 @@ describe('PolicyTableComponent', () => {
       { policyNumber: '457500000', valid: false },
     ]);
     expect(el.querySelector('caption')?.textContent).toContain(
-      '2 valid, 1 invalid',
+      '2 valid, 1 error',
     );
   });
 
-  it('labels each row with a status chip in the matching variant', () => {
+  it('labels each row with a status badge carrying a text alternative', () => {
     const el = render([
       { policyNumber: '457508000', valid: true },
       { policyNumber: '457500000', valid: false },
     ]);
 
-    const chips = el.querySelectorAll('app-chip');
-    expect(chips[0].textContent).toContain('Valid');
-    expect(chips[0].getAttribute('data-variant')).toBe('success');
-    expect(chips[1].textContent).toContain('Invalid');
-    expect(chips[1].getAttribute('data-variant')).toBe('warning');
+    const rows = el.querySelectorAll('tbody tr');
+    const validBadge = rows[0].querySelector('.policy-table__status-icon');
+    const invalidBadge = rows[1].querySelector('.policy-table__status-icon');
+
+    expect(validBadge?.classList).toContain('policy-table__status-icon--valid');
+    expect(rows[0].querySelector('.sr-only')?.textContent).toContain('Valid');
+
+    expect(invalidBadge?.classList).not.toContain(
+      'policy-table__status-icon--valid',
+    );
+    expect(rows[1].querySelector('.sr-only')?.textContent).toContain('Error');
   });
 
   it('uses a scoped column header for accessibility', () => {

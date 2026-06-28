@@ -43,16 +43,6 @@ export class PolicyStore {
   /** Whether there are any policies currently loaded. */
   readonly hasPolicies = computed(() => this._policies().length > 0);
 
-  /** Count of loaded policies whose checksum is valid (US2). */
-  readonly validCount = computed(
-    () => this._policies().filter((policy) => policy.valid).length,
-  );
-
-  /** Count of loaded policies that failed the checksum (US2). */
-  readonly invalidCount = computed(
-    () => this._policies().length - this.validCount(),
-  );
-
   /** Flag the start of an upload so the UI can show its processing state. */
   beginProcessing(): void {
     this._processing.set(true);
