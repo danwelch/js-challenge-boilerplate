@@ -1,4 +1,4 @@
-name: Build and Lint
+name: Build and Test
 on: push
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
@@ -30,7 +30,26 @@ jobs:
           node-version-file: '.nvmrc'
       - name: NPM Install
         run: npm ci --ignore-scripts
-      - name: Build
-        run: npm run build
       - name: Test
         run: npm test
+  e2e:
+    name: E2E
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: NPM Install
+        run: npm ci --ignore-scripts
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: E2E tests
+        run: npm run e2e
