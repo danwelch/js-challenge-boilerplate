@@ -44,6 +44,19 @@ export class AppComponent {
   private readonly csvParser = inject(CsvParserService);
   private readonly demoDelayMs = inject(DEMO_DELAY_MS);
 
+  /**
+   * Placeholder rows shown — blurred and aria-hidden — behind the empty-state
+   * prompt so the panel previews what a loaded result looks like. Five rows is
+   * enough to read as a table without dominating the panel.
+   */
+  protected readonly placeholderPolicies = [
+    '457500000',
+    '664371495',
+    '333333333',
+    '457508000',
+    '861100036',
+  ].map((policyNumber) => ({ policyNumber }));
+
   /** Reads a validated CSV file (browser I/O), then hands the text off to be parsed. */
   async onFileSelected(file: File): Promise<void> {
     this.store.beginProcessing();

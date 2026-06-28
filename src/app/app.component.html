@@ -18,14 +18,22 @@
   </app-panel>
 
   <app-panel data-variant="results" title="Results">
-    @if (!store.hasPolicies()) {
-      <p class="panel-subtitle" panel-subtitle>
-        No policy numbers loaded yet. Upload a CSV to get started.
-      </p>
-    }
-
     @if (store.hasPolicies()) {
       <app-policy-table [policies]="store.policies()" />
+    } @else {
+      <div class="results-empty">
+        <div class="results-empty__preview" aria-hidden="true">
+          <app-policy-table [policies]="placeholderPolicies" />
+        </div>
+        <div class="results-empty__overlay">
+          <div class="results-empty__card">
+            <p class="results-empty__title">No policy numbers yet</p>
+            <p class="results-empty__hint">
+              Upload a CSV to get started.
+            </p>
+          </div>
+        </div>
+      </div>
     }
   </app-panel>
 </main>
