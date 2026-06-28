@@ -31,6 +31,25 @@ test.describe('Policy CSV upload', () => {
     await expect(numbers.last()).toHaveText('123456789');
   });
 
+  test('locks the form inert while an upload is processing', async ({
+    page,
+  }) => {
+    // The dev server runs in dev mode, where a ~1s demo delay keeps the
+    // processing state on screen long enough to observe (0ms in production).
+    await page
+      .locator('#policy-file')
+      .setInputFiles(join(fixtures, 'sample.csv'));
+
+    // During the processing window the spinner shows and the whole upload
+    // wrapper is `inert` — keyboard and assistive tech can't reopen the picker.
+    await expect(page.getByText('Processing…')).toBeVisible();
+    await expect(page.locator('.upload')).toHaveAttribute('inert', '');
+
+    // Once processing completes the form is interactive again (inert removed).
+    await expect(page.locator('caption')).toContainText('(10)');
+    await expect(page.locator('.upload')).not.toHaveAttribute('inert', '');
+  });
+
   test('rejects a non-CSV file with an accessible error', async ({ page }) => {
     await page
       .locator('#policy-file')
@@ -95,8 +114,8 @@ test.describe('Policy CSV upload', () => {
       const dt = new DataTransfer();
       dt.items.add(file);
 
-      const dropzone = document.querySelector('.upload__dropzone')!;
-      dropzone.dispatchEvent(
+      const dropzone = document.querySelector('.upload__dropzone');
+      dropzone?.dispatchEvent(
         new DragEvent('drop', { bubbles: true, dataTransfer: dt }),
       );
     }, base64);

@@ -38,16 +38,16 @@ describe('AppComponent', () => {
 
   it('shows the empty state with a blurred preview table before any upload', () => {
     const el = fixture.nativeElement as HTMLElement;
-    const empty = el.querySelector('.results-empty')!;
+    const empty = el.querySelector('.results-empty');
     expect(empty).not.toBeNull();
     // The prompt is the user-facing message.
-    expect(empty.querySelector('.results-empty__title')?.textContent).toContain(
+    expect(empty?.querySelector('.results-empty__title')?.textContent).toContain(
       'No policy numbers yet',
     );
     // The placeholder table exists, but is hidden from assistive tech.
-    const preview = empty.querySelector('.results-empty__preview')!;
-    expect(preview.getAttribute('aria-hidden')).toBe('true');
-    expect(preview.querySelector('app-policy-table')).not.toBeNull();
+    const preview = empty?.querySelector('.results-empty__preview');
+    expect(preview?.getAttribute('aria-hidden')).toBe('true');
+    expect(preview?.querySelector('app-policy-table')).not.toBeNull();
   });
 
   it('renders the table once policies are loaded', () => {

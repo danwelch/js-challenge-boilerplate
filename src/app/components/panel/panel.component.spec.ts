@@ -33,7 +33,7 @@ describe('PanelComponent', () => {
   it('marks the host as a labelled region landmark', () => {
     const panel = panelEl();
     expect(panel.getAttribute('role')).toBe('region');
-    const titleId = panel.getAttribute('aria-labelledby')!;
+    const titleId = panel.getAttribute('aria-labelledby');
     expect(titleId).toBeTruthy();
     expect(panel.querySelector('h2')?.id).toBe(titleId);
   });
