@@ -18,14 +18,13 @@
         <tr>
           <td class="policy-table__col-index">{{ $index + 1 }}</td>
           <td class="policy-table__number">{{ policy.policyNumber }}</td>
-          <td class="policy-table__status" [attr.data-valid]="policy.valid">
-            <lucide-icon
-              [img]="policy.valid ? validIcon : invalidIcon"
-              [size]="16"
-              aria-hidden="true"
-              class="policy-table__status-icon"
-            />
-            {{ policy.valid ? 'Valid' : 'Invalid' }}
+          <td class="policy-table__status">
+            <app-chip
+              [variant]="policy.valid ? 'success' : 'warning'"
+              [icon]="policy.valid ? validIcon : invalidIcon"
+            >
+              {{ policy.valid ? 'Valid' : 'Invalid' }}
+            </app-chip>
           </td>
         </tr>
       }

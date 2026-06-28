@@ -54,21 +54,19 @@
   letter-spacing: 0.05em;
 }
 
-/* Status cell: icon + label, coloured by validity via the data-valid flag. */
+/* Status cell holds an <app-chip>; keep it from wrapping mid-pill. */
 .policy-table__status {
-  font-weight: 600;
   white-space: nowrap;
 }
 
-.policy-table__status[data-valid='true'] {
-  color: var(--color-success-600);
-}
-
-.policy-table__status[data-valid='false'] {
-  color: var(--color-warning);
-}
-
-.policy-table__status-icon {
-  vertical-align: text-bottom;
-  margin-right: var(--space-100);
+/*
+ * Give every status chip the same width so the column reads as a clean stack
+ * regardless of label length, and centre the shorter label within it. This is a
+ * table-layout concern, so it lives here rather than in the reusable chip — the
+ * <app-chip> element is this table's own template node, so its host box is
+ * styleable from the consumer's stylesheet.
+ */
+.policy-table__status app-chip {
+  min-width: 6rem;
+  justify-content: center;
 }

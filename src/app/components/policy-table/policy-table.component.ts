@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { CircleCheckBig, LucideAngularModule, TriangleAlert } from 'lucide-angular';
+import { CircleCheckBig, TriangleAlert } from 'lucide-angular';
 import type { PolicyRecord } from '../../models/policy.model';
+import { ChipComponent } from '../chip/chip.component';
 
 /**
  * Presentational table of scanned policy numbers.
@@ -17,7 +18,7 @@ import type { PolicyRecord } from '../../models/policy.model';
   selector: 'app-policy-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule],
+  imports: [ChipComponent],
   templateUrl: './policy-table.component.html',
   styleUrl: './policy-table.component.scss',
 })

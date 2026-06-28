@@ -1,0 +1,41 @@
+/*
+ * Host-element-is-the-box: the `<app-chip>` tag *is* the pill, so style :host
+ * directly (no wrapper div). A host element defaults to `display: inline`, so
+ * `display` is set explicitly.
+ *
+ * A small, soft status pill: the status colour (`--_chip-color`) paints the
+ * border and the text, and an 8%-into-white mix of it softens the background.
+ * `gap` matches the horizontal padding so the icon sits evenly inside the pill.
+ */
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-100);
+  padding: var(--space-75) var(--space-100);
+  border: 1px solid var(--_chip-color);
+  border-radius: var(--border-radius-400);
+  background-color: color-mix(in srgb, var(--_chip-color) 8%, white);
+  color: var(--_chip-color);
+  font-size: 0.6875rem; /* 11px — one step below the smallest body token (12px) */
+  font-weight: 600;
+  line-height: var(--line-height-0);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/*
+ * `--_chip-color` paints the border and text and seeds the 8% softened fill.
+ * Targets WCAG AA (4.5:1, this being normal-size text) against that fill —
+ * measured, not eyeballed. The red is the vibrant default (~6.1:1). The green
+ * hue is inherently light-valued (the default green is only 3.5:1 on the fill,
+ * failing even AA), so it's darkened to the lightest shade that clears AA
+ * (~5.0:1).
+ */
+:host([data-variant="success"]) {
+  --_chip-color: color-mix(in srgb, var(--color-success), black 20%);
+}
+
+:host([data-variant="warning"]) {
+  --_chip-color: var(--color-warning);
+}

@@ -53,17 +53,17 @@ describe('PolicyTableComponent', () => {
     );
   });
 
-  it('labels each row with its checksum status', () => {
+  it('labels each row with a status chip in the matching variant', () => {
     const el = render([
       { policyNumber: '457508000', valid: true },
       { policyNumber: '457500000', valid: false },
     ]);
 
-    const statuses = el.querySelectorAll('.policy-table__status');
-    expect(statuses[0].textContent).toContain('Valid');
-    expect(statuses[0].getAttribute('data-valid')).toBe('true');
-    expect(statuses[1].textContent).toContain('Invalid');
-    expect(statuses[1].getAttribute('data-valid')).toBe('false');
+    const chips = el.querySelectorAll('app-chip');
+    expect(chips[0].textContent).toContain('Valid');
+    expect(chips[0].getAttribute('data-variant')).toBe('success');
+    expect(chips[1].textContent).toContain('Invalid');
+    expect(chips[1].getAttribute('data-variant')).toBe('warning');
   });
 
   it('uses a scoped column header for accessibility', () => {
