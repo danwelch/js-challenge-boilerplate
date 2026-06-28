@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ButtonDirective, ButtonSize, ButtonVariant } from './button.directive';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ButtonDirective,
+  type ButtonSize,
+  type ButtonVariant,
+} from './button.directive';
 
 @Component({
   standalone: true,

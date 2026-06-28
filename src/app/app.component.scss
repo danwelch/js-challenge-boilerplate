@@ -45,7 +45,7 @@
  * projected into the panel's slots, so they stay with the consumer (AppComponent)
  * because emulated view encapsulation scopes them to this view.
  */
-app-panel[data-variant='results'] {
+app-panel[data-variant="results"] {
   align-self: stretch;
 }
 
@@ -93,8 +93,13 @@ app-panel[data-variant='results'] {
   flex-direction: column;
   gap: var(--space-75);
   padding: clamp(var(--space-400), 4vw, var(--space-500));
-  background-color: color-mix(in oklab, var(--color-neutral-white) 85%, transparent);
-  border: 1px solid color-mix(in oklab, var(--color-neutral-400) 50%, transparent);
+  background-color: color-mix(
+    in oklab,
+    var(--color-neutral-white) 85%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in oklab, var(--color-neutral-400) 50%, transparent);
   border-radius: var(--border-radius-300);
   max-width: 24rem;
 }

@@ -7,8 +7,8 @@
   --color-primary-900: #7e6115;
 
   --color-secondary: #167c80;
-  --color-secondary-100: #E8F2F3;
-  --color-secondary-200: #D0E0E1;
+  --color-secondary-100: #e8f2f3;
+  --color-secondary-200: #d0e0e1;
   --color-secondary-300: #3193ad;
   --color-secondary-400: var(--color-secondary);
   --color-secondary-500: #126568;
@@ -26,7 +26,7 @@
   --color-blue-100: #dee7ff;
   --color-blue-400: var(--color-blue);
 
-  --color-warning: #B11030;
+  --color-warning: #b11030;
   --color-warning-100: #fae6e8;
   --color-warning-200: #f4cace;
   --color-warning-400: var(--color-warning);
@@ -49,7 +49,16 @@
   --color-neutral-800: #3e3e3e;
 
   // More design tokens pulled from the Kin site
-  --font-webfont: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-webfont:
+    "Inter",
+    "Inter Fallback",
+    ui-sans-serif,
+    system-ui,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --text-0: 0.75rem;
   --text-50: 0.875rem;

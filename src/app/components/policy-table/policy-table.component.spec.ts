@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import type { PolicyRecord } from '../../models/policy.model';
 import { PolicyTableComponent } from './policy-table.component';
-import { PolicyRecord } from '../../models/policy.model';
 
 describe('PolicyTableComponent', () => {
   let fixture: ComponentFixture<PolicyTableComponent>;

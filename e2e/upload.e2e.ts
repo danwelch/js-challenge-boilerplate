@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { join } from 'node:path';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { expect, test } from '@playwright/test';
 
 // Playwright runs from the project root; fixtures live alongside the e2e specs.
 const fixtures = join(process.cwd(), 'e2e', 'fixtures');
@@ -43,7 +43,9 @@ test.describe('Policy CSV upload', () => {
     await expect(page.locator('.results-empty')).toBeVisible();
   });
 
-  test('rejects an empty CSV with the empty-content alert', async ({ page }) => {
+  test('rejects an empty CSV with the empty-content alert', async ({
+    page,
+  }) => {
     await page
       .locator('#policy-file')
       .setInputFiles(join(fixtures, 'sample-empty.csv'));
@@ -54,7 +56,9 @@ test.describe('Policy CSV upload', () => {
     await expect(page.locator('.results-empty')).toBeVisible();
   });
 
-  test('rejects an oversize CSV with the size-limit alert', async ({ page }) => {
+  test('rejects an oversize CSV with the size-limit alert', async ({
+    page,
+  }) => {
     await page
       .locator('#policy-file')
       .setInputFiles(join(fixtures, 'sample-too-large.csv'));

@@ -1,5 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UploadError } from '../../models/upload-error.model';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import type { UploadError } from '../../models/upload-error.model';
 import { FileUploadComponent } from './file-upload.component';
 
 /** Builds a File of an exact byte size with the given name/type. */
@@ -27,7 +27,10 @@ function dragOverEvent(): DragEvent {
 }
 
 /** Simulates a dragleave event, optionally moving onto a child of the zone. */
-function dragLeaveEvent(opts: { related: Node | null; insideZone: boolean }): DragEvent {
+function dragLeaveEvent(opts: {
+  related: Node | null;
+  insideZone: boolean;
+}): DragEvent {
   return {
     preventDefault: () => {},
     relatedTarget: opts.related,
@@ -151,7 +154,9 @@ describe('FileUploadComponent', () => {
     });
     fixture.detectChanges();
 
-    const alert = fixture.nativeElement.querySelector('[role="alert"]') as HTMLElement;
+    const alert = fixture.nativeElement.querySelector(
+      '[role="alert"]',
+    ) as HTMLElement;
     // The hostile filename round-trips as plain text inside a <code> element…
     const code = alert.querySelector('code') as HTMLElement;
     expect(code.textContent).toBe(hostile);
@@ -198,7 +203,9 @@ describe('FileUploadComponent', () => {
       component.onDragOver(dragOverEvent());
       expect(component.isDragging()).toBe(true);
 
-      component.onDragLeave(dragLeaveEvent({ related: null, insideZone: false }));
+      component.onDragLeave(
+        dragLeaveEvent({ related: null, insideZone: false }),
+      );
       expect(component.isDragging()).toBe(false);
     });
 
@@ -206,7 +213,10 @@ describe('FileUploadComponent', () => {
       component.onDragOver(dragOverEvent());
 
       component.onDragLeave(
-        dragLeaveEvent({ related: document.createElement('span'), insideZone: true }),
+        dragLeaveEvent({
+          related: document.createElement('span'),
+          insideZone: true,
+        }),
       );
 
       expect(component.isDragging()).toBe(true);
@@ -274,14 +284,18 @@ describe('FileUploadComponent', () => {
 
     it('does not flag the wrapper as busy when idle', () => {
       setProcessing(false);
-      const wrapper = fixture.nativeElement.querySelector('.upload') as HTMLElement;
+      const wrapper = fixture.nativeElement.querySelector(
+        '.upload',
+      ) as HTMLElement;
       expect(wrapper.classList.contains('upload--processing')).toBe(false);
       expect(wrapper.getAttribute('aria-busy')).toBeNull();
     });
 
     it('grays out the form and marks it busy while processing', () => {
       setProcessing(true);
-      const wrapper = fixture.nativeElement.querySelector('.upload') as HTMLElement;
+      const wrapper = fixture.nativeElement.querySelector(
+        '.upload',
+      ) as HTMLElement;
       expect(wrapper.classList.contains('upload--processing')).toBe(true);
       expect(wrapper.getAttribute('aria-busy')).toBe('true');
     });

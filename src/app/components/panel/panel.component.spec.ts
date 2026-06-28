@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { PanelComponent } from './panel.component';
 
 @Component({
@@ -35,25 +35,29 @@ describe('PanelComponent', () => {
     expect(panel.getAttribute('role')).toBe('region');
     const titleId = panel.getAttribute('aria-labelledby')!;
     expect(titleId).toBeTruthy();
-    expect(panel.querySelector('h2')!.id).toBe(titleId);
+    expect(panel.querySelector('h2')?.id).toBe(titleId);
   });
 
   it('renders the title text', () => {
-    expect(panelEl().querySelector('h2')!.textContent).toContain('Upload');
+    expect(panelEl().querySelector('h2')?.textContent).toContain('Upload');
   });
 
   it('applies the base panel class but no variant-specific classes', () => {
     expect(panelEl().classList).toContain('panel');
     // The panel itself is variant-agnostic — consumers tag panels via
     // their own attributes/classes from the outside.
-    expect([...panelEl().classList].filter((c) => c.startsWith('panel--'))).toEqual([]);
+    expect(
+      [...panelEl().classList].filter((c) => c.startsWith('panel--')),
+    ).toEqual([]);
   });
 
   it('projects content into all three slots', () => {
     const panel = panelEl();
-    expect(panel.querySelector('h2')!.textContent).toContain('extra');
-    expect(panel.querySelector('[panel-subtitle]')!.textContent).toContain('subtitle');
-    expect(panel.querySelector('.body')!.textContent).toContain('body');
+    expect(panel.querySelector('h2')?.textContent).toContain('extra');
+    expect(panel.querySelector('[panel-subtitle]')?.textContent).toContain(
+      'subtitle',
+    );
+    expect(panel.querySelector('.body')?.textContent).toContain('body');
   });
 
   it('gives each instance a distinct title id', () => {

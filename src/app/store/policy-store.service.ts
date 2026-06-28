@@ -1,6 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
-import { PolicyRecord } from '../models/policy.model';
-import { UploadError } from '../models/upload-error.model';
+import { computed, Injectable, signal } from '@angular/core';
+import type { PolicyRecord } from '../models/policy.model';
+import type { UploadError } from '../models/upload-error.model';
 
 /**
  * Single source of truth for the policy upload feature, built on Angular signals.

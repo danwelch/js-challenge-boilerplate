@@ -11,22 +11,26 @@
   color: var(--_color);
   padding: var(--space-200);
   border-radius: var(--border-radius-300);
-  background-color: color-mix(in oklab, var(--_color) 7.5%, var(--color-neutral-white));
+  background-color: color-mix(
+    in oklab,
+    var(--_color) 7.5%,
+    var(--color-neutral-white)
+  );
   border: 1px solid var(--_color);
   font-size: var(--text-body-sm);
   line-height: var(--line-height-100);
   width: 100%;
 }
 
-:host([data-variant='success']) {
+:host([data-variant="success"]) {
   --_color: var(--color-success-600);
 }
 
-:host([data-variant='warning']) {
+:host([data-variant="warning"]) {
   --_color: var(--color-primary-900);
 }
 
-:host([data-variant='error']) {
+:host([data-variant="error"]) {
   --_color: var(--color-warning);
 }
 
@@ -51,6 +55,10 @@
     display: inline-block;
     font-family: var(--font-mono);
     font-weight: 600;
-    background-color: color-mix(in oklab, var(--_color) 80%, var(--color-neutral-white));
+    background-color: color-mix(
+      in oklab,
+      var(--_color) 80%,
+      var(--color-neutral-white)
+    );
   }
 }

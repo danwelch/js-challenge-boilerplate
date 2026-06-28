@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { PolicyRecord } from '../../models/policy.model';
+import type { PolicyRecord } from '../../models/policy.model';
 
 /**
  * Presentational table of scanned policy numbers.

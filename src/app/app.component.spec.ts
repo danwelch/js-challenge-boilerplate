@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { AppComponent, DEMO_DELAY_MS } from './app.component';
@@ -75,7 +75,9 @@ describe('AppComponent', () => {
     vi.useFakeTimers();
 
     // Stub File.text() — jsdom doesn't implement it.
-    const file = new File(['457508000,123456789'], 'sample.csv', { type: 'text/csv' });
+    const file = new File(['457508000,123456789'], 'sample.csv', {
+      type: 'text/csv',
+    });
     Object.defineProperty(file, 'text', {
       value: () => Promise.resolve('457508000,123456789'),
     });
@@ -166,7 +168,7 @@ describe('AppComponent', () => {
     expect(store.hasPolicies()).toBe(false);
   });
 
-  it('wires the upload control\'s validationError into the store', () => {
+  it("wires the upload control's validationError into the store", () => {
     const uploadCmp = fixture.debugElement.query(
       By.directive(FileUploadComponent),
     ).componentInstance as FileUploadComponent;

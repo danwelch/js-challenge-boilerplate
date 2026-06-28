@@ -1,8 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import {
-  OctagonAlert,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
+import {
   CircleCheckBig,
   LucideAngularModule,
+  OctagonAlert,
   TriangleAlert,
 } from 'lucide-angular';
 
@@ -54,7 +59,7 @@ export class AlertComponent {
 
   protected readonly icon = computed(() => VARIANT_ICONS[this.variant()]);
   protected readonly label = computed(() => VARIANT_LABELS[this.variant()]);
-  
+
   protected readonly role = computed(() =>
     this.variant() === 'error' ? 'alert' : 'status',
   );

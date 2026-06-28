@@ -43,7 +43,11 @@
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--_bg-color) 75%, var(--color-neutral-white));
+    background-color: color-mix(
+      in srgb,
+      var(--_bg-color) 75%,
+      var(--color-neutral-white)
+    );
   }
 
   /* Icons - size is based on the font size */
@@ -54,42 +58,42 @@
   }
 
   /* Sizes */
-  &[data-size='sm'] {
+  &[data-size="sm"] {
     --_px: var(--space-200);
     --_py: var(--space-100);
     --_font-size: var(--text-body-sm);
   }
 
-  &[data-size='md'] {
+  &[data-size="md"] {
     --_px: var(--space-300);
     --_py: var(--space-200);
     --_font-size: var(--text-body-md);
   }
 
-  &[data-size='lg'] {
+  &[data-size="lg"] {
     --_px: var(--space-400);
     --_py: var(--space-300);
     --_font-size: var(--text-body-lg);
   }
 
   /* Variants */
-  &[data-variant='primary'] {
+  &[data-variant="primary"] {
     --_color: var(--color-neutral-black);
     --_bg-color: var(--color-primary);
     --_border-color: var(--color-neutral-black);
   }
 
-  &[data-variant='secondary'] {
+  &[data-variant="secondary"] {
     --_color: var(--color-neutral-white);
     --_bg-color: var(--color-secondary);
   }
 
-  &[data-variant='tertiary'] {
+  &[data-variant="tertiary"] {
     --_color: var(--color-neutral-white);
     --_bg-color: var(--color-tertiary);
   }
 
-  &[data-variant='ghost'] {
+  &[data-variant="ghost"] {
     --_color: var(--color-neutral-black);
     --_bg-color: transparent;
 
