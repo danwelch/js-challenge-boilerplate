@@ -3,6 +3,42 @@
 Angular 21 app. See `README.md` for setup, run/test commands, and the full list of design
 decisions. This file captures conventions to follow when working in the codebase.
 
+## What this is
+
+A scanning machine exports a CSV of insurance policy numbers; this app uploads that CSV, parses
+it, and lists the numbers in a table. Delivered story by story (each on its own branch,
+squash‑merged into `main`):
+
+- **US1 — done:** upload a validated CSV (CSV type, ≤ 2 MB) and list the policy numbers.
+- **US2 — planned:** mod‑11 checksum validation, valid/invalid status per row.
+- **US3 — planned:** POST the processed array to a mock API, report success/failure.
+- **US4 — outline only:** auto‑correct mis‑scanned digits.
+
+## Architecture
+
+Data flow is **one‑directional**, and each later story adds a service/signal rather than
+reshaping it:
+
+```
+FileUploadComponent ──(validated File | UploadError)──▶ AppComponent
+AppComponent reads file.text() ──▶ CsvParserService.parse() ──▶ PolicyStore (signals)
+PolicyStore ──▶ PolicyTableComponent renders
+```
+
+- `AppComponent` is a thin orchestrator: it owns only the async file read, then delegates parsing
+  to a service and state to the store. Keep the interesting logic out of it.
+- `PolicyStore` (`store/policy-store.service.ts`) is the **single source of truth** — read‑only
+  signals out, intent‑named actions in (`setPolicies`, `setError`, `reset`, `beginProcessing`).
+  New stories extend the store, not the components.
+- `CsvParserService` is a pure `string → string[]` function (no I/O), so it's unit‑testable
+  without a real `File`.
+- Errors are structured `UploadError` objects (`{ message, filename? }`), never HTML strings —
+  filenames are user‑controlled, so the template does the markup (XSS‑safe).
+
+Key locations: `models/` (interfaces), `services/` (parser), `store/` (signal state),
+`components/` (`alert`, `button`, `file-upload`, `panel`, `policy-table`). See the README's
+*Project structure* for the full tree.
+
 ## Environment
 
 - Node **v22** (pinned in `.nvmrc`; Angular 21 rejects odd‑numbered v25). Shells here default
