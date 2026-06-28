@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
-import { AppComponent } from './app.component';
+import { AppComponent, DEMO_DELAY_MS } from './app.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { PolicyStore } from './store/policy-store.service';
 
@@ -10,13 +10,22 @@ describe('AppComponent', () => {
   let component: AppComponent;
   let store: PolicyStore;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [AppComponent] });
+  /** Build the fixture with an overridable demo delay (0 by default → no wait). */
+  function setup(delayMs = 0): void {
+    // Allow a test to rebuild the fixture with a different delay after the
+    // outer beforeEach has already configured one.
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [AppComponent],
+      providers: [{ provide: DEMO_DELAY_MS, useValue: delayMs }],
+    });
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(PolicyStore);
     fixture.detectChanges();
-  });
+  }
+
+  beforeEach(() => setup());
 
   it('creates the app', () => {
     expect(component).toBeTruthy();
@@ -55,6 +64,7 @@ describe('AppComponent', () => {
   });
 
   it('flips processing on, waits for the demo delay, then loads the file', async () => {
+    setup(1000);
     vi.useFakeTimers();
 
     // Stub File.text() — jsdom doesn't implement it.
@@ -81,6 +91,19 @@ describe('AppComponent', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('skips the delay entirely when configured to zero (prod mode)', async () => {
+    // The default setup() already provides DEMO_DELAY_MS = 0.
+    const file = new File(['457508000'], 'sample.csv', { type: 'text/csv' });
+    Object.defineProperty(file, 'text', {
+      value: () => Promise.resolve('457508000'),
+    });
+
+    await component.onFileSelected(file);
+
+    expect(store.processing()).toBe(false);
+    expect(store.hasPolicies()).toBe(true);
   });
 
   it('records an error when the file cannot be read', async () => {

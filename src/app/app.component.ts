@@ -1,9 +1,27 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  InjectionToken,
+  inject,
+  isDevMode,
+} from '@angular/core';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PolicyTableComponent } from './components/policy-table/policy-table.component';
 import { CsvParserService } from './services/csv-parser.service';
 import { PolicyStore } from './store/policy-store.service';
+
+/**
+ * Artificial delay inserted between reading the file and parsing it so the
+ * processing state is visible during local development. Real CSVs of this size
+ * parse in microseconds — without this pause the loading state would flash by
+ * too fast to notice. Defaults to 0 in production (no `await`, no overhead) and
+ * is exposed as an injection token so tests can pin a deterministic value.
+ */
+export const DEMO_DELAY_MS = new InjectionToken<number>('DEMO_DELAY_MS', {
+  providedIn: 'root',
+  factory: () => (isDevMode() ? 1000 : 0),
+});
 
 /**
  * Root component and orchestrator for the OCR workflow.
@@ -24,14 +42,7 @@ import { PolicyStore } from './store/policy-store.service';
 export class AppComponent {
   protected readonly store = inject(PolicyStore);
   private readonly csvParser = inject(CsvParserService);
-
-  /**
-   * Artificial delay (ms) inserted between reading the file and parsing it so
-   * the processing state is visible in the demo. Real CSVs of this size parse
-   * in microseconds — without this pause the loading state would flash by too
-   * fast to be perceived. Remove (or set to 0) for production.
-   */
-  private readonly DEMO_PROCESSING_DELAY_MS = 1000;
+  private readonly demoDelayMs = inject(DEMO_DELAY_MS);
 
   /** Reads a validated CSV file (browser I/O), then hands the text off to be parsed. */
   async onFileSelected(file: File): Promise<void> {
@@ -48,10 +59,9 @@ export class AppComponent {
       return;
     }
 
-    // See DEMO_PROCESSING_DELAY_MS above.
-    await new Promise((resolve) =>
-      setTimeout(resolve, this.DEMO_PROCESSING_DELAY_MS),
-    );
+    if (this.demoDelayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, this.demoDelayMs));
+    }
 
     this.loadFromText(text, file.name);
   }
