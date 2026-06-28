@@ -16,15 +16,9 @@
     </div>
 
     <div class="upload__actions">
-      <label appButton size="sm" variant="primary" class="upload__button" for="policy-file">
-        @if (processing()) {
-          <lucide-icon [img]="SpinnerIcon" aria-hidden="true" class="upload__spinner" />
-          <span>Processing…</span>
-        } @else {
-          <lucide-icon [img]="UploadIcon" aria-hidden="true" />
-          <span>Choose another file</span>
-        }
-      </label>
+      <ng-container
+        *ngTemplateOutlet="uploadLabel; context: { label: 'Choose another file' }"
+      />
       <button
         type="button"
         appButton
@@ -52,19 +46,25 @@
       />
       <p class="upload__dropzone-text">Drag &amp; drop a CSV file here, or</p>
 
-      <label appButton size="sm" variant="primary" class="upload__button" for="policy-file">
-        @if (processing()) {
-          <lucide-icon [img]="SpinnerIcon" aria-hidden="true" class="upload__spinner" />
-          <span>Processing…</span>
-        } @else {
-          <lucide-icon [img]="UploadIcon" aria-hidden="true" />
-          <span>Upload policy CSV</span>
-        }
-      </label>
+      <ng-container
+        *ngTemplateOutlet="uploadLabel; context: { label: 'Upload policy CSV' }"
+      />
 
       <p class="upload__hint" id="upload-hint">CSV file only, up to 2 MB.</p>
     </div>
   }
+
+  <ng-template #uploadLabel let-label="label">
+    <label appButton size="sm" variant="primary" class="upload__button" for="policy-file">
+      @if (processing()) {
+        <lucide-icon [img]="SpinnerIcon" aria-hidden="true" class="upload__spinner" />
+        <span>Processing…</span>
+      } @else {
+        <lucide-icon [img]="UploadIcon" aria-hidden="true" />
+        <span>{{ label }}</span>
+      }
+    </label>
+  </ng-template>
 
   <!--
     Single hidden <input type="file"> shared by both modes — referenced by

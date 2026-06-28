@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -55,7 +56,7 @@ const CSV_MIME_TYPES = new Set(['text/csv', 'application/vnd.ms-excel']);
   selector: 'app-file-upload',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule, ButtonDirective, AlertComponent],
+  imports: [LucideAngularModule, ButtonDirective, AlertComponent, NgTemplateOutlet],
   templateUrl: './file-upload.component.html',
   styleUrl: './file-upload.component.scss',
 })
