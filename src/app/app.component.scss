@@ -49,13 +49,6 @@ app-panel[data-variant="results"] {
   align-self: stretch;
 }
 
-[panel-subtitle] {
-  margin: 0;
-  color: var(--color-neutral-700);
-  text-wrap: pretty;
-  line-height: var(--line-height-200);
-}
-
 /*
  * Empty state for the Results panel: a blurred placeholder table sets the
  * height and previews what a loaded result looks like, with a prompt overlaid

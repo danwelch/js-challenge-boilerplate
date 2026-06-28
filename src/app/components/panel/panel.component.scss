@@ -29,3 +29,10 @@
   line-height: var(--line-height-100);
   color: var(--color-neutral-800);
 }
+
+.panel-subtitle {
+  margin: 0;
+  color: var(--color-neutral-700);
+  text-wrap: pretty;
+  line-height: var(--line-height-200);
+}

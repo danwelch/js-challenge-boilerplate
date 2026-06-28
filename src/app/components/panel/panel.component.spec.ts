@@ -6,9 +6,7 @@ import { PanelComponent } from './panel.component';
   standalone: true,
   imports: [PanelComponent],
   template: `
-    <app-panel [title]="title">
-      <span panel-title-extra>extra</span>
-      <p panel-subtitle>subtitle</p>
+    <app-panel [title]="title" subtitle="A subtitle">
       <div class="body">body</div>
     </app-panel>
   `,
@@ -51,13 +49,22 @@ describe('PanelComponent', () => {
     ).toEqual([]);
   });
 
-  it('projects content into all three slots', () => {
+  it('renders the subtitle input and projects body content', () => {
     const panel = panelEl();
-    expect(panel.querySelector('h2')?.textContent).toContain('extra');
-    expect(panel.querySelector('[panel-subtitle]')?.textContent).toContain(
-      'subtitle',
+    expect(panel.querySelector('.panel-subtitle')?.textContent).toContain(
+      'A subtitle',
     );
     expect(panel.querySelector('.body')?.textContent).toContain('body');
+  });
+
+  it('omits the subtitle element when no subtitle is provided', () => {
+    // Render a bare panel directly (the host fixture always supplies a subtitle).
+    const noSubtitle = TestBed.createComponent(PanelComponent);
+    noSubtitle.componentRef.setInput('title', 'Results');
+    noSubtitle.detectChanges();
+    expect(
+      noSubtitle.nativeElement.querySelector('.panel-subtitle'),
+    ).toBeNull();
   });
 
   it('gives each instance a distinct title id', () => {

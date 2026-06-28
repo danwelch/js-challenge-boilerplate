@@ -3,10 +3,11 @@
     <h1 class="app__title">Kin OCR</h1>
   </header>
 
-  <app-panel data-variant="upload" title="OCR File Upload">
-    <p panel-subtitle>
-      Upload the scanner’s CSV export to review the policy numbers it captured.
-    </p>
+  <app-panel
+    data-variant="upload"
+    title="OCR File Upload"
+    subtitle="Upload the scanner’s CSV export to review the policy numbers it captured."
+  >
     <app-file-upload
       [error]="store.uploadError()"
       [currentFile]="store.sourceName()"
