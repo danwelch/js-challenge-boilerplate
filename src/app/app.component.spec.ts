@@ -41,9 +41,9 @@ describe('AppComponent', () => {
     const empty = el.querySelector('.results-empty');
     expect(empty).not.toBeNull();
     // The prompt is the user-facing message.
-    expect(empty?.querySelector('.results-empty__title')?.textContent).toContain(
-      'No policy numbers yet',
-    );
+    expect(
+      empty?.querySelector('.results-empty__title')?.textContent,
+    ).toContain('No policy numbers yet');
     // The placeholder table exists, but is hidden from assistive tech.
     const preview = empty?.querySelector('.results-empty__preview');
     expect(preview?.getAttribute('aria-hidden')).toBe('true');
