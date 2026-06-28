@@ -100,6 +100,98 @@ error); the orchestrator reads and parses it; the store holds the result as sign
 table renders from the store. Each later story adds a service/signal rather than reshaping
 this flow.
 
+## Component design system
+
+The components split into two tiers. **Primitives** — the directive `appButton` and the components
+`app-alert` / `app-panel` (camelCase attribute selector vs. kebab-case element selectors, per Angular's
+directive/component convention) — are context-free and reusable: they know nothing about CSVs or
+policies. **Feature components** (`app-file-upload`, `app-policy-table`) compose those primitives for
+this app's flow. New stories add feature components and extend the store; the primitives stay stable.
+
+Variant theming is consistent across the set: each variant is reflected to a `data-*` attribute via
+host bindings (not a modifier class), so stylesheets target `[data-variant=…]` and it works for bound
+inputs and defaults alike — not just static string attributes.
+
+### Primitives
+
+**`appButton`** — directive (`button.directive.ts`)
+
+| Input | Type | Default | Notes |
+| ----- | ---- | ------- | ----- |
+| `variant` | `primary \| secondary \| tertiary \| ghost` | `primary` | reflected to `data-variant` |
+| `size` | `sm \| md \| lg` | `md` | reflected to `data-size` |
+
+A directive, not a `<app-button>`, so the *consumer* picks the semantic host element —
+`<button appButton>`, `<a appButton href>`, `<label appButton for>` (the upload uses the label form).
+Styles are global (`button.scss`), the norm for a control applied across many host elements. Same
+pattern as Angular Material's button.
+
+**`app-alert`** — component (`alert.component.ts`)
+
+| Input | Type | Required | Notes |
+| ----- | ---- | -------- | ----- |
+| `variant` | `success \| warning \| error` | yes | reflected to `data-variant`; selects icon + label |
+
+Message text is projected via `<ng-content>`. Semantics are derived from the variant: `error` →
+`role="alert"` + `aria-live="assertive"`; `success`/`warning` → `role="status"` + `aria-live="polite"`.
+Icons are decorative. A component (vs. a directive) because it owns its structure — icon + text — and
+benefits from encapsulated styles.
+
+**`app-panel`** — component (`panel.component.ts`)
+
+| Input | Type | Required | Notes |
+| ----- | ---- | -------- | ----- |
+| `title` | `string` | yes | renders the `<h2>`, wired to `aria-labelledby` |
+| `subtitle` | `string` | no | optional sub-heading |
+
+Body content is projected. Renders as a labelled landmark (`role="region"` + `aria-labelledby`) so
+each panel appears in assistive-tech navigation. Deliberately variant-agnostic: a consumer tags a
+panel with any `data-*` attribute and styles it from its own sheet (`app-panel[data-variant="results"]`),
+keeping the panel a clean structural primitive. `subtitle` is an *input* the panel renders itself —
+not a projection slot — because emulated view encapsulation can't style projected content.
+
+### Feature components
+
+**`app-file-upload`** — fully controlled by its inputs (`file-upload.component.ts`)
+
+| Member | Kind | Type | Notes |
+| ------ | ---- | ---- | ----- |
+| `error` | input | `UploadError \| null` | error to display, driven by the store |
+| `currentFile` | input | `string \| null` | when set, renders the compact "loaded" state |
+| `processing` | input | `boolean` | spinner + inert form while a read is in flight |
+| `fileSelected` | output | `File` | emitted when a valid CSV is chosen |
+| `validationError` | output | `UploadError` | emitted when validation fails (wrong type / > 2 MB) |
+| `reset` | output | `void` | user cleared the loaded file |
+
+States: **empty** drop zone → **dragging** (drag-over highlight) → **loaded** (compact, "Choose
+another file" + "Reset") → **processing** (spinner, inert) → **error** (inline `role="alert"`).
+Validation lives here (it's purely about the file) but the error is *displayed* from the `error`
+input, so the store stays the single source of truth. Drag-and-drop is progressive enhancement over
+the keyboard/AT-accessible visually-hidden `<input>` + `<label>`.
+
+**`app-policy-table`** — presentational table (`policy-table.component.ts`)
+
+| Input | Type | Required | Notes |
+| ----- | ---- | -------- | ----- |
+| `policies` | `PolicyRecord[]` | yes | renders whatever fields exist on the record |
+
+Story 1 shows row number + policy number; US2/US4 add columns by extending `PolicyRecord`, no contract
+change. Rows are tracked by index because duplicate policy numbers are legitimate, so the value isn't a
+stable key.
+
+### Documentation: why no Storybook (yet)
+
+I considered Storybook to document these components and judged it disproportionate at this scale — five
+components, three of them primitives a reviewer can read end-to-end in a few minutes. A heavyweight
+dependency plus its own build/CI lane would add maintenance surface without unlocking understanding the
+way it would in a large system, and a half-wired Storybook (static stories, no a11y/interaction tests,
+not in CI) reads as worse than none. The component contracts above plus the Vitest unit specs
+(variants, reflected attributes, state transitions) and the Playwright e2e specs (the real upload paths)
+cover the same ground proportionally. **Where I'd reach for it:** once the primitive set grows past
+~10–15 controls or is shared across apps/teams, Storybook earns its place — and then with the a11y addon,
+`play`-function interaction tests, and `build-storybook` wired into CI, so it documents *and* guards
+behaviour rather than just displaying it.
+
 ## Design decisions & assumptions
 
 - **Policy numbers are stored as `string`, not `number`.** They are fixed‑width 9‑digit
