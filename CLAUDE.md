@@ -6,8 +6,7 @@ decisions. This file captures conventions to follow when working in the codebase
 ## What this is
 
 A scanning machine exports a CSV of insurance policy numbers; this app uploads that CSV, parses
-it, and lists the numbers in a table. Delivered story by story (each on its own branch,
-squash‑merged into `main`):
+it, and lists the numbers in a table. Delivered story by story:
 
 - **US1 — done:** upload a validated CSV (CSV type, ≤ 2 MB) and list the policy numbers.
 - **US2 — done:** mod‑11 checksum validation (`ChecksumValidator`), valid/invalid status per row.

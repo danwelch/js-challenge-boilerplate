@@ -4,8 +4,7 @@ A small Angular app for the **Kinsurance OCR** challenge. A scanning machine exp
 of policy numbers; this app lets a user upload that CSV, view the numbers in a table, and
 (in later stories) validate and submit them.
 
-Built on the provided Angular 21 boilerplate. The work is delivered story by story, each on
-its own branch and squash-merged into `main`.
+Built on the provided Angular 21 boilerplate. The work is delivered story by story.
 
 | User story | Scope | Status |
 | ---------- | ----- | ------ |
