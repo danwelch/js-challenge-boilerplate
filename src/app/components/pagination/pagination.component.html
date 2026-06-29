@@ -1,0 +1,23 @@
+<nav class="pagination" aria-label="Table pages">
+  <button
+    type="button"
+    class="pagination__btn"
+    (click)="previous.emit()"
+    [disabled]="atFirst()"
+    aria-label="Previous page"
+  >
+    <lucide-icon [img]="prevIcon" [size]="16" aria-hidden="true" />
+  </button>
+  <span class="pagination__status" aria-live="polite">
+    Page {{ page() }} of {{ pageCount() }}
+  </span>
+  <button
+    type="button"
+    class="pagination__btn"
+    (click)="next.emit()"
+    [disabled]="atLast()"
+    aria-label="Next page"
+  >
+    <lucide-icon [img]="nextIcon" [size]="16" aria-hidden="true" />
+  </button>
+</nav>
