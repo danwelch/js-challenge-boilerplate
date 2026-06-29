@@ -2,26 +2,29 @@ import {
   ChangeDetectionStrategy,
   Component,
   InjectionToken,
+  computed,
   inject,
   isDevMode,
 } from '@angular/core';
+import { Inbox, LucideAngularModule } from 'lucide-angular';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PolicyTableComponent } from './components/policy-table/policy-table.component';
-import { ChecksumValidator } from './services/checksum-validator.service';
 import { CsvParserService } from './services/csv-parser.service';
 import { PolicyStore } from './store/policy-store.service';
 
 /**
- * Artificial delay inserted between reading the file and parsing it so the
- * processing state is visible during local development. Real CSVs of this size
- * parse in microseconds — without this pause the loading state would flash by
- * too fast to notice. Defaults to 0 in production (no `await`, no overhead) and
- * is exposed as an injection token so tests can pin a deterministic value.
+ * Minimum time the processing state (and its loading skeleton) stays on screen,
+ * measured from the start of an upload. Real CSVs of this size parse in
+ * microseconds, so without a floor the skeleton would flash for a single frame
+ * and read as a glitch. The **400ms production floor** keeps it visible long
+ * enough to register as a deliberate loading state; development uses 1000ms so
+ * the state is easy to see while building. Exposed as an injection token so
+ * tests can pin a deterministic value.
  */
-export const DEMO_DELAY_MS = new InjectionToken<number>('DEMO_DELAY_MS', {
+export const MIN_PROCESSING_MS = new InjectionToken<number>('MIN_PROCESSING_MS', {
   providedIn: 'root',
-  factory: () => (isDevMode() ? 1000 : 0),
+  factory: () => (isDevMode() ? 1000 : 400),
 });
 
 /**
@@ -36,36 +39,37 @@ export const DEMO_DELAY_MS = new InjectionToken<number>('DEMO_DELAY_MS', {
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FileUploadComponent, PanelComponent, PolicyTableComponent],
+  imports: [FileUploadComponent, PanelComponent, PolicyTableComponent, LucideAngularModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   protected readonly store = inject(PolicyStore);
   private readonly csvParser = inject(CsvParserService);
-  private readonly checksumValidator = inject(ChecksumValidator);
-  private readonly demoDelayMs = inject(DEMO_DELAY_MS);
+  private readonly minProcessingMs = inject(MIN_PROCESSING_MS);
 
-  /**
-   * Placeholder rows shown — blurred and aria-hidden — behind the empty-state
-   * prompt so the panel previews what a loaded result looks like. Five rows is
-   * enough to read as a table without dominating the panel. The validity flag is
-   * computed for real (not hard-coded) so the previewed status column is honest.
-   */
-  protected readonly placeholderPolicies = [
-    '457500000',
-    '664371495',
-    '333333333',
-    '457508000',
-    '861100036',
-  ].map((policyNumber) => ({
-    policyNumber,
-    valid: this.checksumValidator.isValid(policyNumber),
-  }));
+  /** Decorative icon for the empty Results panel. */
+  protected readonly emptyIcon = Inbox;
+
+  /** Drives a persistent polite live region so SR users hear upload progress.
+   *  Errors are intentionally omitted — AlertComponent already announces them. */
+  protected readonly statusMessage = computed(() => {
+    if (this.store.processing()) {
+      return 'Processing upload…';
+    }
+    const policies = this.store.policies();
+    if (policies.length === 0) {
+      return '';
+    }
+    const valid = policies.filter((policy) => policy.valid).length;
+    const invalid = policies.length - valid;
+    return `Loaded ${policies.length} policy numbers — ${valid} valid, ${invalid} ${invalid === 1 ? 'error' : 'errors'}.`;
+  });
 
   /** Reads a validated CSV file (browser I/O), then hands the text off to be parsed. */
   async onFileSelected(file: File): Promise<void> {
     this.store.beginProcessing();
+    const startedAt = performance.now();
 
     let text: string;
     try {
@@ -78,8 +82,11 @@ export class AppComponent {
       return;
     }
 
-    if (this.demoDelayMs > 0) {
-      await new Promise((resolve) => setTimeout(resolve, this.demoDelayMs));
+    // Hold the loading skeleton for at least the floor so it never flickers. Using
+    // the *remaining* time (not a fixed sleep) means a genuinely slow read isn't padded.
+    const remaining = this.minProcessingMs - (performance.now() - startedAt);
+    if (remaining > 0) {
+      await new Promise((resolve) => setTimeout(resolve, remaining));
     }
 
     this.loadFromText(text, file.name);

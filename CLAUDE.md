@@ -31,8 +31,20 @@ PolicyStore ──▶ PolicyTableComponent renders
   New stories extend the store, not the components.
 - `CsvParserService` is a pure `string → string[]` function (no I/O), so it's unit‑testable
   without a real `File`. `ChecksumValidator` follows the same shape — a pure `string → boolean`
-  mod‑11 check the store calls when mapping tokens into records, so validity is attached in the
-  store (not the components) and the table stays presentational.
+  mod‑11 check the store calls when mapping tokens into records, so **domain** validity is attached
+  in the store, not the components.
+- **Domain vs. view state.** `PolicyStore` owns domain state (the records, errors, processing).
+  `PolicyTableComponent` owns its own **view** state — sort, status filter, pagination, and its
+  `loading` skeleton — as local signals, and derives the visible page from `policies()` via a
+  filter→sort→paginate pipeline of `computed`s without mutating the records. So the table is no
+  longer purely presentational; ephemeral UI state stays with the view, not in the app‑wide store.
+- The Results panel has three states: idle → an honest empty state (no preview); processing →
+  `app-policy-table` with `[loading]="true"` (gray skeleton); loaded → the real table. A skeleton is
+  used only for processing, never as the idle state.
+- `MIN_PROCESSING_MS` (`app.component.ts`) is the floor the processing state / skeleton stays on
+  screen — **400ms in prod, 1000ms in dev**. The prod floor exists so the skeleton can't flash for a
+  single frame on instant parses (which reads as a glitch); `onFileSelected` sleeps only the
+  *remaining* time so genuinely slow reads aren't padded. (Renamed from `DEMO_DELAY_MS`.)
 - Errors are structured `UploadError` objects (`{ message, filename? }`), never HTML strings —
   filenames are user‑controlled, so the template does the markup (XSS‑safe).
 
@@ -98,6 +110,21 @@ component — Angular's idiomatic equivalent of React's `as` prop. Use a **compo
 its structure and benefits from encapsulated styles (`AlertComponent`). Select variants via a
 reflected `data-*` attribute (`host: { '[attr.data-variant]': 'variant()' }`) so the stylesheet
 targets `[data-variant=…]` and it works for bound usage and defaults, not just static strings.
+
+### Component API conventions
+
+- **Value-carrying outputs** use the `…Change` suffix (`valueChange`) — mirrors Angular's
+  two-way binding convention.
+- **Action/event outputs** use a verb or past-tense noun (`previous`, `next`, `toggle`,
+  `fileSelected`, `validationError`, `reset`). Don't rename a working name just for consistency;
+  only rename when the name is genuinely unclear.
+- **Icons:** standalone icons pass a literal `[size]` (12 / 14 / 16 / 40 px). Icons inside
+  `appButton` are sized from `font-size` via the button stylesheet — do not set `[size]` on them.
+  Standalone sizes are intentional; document them here rather than abstracting to tokens.
+- **Uppercase micro-labels** (alert label, select-field label, table header text):
+  `font-weight: 700`, `letter-spacing: 0.05em`, `font-size: var(--text-body-xs)`,
+  `text-transform: uppercase`. This is the canonical form — apply it consistently; do not
+  introduce a partial just to share four lines.
 
 ## Testing
 

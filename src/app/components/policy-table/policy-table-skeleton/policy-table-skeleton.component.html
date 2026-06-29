@@ -1,0 +1,37 @@
+<div class="policy-table-skeleton__header">
+  <div class="policy-table-skeleton__heading">
+    <span class="policy-table-skeleton__bar policy-table-skeleton__bar--title"></span>
+    <span class="policy-table-skeleton__bar policy-table-skeleton__bar--subtitle"></span>
+  </div>
+  <span class="policy-table-skeleton__bar policy-table-skeleton__bar--filter"></span>
+</div>
+<div class="policy-table-skeleton__scroll">
+  <table class="policy-table-skeleton__table">
+    <thead>
+      <tr>
+        <th scope="col" class="policy-table-skeleton__col-index">#</th>
+        <th scope="col">Policy number</th>
+        <th scope="col" class="policy-table-skeleton__col-status">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of skeletonRows(); track $index) {
+        <tr>
+          <td class="policy-table-skeleton__col-index">
+            <span class="policy-table-skeleton__bar policy-table-skeleton__bar--index"></span>
+          </td>
+          <td>
+            <span class="policy-table-skeleton__bar policy-table-skeleton__bar--number"></span>
+          </td>
+          <td class="policy-table-skeleton__col-status">
+            <span class="policy-table-skeleton__circle"></span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+<div class="policy-table-skeleton__footer">
+  <span class="policy-table-skeleton__bar policy-table-skeleton__bar--pagesize"></span>
+  <span class="policy-table-skeleton__bar policy-table-skeleton__bar--pagination"></span>
+</div>

@@ -33,8 +33,8 @@
   line-height: var(--line-height-0);
   text-align: center;
   text-decoration: none;
-  outline: 3px solid var(--_outline-color);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--_outline-color);
+  outline-offset: var(--focus-ring-offset);
   transition:
     background-color var(--transition-duration) var(--transition-easing),
     outline-color var(--transition-duration) var(--transition-easing);
@@ -92,6 +92,27 @@
   &[data-variant="tertiary"] {
     --_color: var(--color-neutral-white);
     --_bg-color: var(--color-tertiary);
+  }
+
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Icon-only button: square padding so the button is ~2rem. */
+  &[data-icon] {
+    --_px: var(--space-100);
+    --_py: var(--space-100);
+  }
+
+  &[data-variant="outline"] {
+    --_color: var(--color-neutral-800);
+    --_bg-color: var(--color-neutral-white);
+    --_border-color: var(--color-neutral-600);
+
+    &:hover {
+      background-color: var(--color-neutral-100);
+    }
   }
 
   &[data-variant="ghost"] {

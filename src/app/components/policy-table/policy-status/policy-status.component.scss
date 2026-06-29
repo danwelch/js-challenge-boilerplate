@@ -1,0 +1,21 @@
+:host {
+  display: contents;
+}
+
+/* Solid circle badge; inline-flex centers the icon. text-align:center on the td
+   centers the badge in the column. */
+.policy-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--border-radius-full);
+  background-color: var(--color-danger);
+  color: var(--color-neutral-white);
+  vertical-align: middle;
+}
+
+.policy-status--valid {
+  background-color: color-mix(in srgb, var(--color-success), black 20%);
+}

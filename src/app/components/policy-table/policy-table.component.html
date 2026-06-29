@@ -1,35 +1,85 @@
-<div class="policy-table__scroll">
-  <table class="policy-table">
-    <caption class="policy-table__caption">
-      Scanned policy numbers ({{ policies().length }})
-      <span class="policy-table__summary">
+@if (loading()) {
+  <app-policy-table-skeleton [rows]="10" />
+} @else {
+  <div class="policy-table__header">
+    <div class="policy-table__heading" aria-hidden="true">
+      <p class="policy-table__title">Scanned policy numbers ({{ policies().length }})</p>
+      <p class="policy-table__summary">
+        {{ validCount() }} valid, {{ invalidCount() }} {{ invalidCount() === 1 ? 'error' : 'errors' }}
+      </p>
+    </div>
+
+    <app-select-field
+      label="Status"
+      [value]="statusFilter()"
+      [options]="statusOptions"
+      [inline]="true"
+      (valueChange)="setStatusFilter($event)"
+    />
+  </div>
+
+  <div class="policy-table__scroll">
+    <table class="policy-table">
+      <caption class="sr-only">
+        Scanned policy numbers ({{ policies().length }})
         — {{ validCount() }} valid, {{ invalidCount() }} {{ invalidCount() === 1 ? 'error' : 'errors' }}
-      </span>
-    </caption>
-    <thead>
-      <tr>
-        <th scope="col" class="policy-table__col-index">#</th>
-        <th scope="col">Policy number</th>
-        <th scope="col" class="policy-table__col-status">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (policy of policies(); track $index) {
+      </caption>
+      <thead>
         <tr>
-          <td class="policy-table__col-index">{{ $index + 1 }}</td>
-          <td class="policy-table__number">{{ policy.policyNumber }}</td>
-          <td class="policy-table__col-status">
-            <span
-              class="policy-table__status-icon"
-              [class.policy-table__status-icon--valid]="policy.valid"
-              aria-hidden="true"
-            >
-              <lucide-icon [img]="policy.valid ? validIcon : invalidIcon" [size]="12" [strokeWidth]="4" />
-            </span>
-            <span class="sr-only">{{ policy.valid ? 'Valid' : 'Error' }}</span>
-          </td>
+          <th scope="col" class="policy-table__col-index" [attr.aria-sort]="ariaSort('index')">
+            <app-sort-header
+              [direction]="sortDirection('index')"
+              align="end"
+              (toggle)="toggleSort('index')"
+            >#</app-sort-header>
+          </th>
+          <th scope="col" [attr.aria-sort]="ariaSort('policyNumber')">
+            <app-sort-header
+              [direction]="sortDirection('policyNumber')"
+              (toggle)="toggleSort('policyNumber')"
+            >Policy number</app-sort-header>
+          </th>
+          <th scope="col" class="policy-table__col-status" [attr.aria-sort]="ariaSort('status')">
+            <app-sort-header
+              [direction]="sortDirection('status')"
+              align="center"
+              (toggle)="toggleSort('status')"
+            >Status</app-sort-header>
+          </th>
         </tr>
-      }
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        @for (row of pagedRows(); track $index) {
+          <tr>
+            <td class="policy-table__col-index">{{ row.scanIndex }}</td>
+            <td class="policy-table__number">{{ row.policyNumber }}</td>
+            <td class="policy-table__col-status">
+              <app-policy-status [valid]="row.valid" />
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3" class="policy-table__empty-row">No policy numbers match this filter.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="policy-table__footer">
+    <app-select-field
+      label="Rows per page"
+      [value]="pageSize()"
+      [options]="pageSizeOptions"
+      [inline]="true"
+      (valueChange)="setPageSize($event)"
+    />
+
+    <app-pagination
+      [page]="currentPage() + 1"
+      [pageCount]="pageCount()"
+      (previous)="goToPreviousPage()"
+      (next)="goToNextPage()"
+    />
+  </div>
+}

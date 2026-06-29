@@ -169,15 +169,21 @@ Validation lives here (it's purely about the file) but the error is *displayed* 
 input, so the store stays the single source of truth. Drag-and-drop is progressive enhancement over
 the keyboard/AT-accessible visually-hidden `<input>` + `<label>`.
 
-**`app-policy-table`** — presentational table (`policy-table.component.ts`)
+**`app-policy-table`** — data table with sort / filter / pagination (`policy-table.component.ts`)
 
 | Input | Type | Required | Notes |
 | ----- | ---- | -------- | ----- |
 | `policies` | `PolicyRecord[]` | yes | renders whatever fields exist on the record |
+| `loading` | `boolean` | no (default `false`) | renders a gray skeleton of the table shell instead of rows |
 
 Story 1 shows row number + policy number; US2/US4 add columns by extending `PolicyRecord`, no contract
-change. Rows are tracked by index because duplicate policy numbers are legitimate, so the value isn't a
-stable key.
+change. The component owns its **view** state — column sort (all three columns), a status `<select>`
+filter, and pagination (5/10/25/50/100 per page) — as local signals, deriving the visible page from
+`policies()` without mutating it; the store keeps only domain state. The `#` column always shows the
+1‑based **scan position**, so a row traces back to the scanner output even after sorting or paging
+(duplicate policy numbers are legitimate, so the displayed position isn't a stable identity). When
+`loading` is set the table renders an `aria-hidden` skeleton with a polite `role="status"`
+announcement — the "data is coming" state shown while an upload is processed.
 
 ### Documentation: why no Storybook (yet)
 
@@ -201,7 +207,8 @@ behaviour rather than just displaying it.
 - **Checksum lives in its own pure service, validity is attached in the store.** `ChecksumValidator`
   is a pure `string → boolean` mod‑11 check (no I/O), unit‑testable like the parser. The store —
   the single source of truth — calls it as it maps tokens into `PolicyRecord`s, so each record
-  carries a `valid` flag and the table stays presentational. A non‑9‑digit or non‑numeric token
+  carries a `valid` flag the table just renders (the table owns *view* state like sort/filter, not
+  domain logic). A non‑9‑digit or non‑numeric token
   can't satisfy a positional checksum, so it is simply invalid. (`valid` is a `boolean` for US2's
   binary split; US4 can widen it to a `valid` / `corrected` / `AMB` / `error` union.)
 - **Hand‑rolled CSV parser over a library.** The export is a single line (or one value per

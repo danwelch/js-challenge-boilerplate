@@ -1,0 +1,50 @@
+:host {
+  display: contents;
+}
+
+/* Borderless button that fills the th cell; inherits teal color/font from thead. */
+.sort-header__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-75);
+  width: 100%;
+  margin: 0;
+  padding: var(--space-150) var(--space-300);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+:host([data-align='end']) .sort-header__btn {
+  justify-content: flex-end;
+}
+
+:host([data-align='center']) .sort-header__btn {
+  justify-content: center;
+}
+
+@media (max-width: 46.5rem) {
+  .sort-header__btn {
+    padding-inline: var(--space-150);
+  }
+}
+
+.sort-header__btn:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-neutral-white);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--border-radius-100);
+}
+
+/* Dim the icon until this column is the active sort. */
+.sort-header__icon {
+  opacity: 0.55;
+}
+
+.sort-header__icon--active {
+  opacity: 1;
+}

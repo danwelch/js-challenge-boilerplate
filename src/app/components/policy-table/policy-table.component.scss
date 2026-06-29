@@ -1,3 +1,9 @@
+/* Container for the footer's inline-size query below. */
+:host {
+  display: block;
+  container-type: inline-size;
+}
+
 /* Horizontal scroll guard so the table never overflows narrow viewports. */
 .policy-table__scroll {
   width: 100%;
@@ -10,15 +16,38 @@
   font-variant-numeric: tabular-nums;
 }
 
-.policy-table__caption {
-  padding-bottom: var(--space-200);
+/* Header row: table title (with the count breakdown on a smaller second line)
+   on the left, status filter on the right. */
+.policy-table__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-200);
+  margin-bottom: var(--space-200);
+}
+
+/* Push the status filter down to sit flush with the table edge. */
+.policy-table__header app-select-field {
+  align-self: end;
+}
+
+.policy-table__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-50);
+}
+
+.policy-table__title {
+  margin: 0;
   font-weight: 600;
-  text-align: left;
   color: var(--color-neutral-700);
 }
 
-/* De-emphasised count breakdown that trails the caption title. */
+/* De-emphasised count breakdown on its own, smaller line. */
 .policy-table__summary {
+  margin: 0;
+  font-size: var(--text-body-sm);
   font-weight: 400;
   color: var(--color-neutral-600);
 }
@@ -26,21 +55,26 @@
 .policy-table th,
 .policy-table td {
   padding: var(--space-150) var(--space-300);
-  text-align: left;
   border-bottom: 1px solid var(--color-neutral-300);
   white-space: nowrap;
 }
 
+/* Padding moves onto the sort-header button so the whole cell is the click target. */
 .policy-table thead th {
+  padding: 0;
   font-size: var(--text-body-sm);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--color-neutral-white);
   background-color: var(--color-secondary);
 }
 
 .policy-table tbody tr:nth-child(even) {
   background-color: var(--color-neutral-100);
+}
+
+.policy-table tbody tr:hover {
+  background-color: var(--color-neutral-300);
 }
 
 /* width: 1px + nowrap collapses the column to max-content; the policy-number
@@ -62,20 +96,24 @@
   text-align: center;
 }
 
-/* Solid circle badge in its own column. inline-flex centers the icon inside
-   the circle; text-align: center on the td centers the span in the column. */
-.policy-table__status-icon {
-  display: inline-flex;
+/* Footer row: rows-per-page on the left, pagination on the right. */
+.policy-table__footer {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 50%;
-  background-color: var(--color-warning);
-  color: var(--color-neutral-white);
-  vertical-align: middle;
+  justify-content: space-between;
+  gap: var(--space-200);
+  margin-top: var(--space-200);
 }
 
-.policy-table__status-icon--valid {
-  background-color: color-mix(in srgb, var(--color-success), black 20%);
+.policy-table__empty-row {
+  padding: var(--space-400);
+  text-align: center;
+  color: var(--color-neutral-600);
+}
+
+@container (max-width: 30rem) {
+  .policy-table__footer {
+    justify-content: center;
+  }
 }

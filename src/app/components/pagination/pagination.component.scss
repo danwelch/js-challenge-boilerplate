@@ -1,0 +1,16 @@
+:host {
+  display: contents;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-200);
+}
+
+.pagination__status {
+  font-size: var(--text-body-sm);
+  color: var(--color-neutral-700);
+  font-variant-numeric: tabular-nums;
+}
+

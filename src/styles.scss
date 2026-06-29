@@ -26,11 +26,19 @@
   --color-blue-100: #dee7ff;
   --color-blue-400: var(--color-blue);
 
-  --color-warning: #b11030;
-  --color-warning-100: #fae6e8;
-  --color-warning-200: #f4cace;
+  /* Kin's source palette labelled this red "warning"; renamed to "danger" for semantic accuracy. */
+  --color-danger: #b11030;
+  --color-danger-100: #fae6e8;
+  --color-danger-200: #f4cace;
+  --color-danger-400: var(--color-danger);
+  --color-danger-600: #68000d;
+
+  /* True amber warning ramp (anchored on --color-primary-500 #e5ae25). */
+  --color-warning: #e5ae25;
+  --color-warning-100: #fdf6e0;
+  --color-warning-200: #faeab3;
   --color-warning-400: var(--color-warning);
-  --color-warning-600: #68000d;
+  --color-warning-600: #7e6115;
 
   --color-success: #2f943b;
   --color-success-100: #e6fae8;
@@ -120,6 +128,18 @@
   --space-1000: calc(var(--space-base) * 12);
   --space-1100: calc(var(--space-base) * 14);
   --space-1150: calc(var(--space-base) * 15);
+
+  /* New tokens for this repo (not from the Kin site) — added to support the
+     OCR app's components: keyboard focus rings, disabled controls, and the
+     processing skeleton / spinner animations. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 1px;
+  --focus-ring-color: var(--color-secondary);
+
+  --opacity-disabled: 0.4;
+
+  --duration-slow: 1.4s;
+  --duration-spin: 0.9s;
 }
 
 /* Minimal global base — the palette file ships no reset/typography of its own. */
