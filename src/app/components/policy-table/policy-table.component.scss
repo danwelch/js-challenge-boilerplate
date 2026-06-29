@@ -44,12 +44,13 @@
 .policy-table th,
 .policy-table td {
   padding: var(--space-150) var(--space-300);
-  text-align: left;
   border-bottom: 1px solid var(--color-neutral-300);
   white-space: nowrap;
 }
 
+/* Padding moves onto the button so the whole header cell is the click target. */
 .policy-table thead th {
+  padding: 0;
   font-size: var(--text-body-sm);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -132,7 +133,7 @@
 
 .policy-table__select {
   padding: var(--space-75) var(--space-150);
-  border: 1px solid var(--color-neutral-400);
+  border: 1px solid var(--color-neutral-600);
   border-radius: var(--border-radius-200);
   background-color: var(--color-neutral-white);
   color: var(--color-neutral-black);
@@ -146,14 +147,14 @@
   outline-offset: 1px;
 }
 
-/* Sortable headers: a borderless button that inherits the th's typography so the
-   teal header still reads as one surface, plus a sort-direction indicator. */
+/* Borderless button inheriting th typography; width:100% fills the cell. */
 .policy-table__sort {
   display: inline-flex;
   align-items: center;
   gap: var(--space-75);
+  width: 100%;
   margin: 0;
-  padding: 0;
+  padding: var(--space-150) var(--space-300);
   border: 0;
   background: none;
   color: inherit;
@@ -161,6 +162,14 @@
   letter-spacing: inherit;
   text-transform: inherit;
   cursor: pointer;
+}
+
+.policy-table__col-index .policy-table__sort {
+  justify-content: flex-end;
+}
+
+.policy-table__col-status .policy-table__sort {
+  justify-content: center;
 }
 
 .policy-table__sort:focus-visible {
@@ -207,7 +216,7 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border: 1px solid var(--color-neutral-400);
+  border: 1px solid var(--color-neutral-600);
   border-radius: var(--border-radius-200);
   background-color: var(--color-neutral-white);
   color: var(--color-neutral-800);
@@ -267,6 +276,12 @@
   width: 1.25rem;
   height: 1.25rem;
   border-radius: var(--border-radius-full);
+}
+
+.policy-table__empty-row {
+  padding: var(--space-400);
+  text-align: center;
+  color: var(--color-neutral-600);
 }
 
 @keyframes policy-table-shimmer {

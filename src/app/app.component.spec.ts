@@ -159,6 +159,22 @@ describe('AppComponent', () => {
     ).not.toBeNull();
   });
 
+  it('live region is present and empty at idle, announces processing, then loaded count', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    const region = el.querySelector('[role="status"][aria-live="polite"]');
+    expect(region).not.toBeNull();
+    expect(region?.textContent?.trim()).toBe('');
+
+    store.beginProcessing();
+    fixture.detectChanges();
+    expect(region?.textContent).toContain('Processing upload');
+
+    store.setPolicies(['457508000', '457500000'], 'f.csv');
+    fixture.detectChanges();
+    expect(region?.textContent).toContain('Loaded');
+    expect(region?.textContent).toContain('2 policy numbers');
+  });
+
   it('parses CSV text into the store', () => {
     component.loadFromText('457508000,123456789', 'policies.csv');
     fixture.detectChanges();

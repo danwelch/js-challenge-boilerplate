@@ -6,9 +6,9 @@
     <table class="policy-table">
       <thead>
         <tr>
-          <th scope="col" class="policy-table__col-index">#</th>
-          <th scope="col">Policy number</th>
-          <th scope="col" class="policy-table__col-status">Status</th>
+          <th scope="col" class="policy-table__col-index"><span class="policy-table__sort">#</span></th>
+          <th scope="col"><span class="policy-table__sort">Policy number</span></th>
+          <th scope="col" class="policy-table__col-status"><span class="policy-table__sort">Status</span></th>
         </tr>
       </thead>
       <tbody>
@@ -28,11 +28,10 @@
       </tbody>
     </table>
   </div>
-  <p class="sr-only" role="status">Processing upload…</p>
 } @else {
   <div class="policy-table__header">
     <div class="policy-table__heading" aria-hidden="true">
-      <p class="policy-table__title">{{ policies().length }} Scanned policy numbers</p>
+      <p class="policy-table__title">Scanned policy numbers ({{ policies().length }})</p>
       <p class="policy-table__summary">
         {{ validCount() }} valid, {{ invalidCount() }} {{ invalidCount() === 1 ? 'error' : 'errors' }}
       </p>
@@ -111,6 +110,10 @@
               </span>
               <span class="sr-only">{{ row.valid ? 'Valid' : 'Error' }}</span>
             </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3" class="policy-table__empty-row">No policy numbers match this filter.</td>
           </tr>
         }
       </tbody>

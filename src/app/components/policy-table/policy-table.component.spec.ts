@@ -90,8 +90,7 @@ describe('PolicyTableComponent', () => {
     expect(el.querySelectorAll('tbody tr')).toHaveLength(10);
     // Controls are suppressed while loading.
     expect(el.querySelectorAll('.policy-table__select')).toHaveLength(0);
-    // A polite status announces the processing state.
-    expect(el.querySelector('[role="status"]')?.textContent).toContain('Processing');
+    // Announcement moved to the app-level persistent live region (Fix 1).
   });
 
   function numbersInOrder(el: HTMLElement): (string | undefined)[] {
@@ -155,6 +154,22 @@ describe('PolicyTableComponent', () => {
     expect(numbersInOrder(el)).toEqual(['457508000']);
     // Caption still reflects the full set, not the filtered view.
     expect(el.querySelector('caption')?.textContent).toContain('1 valid, 2 errors');
+  });
+
+  it('shows an empty-filter message when no rows match the status filter', () => {
+    const el = render([
+      { policyNumber: '457508000', valid: true },
+      { policyNumber: '123456789', valid: true },
+    ]);
+    const statusSelect = el.querySelector('.policy-table__select') as HTMLSelectElement;
+    statusSelect.value = 'invalid';
+    statusSelect.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    expect(el.querySelector('.policy-table__empty-row')?.textContent).toContain(
+      'No policy numbers match this filter.',
+    );
+    expect(el.querySelectorAll('.policy-table__number')).toHaveLength(0);
   });
 
   it('paginates, disables next at the end, and keeps # as the scan position', () => {

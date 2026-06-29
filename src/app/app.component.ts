@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   InjectionToken,
+  computed,
   inject,
   isDevMode,
 } from '@angular/core';
@@ -49,6 +50,21 @@ export class AppComponent {
 
   /** Decorative icon for the empty Results panel. */
   protected readonly emptyIcon = Inbox;
+
+  /** Drives a persistent polite live region so SR users hear upload progress.
+   *  Errors are intentionally omitted — AlertComponent already announces them. */
+  protected readonly statusMessage = computed(() => {
+    if (this.store.processing()) {
+      return 'Processing upload…';
+    }
+    const policies = this.store.policies();
+    if (policies.length === 0) {
+      return '';
+    }
+    const valid = policies.filter((policy) => policy.valid).length;
+    const invalid = policies.length - valid;
+    return `Loaded ${policies.length} policy numbers — ${valid} valid, ${invalid} ${invalid === 1 ? 'error' : 'errors'}.`;
+  });
 
   /** Reads a validated CSV file (browser I/O), then hands the text off to be parsed. */
   async onFileSelected(file: File): Promise<void> {
