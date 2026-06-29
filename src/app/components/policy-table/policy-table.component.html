@@ -49,7 +49,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (row of pagedRows(); track $index) {
+        @for (row of pagedRows(); track row.scanIndex) {
           <tr>
             <td class="policy-table__col-index">{{ row.scanIndex }}</td>
             <td class="policy-table__number">{{ row.policyNumber }}</td>
