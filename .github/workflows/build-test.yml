@@ -59,5 +59,9 @@ jobs:
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium
+      # No `playwright install-deps`: the ubuntu-22.04 runner image already ships
+      # Chromium's shared libraries (~18s saved). This couples us to the runner
+      # image — if a browser launch fails after adding Firefox/WebKit or an image
+      # slim-down, re-add: `npx playwright install-deps chromium`.
       - name: E2E tests
         run: npm run e2e
