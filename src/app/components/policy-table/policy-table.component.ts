@@ -1,15 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import {
-  ArrowDown,
-  ArrowUp,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsUpDown,
-  LucideAngularModule,
-  X,
-} from 'lucide-angular';
 import type { PolicyRecord } from '../../models/policy.model';
+import { PaginationComponent } from '../pagination/pagination.component';
+import { SelectFieldComponent, type SelectOption } from '../select-field/select-field.component';
+import { PolicyStatusComponent } from './policy-status/policy-status.component';
+import { PolicyTableSkeletonComponent } from './policy-table-skeleton/policy-table-skeleton.component';
+import { SortHeaderComponent } from './sort-header/sort-header.component';
 
 /** A policy record paired with its 1-based position in the original scan order. */
 interface PolicyRow extends PolicyRecord {
@@ -50,7 +45,13 @@ const DEFAULT_PAGE_SIZE = 10;
   selector: 'app-policy-table',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule],
+  imports: [
+    SelectFieldComponent,
+    PaginationComponent,
+    PolicyTableSkeletonComponent,
+    SortHeaderComponent,
+    PolicyStatusComponent,
+  ],
   templateUrl: './policy-table.component.html',
   styleUrl: './policy-table.component.scss',
 })
@@ -61,18 +62,16 @@ export class PolicyTableComponent {
   /** When true, render the loading skeleton instead of the data table. */
   readonly loading = input<boolean>(false);
 
-  /** Decorative status icons; the text label carries the meaning for a11y. */
-  protected readonly validIcon = Check;
-  protected readonly invalidIcon = X;
-  protected readonly prevIcon = ChevronLeft;
-  protected readonly nextIcon = ChevronRight;
-  protected readonly sortAscIcon = ArrowUp;
-  protected readonly sortDescIcon = ArrowDown;
-  protected readonly sortNoneIcon = ChevronsUpDown;
+  protected readonly statusOptions: SelectOption[] = [
+    { value: 'all', label: 'All' },
+    { value: 'valid', label: 'Valid' },
+    { value: 'invalid', label: 'Errors' },
+  ];
 
-  protected readonly pageSizes = PAGE_SIZES;
-  /** Fixed-length array driving the `@for` that renders skeleton rows. */
-  protected readonly skeletonRows = Array.from({ length: DEFAULT_PAGE_SIZE });
+  protected readonly pageSizeOptions: SelectOption[] = PAGE_SIZES.map((n) => ({
+    value: String(n),
+    label: String(n),
+  }));
 
   protected readonly sortColumn = signal<SortColumn>('index');
   protected readonly sortDir = signal<SortDirection>('asc');
@@ -147,12 +146,12 @@ export class PolicyTableComponent {
     return this.sortDir() === 'asc' ? 'ascending' : 'descending';
   }
 
-  /** Direction indicator icon for a header cell. */
-  protected sortIcon(column: SortColumn) {
+  /** Direction state passed to `app-sort-header`. */
+  protected sortDirection(column: SortColumn): 'none' | 'asc' | 'desc' {
     if (this.sortColumn() !== column) {
-      return this.sortNoneIcon;
+      return 'none';
     }
-    return this.sortDir() === 'asc' ? this.sortAscIcon : this.sortDescIcon;
+    return this.sortDir();
   }
 
   protected setStatusFilter(value: string): void {

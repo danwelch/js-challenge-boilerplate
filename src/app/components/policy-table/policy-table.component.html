@@ -1,33 +1,5 @@
 @if (loading()) {
-  <div class="policy-table__header" aria-hidden="true">
-    <span class="policy-table__skeleton-bar policy-table__skeleton-bar--caption"></span>
-  </div>
-  <div class="policy-table__scroll" aria-hidden="true">
-    <table class="policy-table">
-      <thead>
-        <tr>
-          <th scope="col" class="policy-table__col-index"><span class="policy-table__sort">#</span></th>
-          <th scope="col"><span class="policy-table__sort">Policy number</span></th>
-          <th scope="col" class="policy-table__col-status"><span class="policy-table__sort">Status</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of skeletonRows; track $index) {
-          <tr>
-            <td class="policy-table__col-index">
-              <span class="policy-table__skeleton-bar policy-table__skeleton-bar--index"></span>
-            </td>
-            <td>
-              <span class="policy-table__skeleton-bar policy-table__skeleton-bar--number"></span>
-            </td>
-            <td class="policy-table__col-status">
-              <span class="policy-table__skeleton-circle"></span>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+  <app-policy-table-skeleton [rows]="10" />
 } @else {
   <div class="policy-table__header">
     <div class="policy-table__heading" aria-hidden="true">
@@ -37,19 +9,13 @@
       </p>
     </div>
 
-    <label class="policy-table__control policy-table__control--inline">
-      <span class="policy-table__control-label">Status</span>
-      <select
-        #statusSelect
-        class="policy-table__select"
-        [value]="statusFilter()"
-        (change)="setStatusFilter(statusSelect.value)"
-      >
-        <option value="all">All</option>
-        <option value="valid">Valid</option>
-        <option value="invalid">Errors</option>
-      </select>
-    </label>
+    <app-select-field
+      label="Status"
+      [value]="statusFilter()"
+      [options]="statusOptions"
+      [inline]="true"
+      (valueChange)="setStatusFilter($event)"
+    />
   </div>
 
   <div class="policy-table__scroll">
@@ -61,37 +27,24 @@
       <thead>
         <tr>
           <th scope="col" class="policy-table__col-index" [attr.aria-sort]="ariaSort('index')">
-            <button type="button" class="policy-table__sort" (click)="toggleSort('index')">
-              #
-              <lucide-icon
-                class="policy-table__sort-icon"
-                [img]="sortIcon('index')"
-                [size]="14"
-                aria-hidden="true"
-              />
-            </button>
+            <app-sort-header
+              [direction]="sortDirection('index')"
+              align="end"
+              (toggle)="toggleSort('index')"
+            >#</app-sort-header>
           </th>
           <th scope="col" [attr.aria-sort]="ariaSort('policyNumber')">
-            <button type="button" class="policy-table__sort" (click)="toggleSort('policyNumber')">
-              Policy number
-              <lucide-icon
-                class="policy-table__sort-icon"
-                [img]="sortIcon('policyNumber')"
-                [size]="14"
-                aria-hidden="true"
-              />
-            </button>
+            <app-sort-header
+              [direction]="sortDirection('policyNumber')"
+              (toggle)="toggleSort('policyNumber')"
+            >Policy number</app-sort-header>
           </th>
           <th scope="col" class="policy-table__col-status" [attr.aria-sort]="ariaSort('status')">
-            <button type="button" class="policy-table__sort" (click)="toggleSort('status')">
-              Status
-              <lucide-icon
-                class="policy-table__sort-icon"
-                [img]="sortIcon('status')"
-                [size]="14"
-                aria-hidden="true"
-              />
-            </button>
+            <app-sort-header
+              [direction]="sortDirection('status')"
+              align="center"
+              (toggle)="toggleSort('status')"
+            >Status</app-sort-header>
           </th>
         </tr>
       </thead>
@@ -101,14 +54,7 @@
             <td class="policy-table__col-index">{{ row.scanIndex }}</td>
             <td class="policy-table__number">{{ row.policyNumber }}</td>
             <td class="policy-table__col-status">
-              <span
-                class="policy-table__status-icon"
-                [class.policy-table__status-icon--valid]="row.valid"
-                aria-hidden="true"
-              >
-                <lucide-icon [img]="row.valid ? validIcon : invalidIcon" [size]="12" [strokeWidth]="4" />
-              </span>
-              <span class="sr-only">{{ row.valid ? 'Valid' : 'Error' }}</span>
+              <app-policy-status [valid]="row.valid" />
             </td>
           </tr>
         } @empty {
@@ -121,42 +67,19 @@
   </div>
 
   <div class="policy-table__footer">
-    <label class="policy-table__control policy-table__control--inline">
-      <span class="policy-table__control-label">Rows per page</span>
-      <select
-        #pageSizeSelect
-        class="policy-table__select"
-        [value]="pageSize()"
-        (change)="setPageSize(pageSizeSelect.value)"
-      >
-        @for (size of pageSizes; track size) {
-          <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
-        }
-      </select>
-    </label>
+    <app-select-field
+      label="Rows per page"
+      [value]="pageSize()"
+      [options]="pageSizeOptions"
+      [inline]="true"
+      (valueChange)="setPageSize($event)"
+    />
 
-    <nav class="policy-table__pagination" aria-label="Table pages">
-      <button
-        type="button"
-        class="policy-table__page-btn"
-        (click)="goToPreviousPage()"
-        [disabled]="currentPage() === 0"
-        aria-label="Previous page"
-      >
-        <lucide-icon [img]="prevIcon" [size]="16" aria-hidden="true" />
-      </button>
-      <span class="policy-table__page-status" aria-live="polite">
-        Page {{ currentPage() + 1 }} of {{ pageCount() }}
-      </span>
-      <button
-        type="button"
-        class="policy-table__page-btn"
-        (click)="goToNextPage()"
-        [disabled]="currentPage() >= pageCount() - 1"
-        aria-label="Next page"
-      >
-        <lucide-icon [img]="nextIcon" [size]="16" aria-hidden="true" />
-      </button>
-    </nav>
+    <app-pagination
+      [page]="currentPage() + 1"
+      [pageCount]="pageCount()"
+      (previous)="goToPreviousPage()"
+      (next)="goToNextPage()"
+    />
   </div>
 }

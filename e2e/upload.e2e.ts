@@ -70,7 +70,7 @@ test.describe('Policy CSV upload', () => {
     await expect(page.getByText('Processing…')).toBeVisible();
     await expect(page.locator('.upload')).toHaveAttribute('inert', '');
     // The Results panel shows the loading skeleton (not the empty state) meanwhile.
-    await expect(page.locator('.policy-table__skeleton-bar').first()).toBeVisible();
+    await expect(page.locator('.table-skeleton__bar').first()).toBeVisible();
 
     // Once processing completes the form is interactive again (inert removed).
     await expect(page.locator('caption')).toContainText('(10)');
@@ -91,10 +91,10 @@ test.describe('Policy CSV upload', () => {
 
     // Filter to valid only — 2 of the 10 sample numbers pass the checksum, while
     // the caption keeps the full totals.
-    await page.locator('.policy-table__select').first().selectOption('valid');
+    await page.locator('app-select-field select').first().selectOption('valid');
     await expect(page.locator('tbody tr')).toHaveCount(2);
     await expect(page.locator('caption')).toContainText('2 valid, 8 errors');
-    await expect(page.locator('.policy-table__page-status')).toContainText(
+    await expect(page.locator('app-pagination .pagination__status')).toContainText(
       'Page 1 of 1',
     );
   });

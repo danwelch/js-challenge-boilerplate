@@ -60,16 +60,14 @@ describe('PolicyTableComponent', () => {
     ]);
 
     const rows = el.querySelectorAll('tbody tr');
-    const validBadge = rows[0].querySelector('.policy-table__status-icon');
-    const invalidBadge = rows[1].querySelector('.policy-table__status-icon');
+    const validBadge = rows[0].querySelector('app-policy-status .policy-status');
+    const invalidBadge = rows[1].querySelector('app-policy-status .policy-status');
 
-    expect(validBadge?.classList).toContain('policy-table__status-icon--valid');
-    expect(rows[0].querySelector('.sr-only')?.textContent).toContain('Valid');
+    expect(validBadge?.classList).toContain('policy-status--valid');
+    expect(rows[0].querySelector('app-policy-status .sr-only')?.textContent).toContain('Valid');
 
-    expect(invalidBadge?.classList).not.toContain(
-      'policy-table__status-icon--valid',
-    );
-    expect(rows[1].querySelector('.sr-only')?.textContent).toContain('Error');
+    expect(invalidBadge?.classList).not.toContain('policy-status--valid');
+    expect(rows[1].querySelector('app-policy-status .sr-only')?.textContent).toContain('Error');
   });
 
   it('uses a scoped column header for accessibility', () => {
@@ -84,13 +82,14 @@ describe('PolicyTableComponent', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
 
-    // Skeleton shell present and hidden from assistive tech.
-    expect(el.querySelector('.policy-table__scroll')?.getAttribute('aria-hidden')).toBe('true');
-    expect(el.querySelectorAll('.policy-table__skeleton-bar').length).toBeGreaterThan(0);
+    // Skeleton component present and hidden from assistive tech via its host attribute.
+    const skeleton = el.querySelector('app-policy-table-skeleton');
+    expect(skeleton).not.toBeNull();
+    expect(skeleton?.getAttribute('aria-hidden')).toBe('true');
+    expect(el.querySelectorAll('.table-skeleton__bar').length).toBeGreaterThan(0);
     expect(el.querySelectorAll('tbody tr')).toHaveLength(10);
     // Controls are suppressed while loading.
-    expect(el.querySelectorAll('.policy-table__select')).toHaveLength(0);
-    // Announcement moved to the app-level persistent live region (Fix 1).
+    expect(el.querySelectorAll('app-select-field')).toHaveLength(0);
   });
 
   function numbersInOrder(el: HTMLElement): (string | undefined)[] {
@@ -145,7 +144,8 @@ describe('PolicyTableComponent', () => {
       { policyNumber: '457500000', valid: false },
       { policyNumber: '861100036', valid: false },
     ]);
-    const statusSelect = el.querySelector('.policy-table__select') as HTMLSelectElement;
+    // First app-select-field is the status filter.
+    const statusSelect = el.querySelector('app-select-field select') as HTMLSelectElement;
     statusSelect.value = 'valid';
     statusSelect.dispatchEvent(new Event('change'));
     fixture.detectChanges();
@@ -161,7 +161,7 @@ describe('PolicyTableComponent', () => {
       { policyNumber: '457508000', valid: true },
       { policyNumber: '123456789', valid: true },
     ]);
-    const statusSelect = el.querySelector('.policy-table__select') as HTMLSelectElement;
+    const statusSelect = el.querySelector('app-select-field select') as HTMLSelectElement;
     statusSelect.value = 'invalid';
     statusSelect.dispatchEvent(new Event('change'));
     fixture.detectChanges();
@@ -181,14 +181,14 @@ describe('PolicyTableComponent', () => {
 
     // Default page size 10 → first page shows 10 of 2 pages.
     expect(el.querySelectorAll('tbody tr')).toHaveLength(10);
-    expect(el.querySelector('.policy-table__page-status')?.textContent).toContain('Page 1 of 2');
+    expect(el.querySelector('app-pagination .pagination__status')?.textContent).toContain('Page 1 of 2');
 
-    const nextBtn = el.querySelectorAll('.policy-table__page-btn')[1] as HTMLButtonElement;
+    const nextBtn = el.querySelectorAll('app-pagination button')[1] as HTMLButtonElement;
     nextBtn.click();
     fixture.detectChanges();
 
     expect(el.querySelectorAll('tbody tr')).toHaveLength(2);
-    expect(el.querySelector('.policy-table__page-status')?.textContent).toContain('Page 2 of 2');
+    expect(el.querySelector('app-pagination .pagination__status')?.textContent).toContain('Page 2 of 2');
     expect(nextBtn.disabled).toBe(true);
     // The # column shows the original scan positions (11, 12), not 1, 2.
     const indices = [...el.querySelectorAll('tbody td.policy-table__col-index')].map((cell) =>
@@ -204,16 +204,17 @@ describe('PolicyTableComponent', () => {
     }));
     const el = render(policies);
 
-    (el.querySelectorAll('.policy-table__page-btn')[1] as HTMLButtonElement).click();
+    (el.querySelectorAll('app-pagination button')[1] as HTMLButtonElement).click();
     fixture.detectChanges();
-    expect(el.querySelector('.policy-table__page-status')?.textContent).toContain('Page 2 of 2');
+    expect(el.querySelector('app-pagination .pagination__status')?.textContent).toContain('Page 2 of 2');
 
-    const pageSizeSelect = el.querySelectorAll('.policy-table__select')[1] as HTMLSelectElement;
+    // Second app-select-field is rows-per-page.
+    const pageSizeSelect = el.querySelectorAll('app-select-field select')[1] as HTMLSelectElement;
     pageSizeSelect.value = '25';
     pageSizeSelect.dispatchEvent(new Event('change'));
     fixture.detectChanges();
 
     expect(el.querySelectorAll('tbody tr')).toHaveLength(12);
-    expect(el.querySelector('.policy-table__page-status')?.textContent).toContain('Page 1 of 1');
+    expect(el.querySelector('app-pagination .pagination__status')?.textContent).toContain('Page 1 of 1');
   });
 });

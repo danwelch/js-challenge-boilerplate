@@ -21,6 +21,11 @@
   margin-bottom: var(--space-200);
 }
 
+/* Push the status filter down to sit flush with the table edge. */
+.policy-table__header app-select-field {
+  align-self: end;
+}
+
 .policy-table__heading {
   display: flex;
   flex-direction: column;
@@ -48,7 +53,7 @@
   white-space: nowrap;
 }
 
-/* Padding moves onto the button so the whole header cell is the click target. */
+/* Padding moves onto the sort-header button so the whole cell is the click target. */
 .policy-table thead th {
   padding: 0;
   font-size: var(--text-body-sm);
@@ -85,109 +90,6 @@
   text-align: center;
 }
 
-/* Solid circle badge in its own column. inline-flex centers the icon inside
-   the circle; text-align: center on the td centers the span in the column. */
-.policy-table__status-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 50%;
-  background-color: var(--color-warning);
-  color: var(--color-neutral-white);
-  vertical-align: middle;
-}
-
-.policy-table__status-icon--valid {
-  background-color: color-mix(in srgb, var(--color-success), black 20%);
-}
-
-.policy-table__control {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-50);
-  font-size: var(--text-body-sm);
-  color: var(--color-neutral-700);
-}
-
-.policy-table__control-label {
-  font-size: var(--text-body-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-neutral-600);
-}
-
-/* Inline variant (label beside the select) for the compact footer row. */
-.policy-table__control--inline {
-  flex-direction: row;
-  align-items: center;
-  gap: var(--space-100);
-}
-
-/* In the header, push the status filter down to sit flush with the table edge. */
-.policy-table__header .policy-table__control {
-  align-self: end;
-}
-
-.policy-table__select {
-  padding: var(--space-75) var(--space-150);
-  border: 1px solid var(--color-neutral-600);
-  border-radius: var(--border-radius-200);
-  background-color: var(--color-neutral-white);
-  color: var(--color-neutral-black);
-  font: inherit;
-  font-size: var(--text-body-sm);
-}
-
-.policy-table__select:focus-visible,
-.policy-table__page-btn:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 1px;
-}
-
-/* Borderless button inheriting th typography; width:100% fills the cell. */
-.policy-table__sort {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-75);
-  width: 100%;
-  margin: 0;
-  padding: var(--space-150) var(--space-300);
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  cursor: pointer;
-}
-
-.policy-table__col-index .policy-table__sort {
-  justify-content: flex-end;
-}
-
-.policy-table__col-status .policy-table__sort {
-  justify-content: center;
-}
-
-.policy-table__sort:focus-visible {
-  outline: 2px solid var(--color-neutral-white);
-  outline-offset: 2px;
-  border-radius: var(--border-radius-100);
-}
-
-/* Dim the indicator until a column is the active sort — present, not noisy. */
-.policy-table__sort-icon {
-  opacity: 0.55;
-}
-
-.policy-table th[aria-sort="ascending"] .policy-table__sort-icon,
-.policy-table th[aria-sort="descending"] .policy-table__sort-icon {
-  opacity: 1;
-}
-
 /* Footer row: rows-per-page on the left, pagination on the right. */
 .policy-table__footer {
   display: flex;
@@ -198,105 +100,8 @@
   margin-top: var(--space-200);
 }
 
-.policy-table__pagination {
-  display: flex;
-  align-items: center;
-  gap: var(--space-200);
-}
-
-.policy-table__page-status {
-  font-size: var(--text-body-sm);
-  color: var(--color-neutral-700);
-  font-variant-numeric: tabular-nums;
-}
-
-.policy-table__page-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--color-neutral-600);
-  border-radius: var(--border-radius-200);
-  background-color: var(--color-neutral-white);
-  color: var(--color-neutral-800);
-  cursor: pointer;
-  transition: background-color var(--transition-duration) var(--transition-easing);
-}
-
-.policy-table__page-btn:hover:not(:disabled) {
-  background-color: var(--color-neutral-100);
-}
-
-.policy-table__page-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/*
- * Loading skeleton: gray placeholder bars/circle mirroring the real cells, so the
- * table reserves its height and column widths while an upload is processed. The
- * whole subtree is aria-hidden; a visually-hidden role="status" sibling announces
- * the processing state to assistive tech.
- */
-.policy-table__skeleton-bar,
-.policy-table__skeleton-circle {
-  display: inline-block;
-  background: linear-gradient(
-      90deg,
-      var(--color-neutral-300) 0%,
-      var(--color-neutral-200) 50%,
-      var(--color-neutral-300) 100%
-    )
-    0 0 / 200% 100%;
-  animation: policy-table-shimmer 1.4s ease-in-out infinite;
-}
-
-.policy-table__skeleton-bar {
-  height: 0.75rem;
-  border-radius: var(--border-radius-200);
-}
-
-.policy-table__skeleton-bar--caption {
-  width: 14rem;
-  max-width: 100%;
-  height: 1rem;
-}
-
-.policy-table__skeleton-bar--index {
-  width: 1rem;
-}
-
-.policy-table__skeleton-bar--number {
-  width: 60%;
-  min-width: 6rem;
-}
-
-.policy-table__skeleton-circle {
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: var(--border-radius-full);
-}
-
 .policy-table__empty-row {
   padding: var(--space-400);
   text-align: center;
   color: var(--color-neutral-600);
-}
-
-@keyframes policy-table-shimmer {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
-  }
-}
-
-/* Respect reduced-motion: keep the placeholders, drop the shimmer sweep. */
-@media (prefers-reduced-motion: reduce) {
-  .policy-table__skeleton-bar,
-  .policy-table__skeleton-circle {
-    animation: none;
-  }
 }
