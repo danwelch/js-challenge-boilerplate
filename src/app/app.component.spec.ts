@@ -153,8 +153,8 @@ describe('AppComponent', () => {
     fixture.detectChanges();
 
     expect(store.policies()).toEqual([
-      { policyNumber: '457508000' },
-      { policyNumber: '123456789' },
+      { policyNumber: '457508000', valid: true },
+      { policyNumber: '123456789', valid: true },
     ]);
   });
 

@@ -1,6 +1,7 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, Injectable, inject, signal } from '@angular/core';
 import type { PolicyRecord } from '../models/policy.model';
 import type { UploadError } from '../models/upload-error.model';
+import { ChecksumValidator } from '../services/checksum-validator.service';
 
 /**
  * Single source of truth for the policy upload feature, built on Angular signals.
@@ -17,6 +18,8 @@ import type { UploadError } from '../models/upload-error.model';
  */
 @Injectable({ providedIn: 'root' })
 export class PolicyStore {
+  private readonly checksumValidator = inject(ChecksumValidator);
+
   private readonly _policies = signal<PolicyRecord[]>([]);
   private readonly _uploadError = signal<UploadError | null>(null);
   private readonly _sourceName = signal<string | null>(null);
@@ -47,7 +50,12 @@ export class PolicyStore {
 
   /** Load policies from parsed CSV tokens; clears errors and the processing flag. */
   setPolicies(tokens: string[], sourceName: string): void {
-    this._policies.set(tokens.map((policyNumber) => ({ policyNumber })));
+    this._policies.set(
+      tokens.map((policyNumber) => ({
+        policyNumber,
+        valid: this.checksumValidator.isValid(policyNumber),
+      })),
+    );
     this._sourceName.set(sourceName);
     this._uploadError.set(null);
     this._processing.set(false);

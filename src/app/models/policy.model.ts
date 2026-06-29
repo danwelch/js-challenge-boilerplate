@@ -8,4 +8,12 @@
  */
 export interface PolicyRecord {
   policyNumber: string;
+
+  /**
+   * Whether `policyNumber` passes the mod-11 checksum (US2). Computed once when
+   * the record enters the store via `ChecksumValidator`; the table renders it as
+   * a per-row status. A `boolean` suffices for US2's valid/invalid split — US4
+   * can widen this to a status union (`valid` / `corrected` / `AMB` / `error`).
+   */
+  valid: boolean;
 }

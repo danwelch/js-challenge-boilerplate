@@ -17,6 +17,23 @@ test.describe('Policy CSV upload', () => {
     await expect(page.locator('tbody tr')).toHaveCount(5);
   });
 
+  test('shows a visible keyboard focus ring on the upload control (WCAG 2.4.7)', async ({
+    page,
+  }) => {
+    // The file input is visually hidden, so focus lands on it but the *visible*
+    // label must show the ring. :focus-visible only fires for keyboard, and the
+    // outline transitions in — so drive it with a real Tab and let toHaveCSS
+    // retry until the transition settles. This is real-browser-only behaviour,
+    // hence e2e rather than a unit test.
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#policy-file')).toBeFocused();
+    // Ring mirrors the button's background; the key point is it's not transparent.
+    await expect(page.locator('.upload__button')).not.toHaveCSS(
+      'outline-color',
+      'rgba(0, 0, 0, 0)',
+    );
+  });
+
   test('loads all policy numbers from a valid CSV', async ({ page }) => {
     await page
       .locator('#policy-file')
@@ -29,6 +46,14 @@ test.describe('Policy CSV upload', () => {
     const numbers = page.locator('.policy-table__number');
     await expect(numbers.first()).toHaveText('457500000');
     await expect(numbers.last()).toHaveText('123456789');
+
+    // mod-11 checksum (US2): of the 10 sample numbers, only 457508000 and
+    // 123456789 pass — the caption summary and per-row status reflect that.
+    await expect(page.locator('caption')).toContainText('2 valid, 8 errors');
+    const statuses = page.locator('td.policy-table__col-status');
+    await expect(statuses.nth(0)).toContainText('Error'); // 457500000
+    await expect(statuses.nth(3)).toContainText('Valid'); // 457508000
+    await expect(statuses.nth(9)).toContainText('Valid'); // 123456789
   });
 
   test('locks the form inert while an upload is processing', async ({

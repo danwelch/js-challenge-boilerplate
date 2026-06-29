@@ -8,6 +8,7 @@ import {
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PolicyTableComponent } from './components/policy-table/policy-table.component';
+import { ChecksumValidator } from './services/checksum-validator.service';
 import { CsvParserService } from './services/csv-parser.service';
 import { PolicyStore } from './store/policy-store.service';
 
@@ -42,12 +43,14 @@ export const DEMO_DELAY_MS = new InjectionToken<number>('DEMO_DELAY_MS', {
 export class AppComponent {
   protected readonly store = inject(PolicyStore);
   private readonly csvParser = inject(CsvParserService);
+  private readonly checksumValidator = inject(ChecksumValidator);
   private readonly demoDelayMs = inject(DEMO_DELAY_MS);
 
   /**
    * Placeholder rows shown — blurred and aria-hidden — behind the empty-state
    * prompt so the panel previews what a loaded result looks like. Five rows is
-   * enough to read as a table without dominating the panel.
+   * enough to read as a table without dominating the panel. The validity flag is
+   * computed for real (not hard-coded) so the previewed status column is honest.
    */
   protected readonly placeholderPolicies = [
     '457500000',
@@ -55,7 +58,10 @@ export class AppComponent {
     '333333333',
     '457508000',
     '861100036',
-  ].map((policyNumber) => ({ policyNumber }));
+  ].map((policyNumber) => ({
+    policyNumber,
+    valid: this.checksumValidator.isValid(policyNumber),
+  }));
 
   /** Reads a validated CSV file (browser I/O), then hands the text off to be parsed. */
   async onFileSelected(file: File): Promise<void> {
