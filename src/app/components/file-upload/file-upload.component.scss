@@ -30,7 +30,7 @@
 }
 
 .upload__spinner {
-  animation: upload-spin 0.9s linear infinite;
+  animation: upload-spin var(--duration-spin) linear infinite;
   /* Hint the browser this property changes often so it can compositor-only update. */
   will-change: transform;
 }
