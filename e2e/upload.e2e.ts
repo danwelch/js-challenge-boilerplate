@@ -17,6 +17,23 @@ test.describe('Policy CSV upload', () => {
     await expect(page.locator('tbody tr')).toHaveCount(5);
   });
 
+  test('shows a visible keyboard focus ring on the upload control (WCAG 2.4.7)', async ({
+    page,
+  }) => {
+    // The file input is visually hidden, so focus lands on it but the *visible*
+    // label must show the ring. :focus-visible only fires for keyboard, and the
+    // outline transitions in — so drive it with a real Tab and let toHaveCSS
+    // retry until the transition settles. This is real-browser-only behaviour,
+    // hence e2e rather than a unit test.
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#policy-file')).toBeFocused();
+    // Ring mirrors the button's background; the key point is it's not transparent.
+    await expect(page.locator('.upload__button')).not.toHaveCSS(
+      'outline-color',
+      'rgba(0, 0, 0, 0)',
+    );
+  });
+
   test('loads all policy numbers from a valid CSV', async ({ page }) => {
     await page
       .locator('#policy-file')

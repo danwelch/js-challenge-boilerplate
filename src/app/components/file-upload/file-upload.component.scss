@@ -103,7 +103,8 @@
 /*
  * Visually hide the native input but keep it focusable and in the tab order
  * (no display:none / visibility:hidden). The <label appButton> is the visible
- * control; its focus ring is driven by :focus-within below.
+ * control; since focus lands on the clipped input (not the label), the label's
+ * ring is mirrored from the input's :focus-visible via :has() below.
  */
 .upload__input {
   position: absolute;
@@ -115,6 +116,17 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+/*
+ * Keyboard focus visibility (WCAG 2.4.7): when the clipped input is focused via
+ * keyboard, light up the visible label's ring by flipping the same custom
+ * property appButton toggles on its own :focus-visible — so the label shows the
+ * identical outline. :has() (not :focus-within) so the ring tracks the input
+ * specifically, not the sibling Reset button.
+ */
+.upload:has(.upload__input:focus-visible) .upload__button {
+  --_outline-color: var(--_bg-color);
 }
 
 .upload__hint {
