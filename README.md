@@ -221,6 +221,11 @@ behaviour rather than just displaying it.
 - **Unit vs e2e split.** `File.text()` is a browser API that jsdom doesn't implement, so the
   parse/load logic is unit‑tested via a text‑in method and the real file‑read path is covered
   by Playwright in a real browser.
+- **CI skips `playwright install-deps`.** The `ubuntu-22.04` runner image already ships
+  Chromium's shared libraries, so the e2e job drops the ~18s system‑deps step and relies on the
+  image. Trade‑off: this couples CI to what GitHub bakes into the runner — adding Firefox/WebKit
+  or an image slim‑down could break a browser launch, fixed by re‑adding `install-deps chromium`
+  (the failure is loud and immediate, not silent).
 - **`ButtonDirective` (`appButton`) over a `<app-button>` component.** A directive is
   Angular's idiomatic equivalent of React's `as` prop: the consumer applies it to the correct
   semantic element (`<button>`, `<a href>`, or — for the upload — `<label for>`) and gets
