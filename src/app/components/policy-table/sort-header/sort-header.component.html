@@ -1,0 +1,10 @@
+<button type="button" class="sort-header__btn" (click)="toggle.emit()">
+  <ng-content />
+  <lucide-icon
+    class="sort-header__icon"
+    [class.sort-header__icon--active]="direction() !== 'none'"
+    [img]="icon()"
+    [size]="14"
+    aria-hidden="true"
+  />
+</button>

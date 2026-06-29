@@ -1,0 +1,8 @@
+<span
+  class="policy-status"
+  [class.policy-status--valid]="valid()"
+  aria-hidden="true"
+>
+  <lucide-icon [img]="valid() ? checkIcon : xIcon" [size]="12" [strokeWidth]="4" />
+</span>
+<span class="sr-only">{{ valid() ? 'Valid' : 'Error' }}</span>
