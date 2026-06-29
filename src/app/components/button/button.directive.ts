@@ -1,6 +1,6 @@
 import { Directive, input } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /**
@@ -34,6 +34,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   host: {
     '[attr.data-variant]': 'variant()',
     '[attr.data-size]': 'size()',
+    '[attr.data-icon]': 'icon() || null',
   },
 })
 export class ButtonDirective {
@@ -42,4 +43,7 @@ export class ButtonDirective {
 
   /** Padding/typography scale. */
   readonly size = input<ButtonSize>('md');
+
+  /** Icon-only button: applies square padding so the button is ~2rem. */
+  readonly icon = input<boolean>(false);
 }

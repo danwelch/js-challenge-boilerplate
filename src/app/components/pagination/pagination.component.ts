@@ -1,11 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { ChevronLeft, ChevronRight, LucideAngularModule } from 'lucide-angular';
+import { ButtonDirective } from '../button/button.directive';
 
+/**
+ * Previous/next page controls. Emits `previous` / `next` and disables the
+ * appropriate button at the boundary pages. Delegates button styling to
+ * `appButton` (outline variant) so focus/disabled states stay consistent with
+ * the rest of the design system.
+ */
 @Component({
   selector: 'app-pagination',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule],
+  imports: [LucideAngularModule, ButtonDirective],
   templateUrl: './pagination.component.html',
   styleUrl: './pagination.component.scss',
 })
