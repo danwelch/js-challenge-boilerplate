@@ -1,5 +1,6 @@
 import { computed, Injectable, inject, signal } from '@angular/core';
 import type { PolicyRecord } from '../models/policy.model';
+import type { SubmitResult } from '../models/submit-result.model';
 import type { UploadError } from '../models/upload-error.model';
 import { ChecksumValidator } from '../services/checksum-validator.service';
 
@@ -24,6 +25,8 @@ export class PolicyStore {
   private readonly _uploadError = signal<UploadError | null>(null);
   private readonly _sourceName = signal<string | null>(null);
   private readonly _processing = signal(false);
+  private readonly _submitting = signal(false);
+  private readonly _submitResult = signal<SubmitResult | null>(null);
 
   /** Policy records loaded from the most recent successful upload. */
   readonly policies = this._policies.asReadonly();
@@ -36,9 +39,14 @@ export class PolicyStore {
 
   /**
    * Whether an upload is currently being processed (file is being read/parsed).
-   * Story 3 can extend this hook for API submission without changing consumers.
    */
   readonly processing = this._processing.asReadonly();
+
+  /** Whether a submission is currently in flight. */
+  readonly submitting = this._submitting.asReadonly();
+
+  /** Result of the most recent submission attempt, or `null`. */
+  readonly submitResult = this._submitResult.asReadonly();
 
   /** Whether there are any policies currently loaded. */
   readonly hasPolicies = computed(() => this._policies().length > 0);
@@ -59,6 +67,8 @@ export class PolicyStore {
     this._sourceName.set(sourceName);
     this._uploadError.set(null);
     this._processing.set(false);
+    this._submitting.set(false);
+    this._submitResult.set(null);
   }
 
   /** Record an upload error; clears any loaded policies and the processing flag. */
@@ -67,6 +77,8 @@ export class PolicyStore {
     this._policies.set([]);
     this._sourceName.set(null);
     this._processing.set(false);
+    this._submitting.set(false);
+    this._submitResult.set(null);
   }
 
   /** Reset the store to its initial empty state. */
@@ -75,5 +87,19 @@ export class PolicyStore {
     this._uploadError.set(null);
     this._sourceName.set(null);
     this._processing.set(false);
+    this._submitting.set(false);
+    this._submitResult.set(null);
+  }
+
+  /** Flag the start of an API submission so the UI can show its loading state. */
+  beginSubmit(): void {
+    this._submitting.set(true);
+    this._submitResult.set(null);
+  }
+
+  /** Store the result of a submission attempt and clear the submitting flag. */
+  setSubmitResult(result: SubmitResult): void {
+    this._submitResult.set(result);
+    this._submitting.set(false);
   }
 }
