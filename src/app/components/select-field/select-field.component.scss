@@ -36,6 +36,6 @@
 }
 
 .select-field__select:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 1px;
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }

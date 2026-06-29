@@ -10,8 +10,8 @@
   justify-content: center;
   width: 1.25rem;
   height: 1.25rem;
-  border-radius: 50%;
-  background-color: var(--color-warning);
+  border-radius: var(--border-radius-full);
+  background-color: var(--color-danger);
   color: var(--color-neutral-white);
   vertical-align: middle;
 }
