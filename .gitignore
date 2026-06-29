@@ -40,6 +40,8 @@ testem.log
 
 # Claude local tooling
 /.claude
+/.agents/skills/
+skills-lock.json
 
 # System files
 .DS_Store

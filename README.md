@@ -10,7 +10,7 @@ Built on the provided Angular 21 boilerplate. The work is delivered story by sto
 | ---------- | ----- | ------ |
 | **US1** | Upload a CSV (validated: CSV type, ≤ 2 MB) and list the policy numbers in a table | ✅ Done |
 | **US2** | Validate each number via a mod‑11 checksum and show valid/invalid status | ✅ Done |
-| **US3** | POST the processed array to a mock API and report success/failure with the returned id | ⏳ Planned |
+| **US3** | POST the processed array to a mock API and report success/failure with the returned id | ✅ Done |
 | **US4** | Auto‑correct mis‑scanned digits (`valid` / `corrected` / `AMB` / `error`) | 📝 Outline only — to be paired on |
 
 ---
@@ -218,6 +218,14 @@ behaviour rather than just displaying it.
 - **Signals over RxJS** for state. The state here is local and synchronous; signals keep the
   store terse and the components free of subscriptions. RxJS would shine if we introduced
   streams/async orchestration (US3's HTTP call is a single request, handled simply).
+- **US3 submission goes through a thin `PolicyApiService` to a mock endpoint.** The POST target
+  (`jsonplaceholder.typicode.com/posts`) is injected via a `POLICY_API_URL` token so it's
+  swappable and the service is testable with `HttpTestingController` — no real network in tests.
+  The store gained a `submitting` / `submitResult` slice (cleared on any new upload or error) and
+  `AppComponent` stays a thin orchestrator: begin → POST → report success (with the returned id)
+  or an error alert. *Future improvement:* the mock always succeeds, so ret/timeout/retry and
+  partial-failure semantics are stubbed; a real endpoint would want request cancellation and a
+  typed error contract rather than a generic catch.
 - **Vitest over Karma/Jasmine.** Karma is deprecated by the Angular team; Angular 21 ships a
   built‑in Vitest runner (`@angular/build:unit-test`). Vitest is faster and ESM‑native. The
   existing Jasmine‑style specs run unchanged thanks to Vitest's compatible matchers.

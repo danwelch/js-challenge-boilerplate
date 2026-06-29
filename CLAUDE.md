@@ -10,7 +10,8 @@ it, and lists the numbers in a table. Delivered story by story:
 
 - **US1 — done:** upload a validated CSV (CSV type, ≤ 2 MB) and list the policy numbers.
 - **US2 — done:** mod‑11 checksum validation (`ChecksumValidator`), valid/invalid status per row.
-- **US3 — planned:** POST the processed array to a mock API, report success/failure.
+- **US3 — done:** POST the processed array to a mock API (`PolicyApiService`, injectable
+  `POLICY_API_URL`), report success (with returned id) or failure via the store's `submit` slice.
 - **US4 — outline only:** auto‑correct mis‑scanned digits.
 
 ## Architecture
