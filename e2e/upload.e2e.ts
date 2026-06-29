@@ -13,8 +13,8 @@ test.describe('Policy CSV upload', () => {
   test('shows the empty state before any upload', async ({ page }) => {
     await expect(page.locator('.results-empty')).toBeVisible();
     await expect(page.getByText('No policy numbers yet')).toBeVisible();
-    // The blurred placeholder renders 5 rows aria-hidden behind the prompt card.
-    await expect(page.locator('tbody tr')).toHaveCount(5);
+    // No table (real or placeholder) is rendered in the idle state.
+    await expect(page.locator('app-policy-table')).toHaveCount(0);
   });
 
   test('shows a visible keyboard focus ring on the upload control (WCAG 2.4.7)', async ({
@@ -69,10 +69,34 @@ test.describe('Policy CSV upload', () => {
     // wrapper is `inert` — keyboard and assistive tech can't reopen the picker.
     await expect(page.getByText('Processing…')).toBeVisible();
     await expect(page.locator('.upload')).toHaveAttribute('inert', '');
+    // The Results panel shows the loading skeleton (not the empty state) meanwhile.
+    await expect(page.locator('.policy-table__skeleton-bar').first()).toBeVisible();
 
     // Once processing completes the form is interactive again (inert removed).
     await expect(page.locator('caption')).toContainText('(10)');
     await expect(page.locator('.upload')).not.toHaveAttribute('inert', '');
+  });
+
+  test('sorts and filters the loaded table', async ({ page }) => {
+    await page
+      .locator('#policy-file')
+      .setInputFiles(join(fixtures, 'sample.csv'));
+    await expect(page.locator('caption')).toContainText('(10)');
+
+    // Sort by policy number ascending — the smallest number floats to the top.
+    await page.getByRole('button', { name: /Policy number/ }).click();
+    await expect(page.locator('.policy-table__number').first()).toHaveText(
+      '123456789',
+    );
+
+    // Filter to valid only — 2 of the 10 sample numbers pass the checksum, while
+    // the caption keeps the full totals.
+    await page.locator('.policy-table__select').first().selectOption('valid');
+    await expect(page.locator('tbody tr')).toHaveCount(2);
+    await expect(page.locator('caption')).toContainText('2 valid, 8 errors');
+    await expect(page.locator('.policy-table__page-status')).toContainText(
+      'Page 1 of 1',
+    );
   });
 
   test('rejects a non-CSV file with an accessible error', async ({ page }) => {

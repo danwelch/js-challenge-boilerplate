@@ -19,21 +19,19 @@
   </app-panel>
 
   <app-panel data-variant="results" title="Results">
-    @if (store.hasPolicies()) {
-      <app-policy-table [policies]="store.policies()" />
+    @if (store.processing() || store.hasPolicies()) {
+      <app-policy-table [policies]="store.policies()" [loading]="store.processing()" />
     } @else {
       <div class="results-empty">
-        <div class="results-empty__preview" aria-hidden="true">
-          <app-policy-table [policies]="placeholderPolicies" />
-        </div>
-        <div class="results-empty__overlay">
-          <div class="results-empty__card">
-            <p class="results-empty__title">No policy numbers yet</p>
-            <p class="results-empty__hint">
-              Upload a CSV to get started.
-            </p>
-          </div>
-        </div>
+        <lucide-icon
+          class="results-empty__icon"
+          [img]="emptyIcon"
+          [size]="40"
+          [strokeWidth]="1.5"
+          aria-hidden="true"
+        />
+        <p class="results-empty__title">No policy numbers yet</p>
+        <p class="results-empty__hint">Upload a CSV to get started.</p>
       </div>
     }
   </app-panel>

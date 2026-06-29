@@ -1,7 +1,7 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
-import { AppComponent, DEMO_DELAY_MS } from './app.component';
+import { AppComponent, MIN_PROCESSING_MS } from './app.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { PolicyStore } from './store/policy-store.service';
 
@@ -10,14 +10,14 @@ describe('AppComponent', () => {
   let component: AppComponent;
   let store: PolicyStore;
 
-  /** Build the fixture with an overridable demo delay (0 by default → no wait). */
-  function setup(delayMs = 0): void {
-    // Allow a test to rebuild the fixture with a different delay after the
+  /** Build the fixture with an overridable processing floor (0 by default → no wait). */
+  function setup(minMs = 0): void {
+    // Allow a test to rebuild the fixture with a different floor after the
     // outer beforeEach has already configured one.
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [{ provide: DEMO_DELAY_MS, useValue: delayMs }],
+      providers: [{ provide: MIN_PROCESSING_MS, useValue: minMs }],
     });
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
@@ -36,18 +36,29 @@ describe('AppComponent', () => {
     expect(el.querySelector('h1')?.textContent).toContain('OCR');
   });
 
-  it('shows the empty state with a blurred preview table before any upload', () => {
+  it('shows an honest empty state (no preview table) before any upload', () => {
     const el = fixture.nativeElement as HTMLElement;
     const empty = el.querySelector('.results-empty');
     expect(empty).not.toBeNull();
-    // The prompt is the user-facing message.
     expect(
       empty?.querySelector('.results-empty__title')?.textContent,
     ).toContain('No policy numbers yet');
-    // The placeholder table exists, but is hidden from assistive tech.
-    const preview = empty?.querySelector('.results-empty__preview');
-    expect(preview?.getAttribute('aria-hidden')).toBe('true');
-    expect(preview?.querySelector('app-policy-table')).not.toBeNull();
+    // No fake/blurred table behind the prompt — the table only renders for real
+    // data or the processing skeleton.
+    expect(el.querySelector('app-policy-table')).toBeNull();
+  });
+
+  it('renders the table with its loading skeleton while processing', () => {
+    store.beginProcessing();
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-policy-table')).not.toBeNull();
+    expect(el.querySelector('.results-empty')).toBeNull();
+    // Skeleton, not the real controls/rows.
+    expect(el.querySelectorAll('.policy-table__skeleton-bar').length).toBeGreaterThan(0);
+    expect(el.querySelectorAll('.policy-table__select')).toHaveLength(0);
+    expect(el.querySelector('[role="status"]')?.textContent).toContain('Processing');
   });
 
   it('renders the table once policies are loaded', () => {
@@ -70,7 +81,7 @@ describe('AppComponent', () => {
     expect(el.querySelector('.upload__dropzone')).toBeNull();
   });
 
-  it('flips processing on, waits for the demo delay, then loads the file', async () => {
+  it('flips processing on, holds for the minimum processing time, then loads the file', async () => {
     setup(1000);
     vi.useFakeTimers();
 
@@ -90,7 +101,7 @@ describe('AppComponent', () => {
       expect(store.processing()).toBe(true);
       expect(store.hasPolicies()).toBe(false);
 
-      // Fast-forward past the demo delay and let the resulting microtasks settle.
+      // Fast-forward past the floor and let the resulting microtasks settle.
       await vi.advanceTimersByTimeAsync(1000);
       await pending;
 
@@ -102,8 +113,8 @@ describe('AppComponent', () => {
     }
   });
 
-  it('skips the delay entirely when configured to zero (prod mode)', async () => {
-    // The default setup() already provides DEMO_DELAY_MS = 0.
+  it('skips the wait entirely when the floor is zero', async () => {
+    // The default setup() already provides MIN_PROCESSING_MS = 0.
     const file = new File(['457508000'], 'sample.csv', { type: 'text/csv' });
     Object.defineProperty(file, 'text', {
       value: () => Promise.resolve('457508000'),
