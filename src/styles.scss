@@ -104,15 +104,6 @@
   --border-radius-300: 8px;
   --border-radius-400: 16px;
   --border-radius-full: 50%;
-  --focus-ring-width: 2px;
-  --focus-ring-offset: 1px;
-  --focus-ring-color: var(--color-secondary);
-
-  --opacity-disabled: 0.4;
-
-  --duration-slow: 1.4s;
-  --duration-spin: 0.9s;
-
   --transition-duration: 0.2s;
   --transition-easing: ease-in-out;
   --x-small: 20rem;
@@ -137,6 +128,18 @@
   --space-1000: calc(var(--space-base) * 12);
   --space-1100: calc(var(--space-base) * 14);
   --space-1150: calc(var(--space-base) * 15);
+
+  /* New tokens for this repo (not from the Kin site) — added to support the
+     OCR app's components: keyboard focus rings, disabled controls, and the
+     processing skeleton / spinner animations. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 1px;
+  --focus-ring-color: var(--color-secondary);
+
+  --opacity-disabled: 0.4;
+
+  --duration-slow: 1.4s;
+  --duration-spin: 0.9s;
 }
 
 /* Minimal global base — the palette file ships no reset/typography of its own. */
