@@ -22,6 +22,24 @@
   <app-panel data-variant="results" title="Results">
     @if (store.processing() || store.hasPolicies()) {
       <app-policy-table [policies]="store.policies()" [loading]="store.processing()" />
+      @if (store.hasPolicies()) {
+        <div class="submit">
+          <button appButton variant="primary" (click)="onSubmit()" [disabled]="store.submitting()">
+            @if (store.submitting()) {
+              <lucide-icon [img]="spinnerIcon" class="submit__spinner" aria-hidden="true" />
+              Submitting…
+            } @else {
+              Submit policy numbers
+            }
+          </button>
+          @if (store.submitResult(); as r) {
+            <app-alert [variant]="r.status">
+              {{ r.message }}
+              @if (r.status === 'success') { <strong>#{{ r.id }}</strong> }
+            </app-alert>
+          }
+        </div>
+      }
     } @else {
       <div class="results-empty">
         <lucide-icon
