@@ -5,6 +5,12 @@ export interface SelectOption {
   label: string;
 }
 
+/**
+ * Accessible labelled select. Renders a `<label>` + `<select>` pair with an
+ * uppercase micro-label. Supports stacked (default) or side-by-side `inline`
+ * layout. Emits `valueChange` on user selection; the consumer controls the
+ * selected value via the `value` input.
+ */
 @Component({
   selector: 'app-select-field',
   standalone: true,

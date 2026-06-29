@@ -111,6 +111,21 @@ its structure and benefits from encapsulated styles (`AlertComponent`). Select v
 reflected `data-*` attribute (`host: { '[attr.data-variant]': 'variant()' }`) so the stylesheet
 targets `[data-variant=…]` and it works for bound usage and defaults, not just static strings.
 
+### Component API conventions
+
+- **Value-carrying outputs** use the `…Change` suffix (`valueChange`) — mirrors Angular's
+  two-way binding convention.
+- **Action/event outputs** use a verb or past-tense noun (`previous`, `next`, `toggle`,
+  `fileSelected`, `validationError`, `reset`). Don't rename a working name just for consistency;
+  only rename when the name is genuinely unclear.
+- **Icons:** standalone icons pass a literal `[size]` (12 / 14 / 16 / 40 px). Icons inside
+  `appButton` are sized from `font-size` via the button stylesheet — do not set `[size]` on them.
+  Standalone sizes are intentional; document them here rather than abstracting to tokens.
+- **Uppercase micro-labels** (alert label, select-field label, table header text):
+  `font-weight: 700`, `letter-spacing: 0.05em`, `font-size: var(--text-body-xs)`,
+  `text-transform: uppercase`. This is the canonical form — apply it consistently; do not
+  introduce a partial just to share four lines.
+
 ## Testing
 
 - Unit specs are `*.spec.ts` (Vitest, jsdom); e2e specs are `*.e2e.ts` (Playwright, real Chromium).

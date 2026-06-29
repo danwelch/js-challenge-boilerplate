@@ -69,4 +69,10 @@ describe('SelectFieldComponent', () => {
     render('Rows', '10');
     expect((fixture.nativeElement as HTMLElement).classList).not.toContain('select-field--inline');
   });
+
+  it('renders label above the select in stacked (inline=false) layout', () => {
+    const el = render('Status', 'all');
+    const inner = el.querySelector('.select-field') as HTMLElement;
+    expect(getComputedStyle(inner).flexDirection).toBe('column');
+  });
 });
