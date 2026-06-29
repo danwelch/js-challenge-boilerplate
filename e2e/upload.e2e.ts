@@ -70,7 +70,7 @@ test.describe('Policy CSV upload', () => {
     await expect(page.getByText('Processing…')).toBeVisible();
     await expect(page.locator('.upload')).toHaveAttribute('inert', '');
     // The Results panel shows the loading skeleton (not the empty state) meanwhile.
-    await expect(page.locator('.table-skeleton__bar').first()).toBeVisible();
+    await expect(page.locator('.policy-table-skeleton__bar').first()).toBeVisible();
 
     // Once processing completes the form is interactive again (inert removed).
     await expect(page.locator('caption')).toContainText('(10)');

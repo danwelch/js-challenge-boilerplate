@@ -30,6 +30,6 @@ describe('PolicyTableSkeletonComponent', () => {
   it('renders the title shimmer bar', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.table-skeleton__bar--title')).not.toBeNull();
+    expect(el.querySelector('.policy-table-skeleton__bar--title')).not.toBeNull();
   });
 });

@@ -56,7 +56,7 @@ describe('AppComponent', () => {
     expect(el.querySelector('app-policy-table')).not.toBeNull();
     expect(el.querySelector('.results-empty')).toBeNull();
     // Skeleton, not the real controls/rows.
-    expect(el.querySelectorAll('.table-skeleton__bar').length).toBeGreaterThan(0);
+    expect(el.querySelectorAll('.policy-table-skeleton__bar').length).toBeGreaterThan(0);
     expect(el.querySelectorAll('app-select-field')).toHaveLength(0);
     expect(el.querySelector('[role="status"]')?.textContent).toContain('Processing');
   });

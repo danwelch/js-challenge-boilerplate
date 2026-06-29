@@ -86,7 +86,7 @@ describe('PolicyTableComponent', () => {
     const skeleton = el.querySelector('app-policy-table-skeleton');
     expect(skeleton).not.toBeNull();
     expect(skeleton?.getAttribute('aria-hidden')).toBe('true');
-    expect(el.querySelectorAll('.table-skeleton__bar').length).toBeGreaterThan(0);
+    expect(el.querySelectorAll('.policy-table-skeleton__bar').length).toBeGreaterThan(0);
     expect(el.querySelectorAll('tbody tr')).toHaveLength(10);
     // Controls are suppressed while loading.
     expect(el.querySelectorAll('app-select-field')).toHaveLength(0);

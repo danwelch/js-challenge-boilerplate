@@ -3,7 +3,7 @@
 }
 
 /* Mirrors the loaded table's header: title+subtitle on the left, filter on the right. */
-.table-skeleton__header {
+.policy-table-skeleton__header {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -12,13 +12,13 @@
   margin-bottom: var(--space-200);
 }
 
-.table-skeleton__heading {
+.policy-table-skeleton__heading {
   display: flex;
   flex-direction: column;
   gap: var(--space-50);
 }
 
-.table-skeleton__scroll {
+.policy-table-skeleton__scroll {
   width: 100%;
   overflow-x: auto;
 }
@@ -28,23 +28,23 @@
  * scopes CSS to its own template, so the skeleton must restate the column widths
  * and header colour to mirror the real table's layout while loading.
  */
-.table-skeleton__table {
+.policy-table-skeleton__table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.table-skeleton__table th,
-.table-skeleton__table td {
+.policy-table-skeleton__table th,
+.policy-table-skeleton__table td {
   padding: var(--space-150) var(--space-300);
   border-bottom: 1px solid var(--color-neutral-300);
   white-space: nowrap;
 }
 
-.table-skeleton__table thead th {
+.policy-table-skeleton__table thead th {
   padding: var(--space-150) var(--space-300);
   font-size: var(--text-body-sm);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--color-neutral-white);
   background-color: var(--color-secondary);
 }
@@ -52,23 +52,23 @@
 /* width: 1px + nowrap collapses each column to its max-content, letting the
    header text (not the tiny body bars) drive the column width — same trick as
    the real table, which uses sort-button content instead. */
-.table-skeleton__col-index {
+.policy-table-skeleton__col-index {
   width: 1px;
   text-align: right;
 }
 
 /* Override the browser's default th centering for the middle column. */
-.table-skeleton__table thead th:not(.table-skeleton__col-index):not(.table-skeleton__col-status) {
+.policy-table-skeleton__table thead th:not(.policy-table-skeleton__col-index):not(.policy-table-skeleton__col-status) {
   text-align: left;
 }
 
-.table-skeleton__col-status {
+.policy-table-skeleton__col-status {
   width: 1px;
   text-align: center;
 }
 
 /* Mirrors the loaded table footer layout. */
-.table-skeleton__footer {
+.policy-table-skeleton__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -77,8 +77,8 @@
 }
 
 /* Animated shimmer bars replacing text content. */
-.table-skeleton__bar,
-.table-skeleton__circle {
+.policy-table-skeleton__bar,
+.policy-table-skeleton__circle {
   display: inline-block;
   background: linear-gradient(
       90deg,
@@ -87,26 +87,26 @@
       var(--color-neutral-300) 100%
     )
     0 0 / 200% 100%;
-  animation: table-skeleton-shimmer 1.4s ease-in-out infinite;
+  animation: policy-table-skeleton-shimmer var(--duration-slow) ease-in-out infinite;
 }
 
-.table-skeleton__bar {
+.policy-table-skeleton__bar {
   height: 0.75rem;
   border-radius: var(--border-radius-200);
 }
 
 /* Header bars */
-.table-skeleton__bar--title {
+.policy-table-skeleton__bar--title {
   width: 14rem;
   max-width: 100%;
   height: 1rem;
 }
 
-.table-skeleton__bar--subtitle {
+.policy-table-skeleton__bar--subtitle {
   width: 8rem;
 }
 
-.table-skeleton__bar--filter {
+.policy-table-skeleton__bar--filter {
   width: 7rem;
   height: 2rem;
   border-radius: var(--border-radius-200);
@@ -114,35 +114,35 @@
 }
 
 /* Body bars */
-.table-skeleton__bar--index {
+.policy-table-skeleton__bar--index {
   width: 1rem;
 }
 
-.table-skeleton__bar--number {
+.policy-table-skeleton__bar--number {
   width: 60%;
   min-width: 6rem;
 }
 
 /* Footer bars */
-.table-skeleton__bar--pagesize {
+.policy-table-skeleton__bar--pagesize {
   width: 9rem;
   height: 2rem;
   border-radius: var(--border-radius-200);
 }
 
-.table-skeleton__bar--pagination {
+.policy-table-skeleton__bar--pagination {
   width: 10rem;
   height: 2rem;
   border-radius: var(--border-radius-200);
 }
 
-.table-skeleton__circle {
+.policy-table-skeleton__circle {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: var(--border-radius-full);
 }
 
-@keyframes table-skeleton-shimmer {
+@keyframes policy-table-skeleton-shimmer {
   from {
     background-position: 200% 0;
   }
@@ -152,8 +152,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .table-skeleton__bar,
-  .table-skeleton__circle {
+  .policy-table-skeleton__bar,
+  .policy-table-skeleton__circle {
     animation: none;
   }
 }
