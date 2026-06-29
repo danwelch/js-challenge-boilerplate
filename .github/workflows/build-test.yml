@@ -59,7 +59,5 @@ jobs:
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium
-      - name: Install Playwright system deps
-        run: npx playwright install-deps chromium
       - name: E2E tests
         run: npm run e2e
