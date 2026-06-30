@@ -54,6 +54,7 @@ export class PolicyStore {
   /** Flag the start of an upload so the UI can show its processing state. */
   beginProcessing(): void {
     this._processing.set(true);
+    this.clearSubmit();
   }
 
   /** Load policies from parsed CSV tokens; clears errors and the processing flag. */
@@ -67,8 +68,7 @@ export class PolicyStore {
     this._sourceName.set(sourceName);
     this._uploadError.set(null);
     this._processing.set(false);
-    this._submitting.set(false);
-    this._submitResult.set(null);
+    this.clearSubmit();
   }
 
   /** Record an upload error; clears any loaded policies and the processing flag. */
@@ -77,8 +77,7 @@ export class PolicyStore {
     this._policies.set([]);
     this._sourceName.set(null);
     this._processing.set(false);
-    this._submitting.set(false);
-    this._submitResult.set(null);
+    this.clearSubmit();
   }
 
   /** Reset the store to its initial empty state. */
@@ -87,6 +86,14 @@ export class PolicyStore {
     this._uploadError.set(null);
     this._sourceName.set(null);
     this._processing.set(false);
+    this.clearSubmit();
+  }
+
+  /**
+   * Clear all submission state — shared teardown so a new upload, error, or reset
+   * can't leave a stale submit result (or spinner) behind.
+   */
+  private clearSubmit(): void {
     this._submitting.set(false);
     this._submitResult.set(null);
   }

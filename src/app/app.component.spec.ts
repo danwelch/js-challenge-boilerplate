@@ -222,6 +222,24 @@ describe('AppComponent', () => {
       expect(store.submitting()).toBe(false);
     });
 
+    it('discards a stale success when a new upload lands while the POST is in flight', async () => {
+      store.setPolicies(['457508000', '123456789'], 'first.csv');
+
+      const pending = component.onSubmit();
+      const req = httpMock.expectOne(TEST_API_URL);
+
+      // A concurrent upload replaces the policies before the POST resolves.
+      store.setPolicies(['457500000'], 'second.csv');
+
+      req.flush({ id: 999 });
+      await pending;
+
+      // The in-flight result is stale: it must not revive a success alert over the
+      // freshly-uploaded file. beginSubmit/setPolicies already cleared the slice.
+      expect(store.submitResult()).toBeNull();
+      expect(store.sourceName()).toBe('second.csv');
+    });
+
     it('issues no second HTTP request when called again while submitting', async () => {
       store.setPolicies(['457508000'], 'policies.csv');
 

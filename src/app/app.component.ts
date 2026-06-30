@@ -88,12 +88,8 @@ export class AppComponent {
       return;
     }
 
-    // Hold the loading skeleton for at least the floor so it never flickers. Using
-    // the *remaining* time (not a fixed sleep) means a genuinely slow read isn't padded.
-    const remaining = this.minProcessingMs - (performance.now() - startedAt);
-    if (remaining > 0) {
-      await new Promise((resolve) => setTimeout(resolve, remaining));
-    }
+    // Hold the loading skeleton for at least the floor so it never flickers.
+    await this.holdFloor(startedAt);
 
     this.loadFromText(text, file.name);
   }
@@ -102,18 +98,36 @@ export class AppComponent {
   async onSubmit(): Promise<void> {
     if (this.store.submitting()) return;
     this.store.beginSubmit();
+    const policies = this.store.policies();
+    const startedAt = performance.now();
 
     let result: SubmitResult;
     try {
-      const { id } = await this.policyApi.submit(this.store.policies());
-      const count = this.store.policies().length;
+      const { id } = await this.policyApi.submit(policies);
+      const count = policies.length;
       result = { status: 'success', message: `Submitted ${count} policy number${count === 1 ? '' : 's'}.`, id };
     } catch (error) {
       console.error('Policy submission failed', error);
       result = { status: 'error', message: 'Submission failed. Please try again.' };
     }
 
+    await this.holdFloor(startedAt);
+    // A concurrent upload replaces the policies array; if that happened mid-flight,
+    // this result is stale — drop it rather than reviving cleared submit state.
+    if (this.store.policies() !== policies) return;
     this.store.setSubmitResult(result);
+  }
+
+  /**
+   * Hold a loading state on screen until at least the `MIN_PROCESSING_MS` floor has
+   * elapsed since `startedAt`, so it never flickers. Sleeps only the *remaining* time,
+   * so a genuinely slow read/POST isn't padded.
+   */
+  private async holdFloor(startedAt: number): Promise<void> {
+    const remaining = this.minProcessingMs - (performance.now() - startedAt);
+    if (remaining > 0) {
+      await new Promise((resolve) => setTimeout(resolve, remaining));
+    }
   }
 
   /**

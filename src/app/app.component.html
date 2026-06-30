@@ -35,7 +35,7 @@
           @if (store.submitResult(); as r) {
             <app-alert [variant]="r.status">
               {{ r.message }}
-              @if (r.status === 'success') { <strong>#{{ r.id }}</strong> }
+              @if (r.status === 'success' && r.id != null) { <strong>#{{ r.id }}</strong> }
             </app-alert>
           }
         </div>

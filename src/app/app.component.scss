@@ -49,18 +49,7 @@ app-panel[data-variant="results"] {
   align-self: stretch;
 }
 
-/*
- * Empty state for the Results panel (no upload yet): an honest, centered prompt.
- * The min-height keeps the panel from collapsing so the layout stays stable
- * before and after data loads. No fake/blurred preview — a skeleton belongs to
- * the processing state, not the idle one.
- */
-@keyframes submit-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
+/* Submit action area below the loaded table: the button and its result alert. */
 .submit {
   display: flex;
   flex-direction: column;
@@ -70,9 +59,15 @@ app-panel[data-variant="results"] {
 }
 
 .submit__spinner {
-  animation: submit-spin var(--duration-spin) linear infinite;
+  animation: spin var(--duration-spin) linear infinite;
 }
 
+/*
+ * Empty state for the Results panel (no upload yet): an honest, centered prompt.
+ * The min-height keeps the panel from collapsing so the layout stays stable
+ * before and after data loads. No fake/blurred preview — a skeleton belongs to
+ * the processing state, not the idle one.
+ */
 .results-empty {
   display: flex;
   flex-direction: column;

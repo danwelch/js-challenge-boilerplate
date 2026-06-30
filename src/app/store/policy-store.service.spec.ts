@@ -137,5 +137,12 @@ describe('PolicyStore', () => {
       expect(store.submitting()).toBe(false);
       expect(store.submitResult()).toBeNull();
     });
+
+    it('beginProcessing() clears the submit slice so a new upload drops a prior result', () => {
+      store.setSubmitResult({ status: 'success', message: 'done', id: 1 });
+      store.beginProcessing();
+      expect(store.submitting()).toBe(false);
+      expect(store.submitResult()).toBeNull();
+    });
   });
 });
