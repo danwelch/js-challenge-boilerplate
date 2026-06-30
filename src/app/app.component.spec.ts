@@ -1,14 +1,20 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { AppComponent, MIN_PROCESSING_MS } from './app.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
+import { POLICY_API_URL } from './services/policy-api.service';
 import { PolicyStore } from './store/policy-store.service';
+
+const TEST_API_URL = 'https://test.example.com/posts';
 
 describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let component: AppComponent;
   let store: PolicyStore;
+  let httpMock: HttpTestingController;
 
   /** Build the fixture with an overridable processing floor (0 by default → no wait). */
   function setup(minMs = 0): void {
@@ -17,15 +23,25 @@ describe('AppComponent', () => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [{ provide: MIN_PROCESSING_MS, useValue: minMs }],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: MIN_PROCESSING_MS, useValue: minMs },
+        { provide: POLICY_API_URL, useValue: TEST_API_URL },
+      ],
     });
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
     store = TestBed.inject(PolicyStore);
+    httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   }
 
   beforeEach(() => setup());
+
+  afterEach(() => {
+    httpMock.verify();
+  });
 
   it('creates the app', () => {
     expect(component).toBeTruthy();
@@ -173,6 +189,114 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     expect(region?.textContent).toContain('Loaded');
     expect(region?.textContent).toContain('2 policy numbers');
+  });
+
+  describe('onSubmit()', () => {
+    it('sets a success result with the returned id on a successful POST', async () => {
+      store.setPolicies(['457508000', '123456789'], 'policies.csv');
+
+      const pending = component.onSubmit();
+      const req = httpMock.expectOne(TEST_API_URL);
+      expect(req.request.method).toBe('POST');
+      req.flush({ id: 101 });
+      await pending;
+
+      const result = store.submitResult();
+      expect(result?.status).toBe('success');
+      expect(result?.id).toBe(101);
+      expect(result?.message).toContain('2 policy numbers');
+      expect(store.submitting()).toBe(false);
+    });
+
+    it('omits the id chip on a success response that has no id', async () => {
+      store.setPolicies(['457508000'], 'policies.csv');
+
+      const pending = component.onSubmit();
+      httpMock.expectOne(TEST_API_URL).flush({}); // success, but the API returned no id
+      await pending;
+      fixture.detectChanges();
+
+      const result = store.submitResult();
+      expect(result?.status).toBe('success');
+      expect(result?.id).toBeUndefined();
+
+      // Template guard: no "#…" chip when id is absent — regression guard for "#undefined".
+      const alert = fixture.nativeElement.querySelector('app-alert[data-variant="success"]');
+      expect(alert).not.toBeNull();
+      expect(alert?.textContent).not.toContain('#');
+    });
+
+    it('sets an error result when the request fails', async () => {
+      store.setPolicies(['457508000'], 'policies.csv');
+
+      const pending = component.onSubmit();
+      const req = httpMock.expectOne(TEST_API_URL);
+      req.flush(null, { status: 500, statusText: 'Server Error' });
+      await pending;
+
+      const result = store.submitResult();
+      expect(result?.status).toBe('error');
+      expect(result?.message).toContain('Submission failed');
+      expect(store.submitting()).toBe(false);
+    });
+
+    it('discards a stale success when a new upload lands while the POST is in flight', async () => {
+      store.setPolicies(['457508000', '123456789'], 'first.csv');
+
+      const pending = component.onSubmit();
+      const req = httpMock.expectOne(TEST_API_URL);
+
+      // A concurrent upload replaces the policies before the POST resolves.
+      store.setPolicies(['457500000'], 'second.csv');
+
+      req.flush({ id: 999 });
+      await pending;
+
+      // The in-flight result is stale: it must not revive a success alert over the
+      // freshly-uploaded file. beginSubmit/setPolicies already cleared the slice.
+      expect(store.submitResult()).toBeNull();
+      expect(store.sourceName()).toBe('second.csv');
+    });
+
+    it('issues no second HTTP request when called again while submitting', async () => {
+      store.setPolicies(['457508000'], 'policies.csv');
+
+      const first = component.onSubmit();
+      // Second call while the first is in flight — should be a no-op.
+      await component.onSubmit();
+
+      const req = httpMock.expectOne(TEST_API_URL);
+      req.flush({ id: 1 });
+      await first;
+
+      httpMock.expectNone(TEST_API_URL);
+    });
+
+    it('holds the spinner for the minimum processing time before showing the result', async () => {
+      setup(1000);
+      vi.useFakeTimers();
+
+      try {
+        store.setPolicies(['457508000', '123456789'], 'policies.csv');
+
+        const pending = component.onSubmit();
+        httpMock.expectOne(TEST_API_URL).flush({ id: 101 });
+
+        // POST has resolved, but the floor hasn't elapsed: spinner still up, no result yet.
+        await Promise.resolve();
+        expect(store.submitting()).toBe(true);
+        expect(store.submitResult()).toBeNull();
+
+        // Fast-forward past the floor and let the resulting microtasks settle.
+        await vi.advanceTimersByTimeAsync(1000);
+        await pending;
+
+        expect(store.submitting()).toBe(false);
+        expect(store.submitResult()?.id).toBe(101);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   it('parses CSV text into the store', () => {

@@ -6,11 +6,15 @@ import {
   inject,
   isDevMode,
 } from '@angular/core';
-import { Inbox, LucideAngularModule } from 'lucide-angular';
+import { Inbox, LoaderCircle, LucideAngularModule } from 'lucide-angular';
+import type { SubmitResult } from './models/submit-result.model';
+import { AlertComponent } from './components/alert/alert.component';
+import { ButtonDirective } from './components/button/button.directive';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PolicyTableComponent } from './components/policy-table/policy-table.component';
 import { CsvParserService } from './services/csv-parser.service';
+import { PolicyApiService } from './services/policy-api.service';
 import { PolicyStore } from './store/policy-store.service';
 
 /**
@@ -39,17 +43,19 @@ export const MIN_PROCESSING_MS = new InjectionToken<number>('MIN_PROCESSING_MS',
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FileUploadComponent, PanelComponent, PolicyTableComponent, LucideAngularModule],
+  imports: [FileUploadComponent, PanelComponent, PolicyTableComponent, LucideAngularModule, ButtonDirective, AlertComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   protected readonly store = inject(PolicyStore);
   private readonly csvParser = inject(CsvParserService);
+  private readonly policyApi = inject(PolicyApiService);
   private readonly minProcessingMs = inject(MIN_PROCESSING_MS);
 
   /** Decorative icon for the empty Results panel. */
   protected readonly emptyIcon = Inbox;
+  protected readonly spinnerIcon = LoaderCircle;
 
   /** Drives a persistent polite live region so SR users hear upload progress.
    *  Errors are intentionally omitted — AlertComponent already announces them. */
@@ -82,14 +88,46 @@ export class AppComponent {
       return;
     }
 
-    // Hold the loading skeleton for at least the floor so it never flickers. Using
-    // the *remaining* time (not a fixed sleep) means a genuinely slow read isn't padded.
+    // Hold the loading skeleton for at least the floor so it never flickers.
+    await this.holdFloor(startedAt);
+
+    this.loadFromText(text, file.name);
+  }
+
+  /** POSTs the current policies to the API and stores the result. */
+  async onSubmit(): Promise<void> {
+    if (this.store.submitting()) return;
+    this.store.beginSubmit();
+    const policies = this.store.policies();
+    const startedAt = performance.now();
+
+    let result: SubmitResult;
+    try {
+      const { id } = await this.policyApi.submit(policies);
+      const count = policies.length;
+      result = { status: 'success', message: `Submitted ${count} policy number${count === 1 ? '' : 's'}.`, id };
+    } catch (error) {
+      console.error('Policy submission failed', error);
+      result = { status: 'error', message: 'Submission failed. Please try again.' };
+    }
+
+    await this.holdFloor(startedAt);
+    // A concurrent upload replaces the policies array; if that happened mid-flight,
+    // this result is stale — drop it rather than reviving cleared submit state.
+    if (this.store.policies() !== policies) return;
+    this.store.setSubmitResult(result);
+  }
+
+  /**
+   * Hold a loading state on screen until at least the `MIN_PROCESSING_MS` floor has
+   * elapsed since `startedAt`, so it never flickers. Sleeps only the *remaining* time,
+   * so a genuinely slow read/POST isn't padded.
+   */
+  private async holdFloor(startedAt: number): Promise<void> {
     const remaining = this.minProcessingMs - (performance.now() - startedAt);
     if (remaining > 0) {
       await new Promise((resolve) => setTimeout(resolve, remaining));
     }
-
-    this.loadFromText(text, file.name);
   }
 
   /**

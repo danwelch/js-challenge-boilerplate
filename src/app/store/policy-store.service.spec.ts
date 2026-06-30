@@ -89,4 +89,60 @@ describe('PolicyStore', () => {
       expect(store.processing()).toBe(false);
     });
   });
+
+  describe('submit slice', () => {
+    it('starts with submitting false and no result', () => {
+      expect(store.submitting()).toBe(false);
+      expect(store.submitResult()).toBeNull();
+    });
+
+    it('beginSubmit() sets submitting and clears any prior result', () => {
+      store.setSubmitResult({ status: 'success', message: 'done', id: 1 });
+      store.beginSubmit();
+      expect(store.submitting()).toBe(true);
+      expect(store.submitResult()).toBeNull();
+    });
+
+    it('setSubmitResult() stores the result and clears submitting', () => {
+      store.beginSubmit();
+      store.setSubmitResult({ status: 'success', message: 'Submitted 1 policy number.', id: 101 });
+      expect(store.submitting()).toBe(false);
+      expect(store.submitResult()).toEqual({ status: 'success', message: 'Submitted 1 policy number.', id: 101 });
+    });
+
+    it('setSubmitResult() stores an error result', () => {
+      store.beginSubmit();
+      store.setSubmitResult({ status: 'error', message: 'Submission failed. Please try again.' });
+      expect(store.submitResult()).toEqual({ status: 'error', message: 'Submission failed. Please try again.' });
+    });
+
+    it('reset() clears the submit slice', () => {
+      store.beginSubmit();
+      store.setSubmitResult({ status: 'success', message: 'done', id: 1 });
+      store.reset();
+      expect(store.submitting()).toBe(false);
+      expect(store.submitResult()).toBeNull();
+    });
+
+    it('setPolicies() clears the submit slice', () => {
+      store.setSubmitResult({ status: 'success', message: 'done', id: 1 });
+      store.setPolicies(['457508000'], 'new.csv');
+      expect(store.submitting()).toBe(false);
+      expect(store.submitResult()).toBeNull();
+    });
+
+    it('setError() clears the submit slice', () => {
+      store.setSubmitResult({ status: 'success', message: 'done', id: 1 });
+      store.setError({ message: 'bad file' });
+      expect(store.submitting()).toBe(false);
+      expect(store.submitResult()).toBeNull();
+    });
+
+    it('beginProcessing() clears the submit slice so a new upload drops a prior result', () => {
+      store.setSubmitResult({ status: 'success', message: 'done', id: 1 });
+      store.beginProcessing();
+      expect(store.submitting()).toBe(false);
+      expect(store.submitResult()).toBeNull();
+    });
+  });
 });

@@ -49,6 +49,19 @@ app-panel[data-variant="results"] {
   align-self: stretch;
 }
 
+/* Submit action area below the loaded table: the button and its result alert. */
+.submit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-200);
+  padding: var(--space-300) var(--space-200);
+}
+
+.submit__spinner {
+  animation: spin var(--duration-spin) linear infinite;
+}
+
 /*
  * Empty state for the Results panel (no upload yet): an honest, centered prompt.
  * The min-height keeps the panel from collapsing so the layout stays stable

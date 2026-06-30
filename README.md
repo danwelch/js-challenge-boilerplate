@@ -1,6 +1,6 @@
 # Kin OCR
 
-A small Angular app for the **Kinsurance OCR** challenge. A scanning machine exports a CSV
+A small Angular app for the **Kin OCR** challenge. A scanning machine exports a CSV
 of policy numbers; this app lets a user upload that CSV, view the numbers in a table, and
 (in later stories) validate and submit them.
 
@@ -10,7 +10,7 @@ Built on the provided Angular 21 boilerplate. The work is delivered story by sto
 | ---------- | ----- | ------ |
 | **US1** | Upload a CSV (validated: CSV type, ≤ 2 MB) and list the policy numbers in a table | ✅ Done |
 | **US2** | Validate each number via a mod‑11 checksum and show valid/invalid status | ✅ Done |
-| **US3** | POST the processed array to a mock API and report success/failure with the returned id | ⏳ Planned |
+| **US3** | POST the processed array to a mock API and report success/failure with the returned id | ✅ Done |
 | **US4** | Auto‑correct mis‑scanned digits (`valid` / `corrected` / `AMB` / `error`) | 📝 Outline only — to be paired on |
 
 ---
@@ -64,7 +64,11 @@ Then open <http://localhost:4200>. Use `./sample-files/sample.csv` as input.
 ```bash
 npm test       # Vitest unit tests (headless, single run)
 npm run e2e    # Playwright end-to-end tests (starts/reuses the dev server)
+npm run e2e:ui # same suite in Playwright's interactive UI mode (watch/debug)
 ```
+Current coverage: **135 unit specs** across 15 files (services, store, and every component) and
+**12 Playwright e2e scenarios** (the real upload, validation, table, and submit paths).
+
 The first `npm run e2e` will download the Chromium browser if it isn't already installed
 (`npx playwright install chromium`).
 
@@ -80,33 +84,43 @@ npm run build  # production build to dist/kin-ocr
 
 ```
 src/app/
-  models/policy.model.ts              # PolicyRecord interface
+  models/                             # interfaces: PolicyRecord, SubmitResult, UploadError
   services/csv-parser.service.ts      # hand-rolled CSV → string[] tokens
   services/checksum-validator.service.ts # mod-11 checksum: policy number → valid?
+  services/policy-api.service.ts      # POSTs policies to the injectable POLICY_API_URL token
   store/policy-store.service.ts       # signal-based state (single source of truth)
   components/
     alert/                            # status message (success/warning/error variants)
     button/                           # appButton directive + global button styles
     file-upload/                      # accessible CSV input + validation
+    pagination/                       # page-navigation control (used by the table)
     panel/                            # labelled-region card with BEM variant classes
-    policy-table/                     # responsive results table
-  app.component.*                     # thin orchestrator: upload → parse → store → table
+    policy-table/                     # responsive results table; decomposed into:
+      sort-header/                    #   clickable column header with sort-direction indicator
+      policy-status/                  #   valid/invalid status pill rendered per row
+      policy-table-skeleton/          #   gray loading skeleton shown while an upload processes
+    select-field/                     # labelled <select> (the table's status filter)
+  app.component.*                     # thin orchestrator: upload → parse → store → table → submit
+  app.config.ts                       # bootstrap providers, incl. provideHttpClient(withFetch())
 e2e/                                  # Playwright specs (*.e2e.ts) + fixtures
 sample-files/                         # sample CSVs for manual testing (success/empty/oversize)
 ```
 
 Data flow is one‑directional: the upload component emits a validated `File` (or a validation
 error); the orchestrator reads and parses it; the store holds the result as signals; the
-table renders from the store. Each later story adds a service/signal rather than reshaping
-this flow.
+table renders from the store; submitting POSTs the records via `PolicyApiService` and reports
+the outcome back through the store's submit slice. Each later story adds a service/signal
+rather than reshaping this flow.
 
 ## Component design system
 
 The components split into two tiers. **Primitives** — the directive `appButton` and the components
-`app-alert` / `app-panel` (camelCase attribute selector vs. kebab-case element selectors, per Angular's
-directive/component convention) — are context-free and reusable: they know nothing about CSVs or
-policies. **Feature components** (`app-file-upload`, `app-policy-table`) compose those primitives for
-this app's flow. New stories add feature components and extend the store; the primitives stay stable.
+`app-alert`, `app-panel`, `app-select-field`, and `app-pagination` (camelCase attribute selector vs.
+kebab-case element selectors, per Angular's directive/component convention) — are context-free and
+reusable: they know nothing about CSVs or policies. **Feature components** — `app-file-upload` and
+`app-policy-table` (itself composed of `app-sort-header`, `app-policy-status`, and
+`app-policy-table-skeleton`) — compose those primitives for this app's flow. New stories add feature
+components and extend the store; the primitives stay stable.
 
 Variant theming is consistent across the set: each variant is reflected to a `data-*` attribute via
 host bindings (not a modifier class), so stylesheets target `[data-variant=…]` and it works for bound
@@ -118,8 +132,9 @@ inputs and defaults alike — not just static string attributes.
 
 | Input | Type | Default | Notes |
 | ----- | ---- | ------- | ----- |
-| `variant` | `primary \| secondary \| tertiary \| ghost` | `primary` | reflected to `data-variant` |
+| `variant` | `primary \| secondary \| tertiary \| ghost \| outline` | `primary` | reflected to `data-variant` |
 | `size` | `sm \| md \| lg` | `md` | reflected to `data-size` |
+| `icon` | `boolean` | `false` | reflected to `data-icon`; flags an icon‑only button for square (~2rem) padding |
 
 A directive, not a `<app-button>`, so the *consumer* picks the semantic host element —
 `<button appButton>`, `<a appButton href>`, `<label appButton for>` (the upload uses the label form).
@@ -185,10 +200,43 @@ filter, and pagination (5/10/25/50/100 per page) — as local signals, deriving 
 `loading` is set the table renders an `aria-hidden` skeleton with a polite `role="status"`
 announcement — the "data is coming" state shown while an upload is processed.
 
+### Shared controls
+
+The table is assembled from small, single-responsibility controls. `app-select-field` and
+`app-pagination` are context-free primitives; `app-sort-header` is table-specific. All follow
+the same signal-input / `…Change`-or-verb-output convention as the components above.
+
+**`app-select-field`** — labelled `<select>` (`select-field.component.ts`)
+
+| Member | Kind | Type | Notes |
+| ------ | ---- | ---- | ----- |
+| `label` | input (required) | `string` | uppercase micro-label, wired to the control |
+| `value` | input (required) | `string \| number` | current selection (controlled) |
+| `options` | input | `SelectOption[]` | `{ label, value }` choices |
+| `inline` | input | `boolean` | row layout vs. stacked |
+| `valueChange` | output | `string` | emitted on change (two-way-friendly) |
+
+**`app-pagination`** — previous/next page control (`pagination.component.ts`)
+
+| Member | Kind | Type | Notes |
+| ------ | ---- | ---- | ----- |
+| `page` | input (required) | `number` | current 0-based page |
+| `pageCount` | input (required) | `number` | total pages (disables the ends) |
+| `previous` / `next` | output | `void` | step requests; the parent owns the page state |
+
+**`app-sort-header`** — clickable column header (`sort-header.component.ts`)
+
+| Member | Kind | Type | Notes |
+| ------ | ---- | ---- | ----- |
+| `direction` | input | `none \| asc \| desc` | current sort state; drives `aria-sort` + indicator |
+| `align` | input | `start \| end \| center` | column text alignment |
+| `toggle` | output | `void` | header activated; the table cycles the sort |
+
 ### Documentation: why no Storybook (yet)
 
-I considered Storybook to document these components and judged it disproportionate at this scale — five
-components, three of them primitives a reviewer can read end-to-end in a few minutes. A heavyweight
+I considered Storybook to document these components and judged it disproportionate at this scale — ten
+small components plus the `appButton` directive, several of them primitives a reviewer can read
+end-to-end in a few minutes. A heavyweight
 dependency plus its own build/CI lane would add maintenance surface without unlocking understanding the
 way it would in a large system, and a half-wired Storybook (static stories, no a11y/interaction tests,
 not in CI) reads as worse than none. The component contracts above plus the Vitest unit specs
@@ -203,7 +251,10 @@ behaviour rather than just displaying it.
 - **Policy numbers are stored as `string`, not `number`.** They are fixed‑width 9‑digit
   identifiers where leading zeros are significant (e.g. `000011111`), and US2's checksum is
   positional over the digit string. A JS `number` would drop leading zeros and risk
-  precision issues. (Trade‑off: callers must not do arithmetic on them — which we never do.)
+  precision issues. (Trade‑off: callers must not treat them as a numeric quantity — no
+  arithmetic on the value as a whole. US2's mod‑11 check does arithmetic, but per‑digit and
+  positional: it weights each character by its index, which only works *because* the string
+  preserves leading zeros.)
 - **Checksum lives in its own pure service, validity is attached in the store.** `ChecksumValidator`
   is a pure `string → boolean` mod‑11 check (no I/O), unit‑testable like the parser. The store —
   the single source of truth — calls it as it maps tokens into `PolicyRecord`s, so each record
@@ -218,6 +269,14 @@ behaviour rather than just displaying it.
 - **Signals over RxJS** for state. The state here is local and synchronous; signals keep the
   store terse and the components free of subscriptions. RxJS would shine if we introduced
   streams/async orchestration (US3's HTTP call is a single request, handled simply).
+- **US3 submission goes through a thin `PolicyApiService` to a mock endpoint.** The POST target
+  (`jsonplaceholder.typicode.com/posts`) is injected via a `POLICY_API_URL` token so it's
+  swappable and the service is testable with `HttpTestingController` — no real network in tests.
+  The store gained a `submitting` / `submitResult` slice (cleared on any new upload or error) and
+  `AppComponent` stays a thin orchestrator: begin → POST → report success (with the returned id)
+  or an error alert. *Future improvement:* the mock always succeeds, so retry/timeout and
+  partial-failure semantics are stubbed; a real endpoint would want request cancellation and a
+  typed error contract rather than a generic catch.
 - **Vitest over Karma/Jasmine.** Karma is deprecated by the Angular team; Angular 21 ships a
   built‑in Vitest runner (`@angular/build:unit-test`). Vitest is faster and ESM‑native. The
   existing Jasmine‑style specs run unchanged thanks to Vitest's compatible matchers.
@@ -256,28 +315,12 @@ behaviour rather than just displaying it.
 
 ## Accessibility & responsiveness
 
-- Labelled file control that stays keyboard‑focusable (visually hidden, not removed), with a
-  visible focus ring via `:focus-within`.
+- Labelled file control that stays keyboard‑focusable (visually hidden, not removed): the visible
+  `<label>` mirrors the hidden input's keyboard focus ring via `:has(.upload__input:focus-visible)`
+  (`:focus-visible` so it's keyboard‑only, and `:has()` so it tracks the input specifically, not the
+  sibling Reset button — deliberately not `:focus-within`).
 - Validation errors render in a `role="alert"` region and are wired to the input with
   `aria-describedby` / `aria-invalid`.
 - Semantic results table with `<caption>` and scoped column headers; horizontal‑scroll guard
   for narrow screens; fluid spacing via `clamp()`.
 - Colors come exclusively from the provided palette variables.
-
-## How I approached US1
-
-The brief asks for a file upload that accepts a CSV, validates it, and lists the policy numbers in a table. That sounds like a form, but the interesting constraint is that the file read itself is an async browser API (`File.text()`) that can fail — so there are actually three distinct failure modes: wrong type, too large, and unreadable at runtime. The design had to make all three feel the same to the user (a single inline error) while keeping the causes separately testable.
-
-The key decision was **keeping I/O and parsing separate**. `AppComponent.onFileSelected()` owns only the async file read; `CsvParserService.parse()` is a pure function on a string. That split means the I/O path is hard to unit-test (jsdom doesn't implement `File.text()`) but trivial to cover with Playwright, while the parsing logic — where the real edge cases live — is covered exhaustively with fast synchronous unit tests. No mocking required for either.
-
-The second consequential call was **no `[innerHTML]`**. Validation errors originally carried pre-formatted HTML strings so the component could render a `<code>` tag around the filename. That's an XSS vector — filenames are user-controlled — so errors are now a `{ filename, message }` object and the template does the markup. The store carries data, not view markup.
-
-Everything else follows from those two: signals over RxJS (state is synchronous), `appButton` directive over a component (semantic flexibility for `<label for>`), hand-rolled CSV parser (single-column plain numbers need six lines, not a library).
-
----
-
-## Future improvements
-
-- A parse summary (counts, duplicates) after upload.
-- Surface row‑level parse warnings (e.g. tokens that aren't 9 digits) ahead of US2.
-- Virtualized table if exports grow to thousands of rows.

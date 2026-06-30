@@ -152,6 +152,38 @@ test.describe('Policy CSV upload', () => {
     await expect(page.locator('.results-empty')).toBeVisible();
   });
 
+  test('submit: shows spinner then success alert with returned id', async ({ page }) => {
+    await page.route('**/posts', async (route) => {
+      await route.fulfill({ json: { id: 42 } });
+    });
+
+    await page.locator('#policy-file').setInputFiles(join(fixtures, 'sample.csv'));
+    await expect(page.locator('caption')).toContainText('(10)');
+
+    await page.getByRole('button', { name: 'Submit policy numbers' }).click();
+
+    // Spinner appears while in flight (dev mode floor keeps it visible).
+    await expect(page.getByText('Submitting…')).toBeVisible();
+
+    // Success alert with the returned id.
+    const successAlert = page.locator('app-alert[data-variant="success"]');
+    await expect(successAlert).toContainText('Submitted');
+    await expect(successAlert).toContainText('#42');
+  });
+
+  test('submit: shows error alert when the request fails', async ({ page }) => {
+    await page.route('**/posts', async (route) => {
+      await route.abort('failed');
+    });
+
+    await page.locator('#policy-file').setInputFiles(join(fixtures, 'sample.csv'));
+    await expect(page.locator('caption')).toContainText('(10)');
+
+    await page.getByRole('button', { name: 'Submit policy numbers' }).click();
+
+    await expect(page.getByRole('alert')).toContainText('Submission failed');
+  });
+
   test('drag-and-drop happy path loads the CSV', async ({ page }) => {
     const fileBytes = readFileSync(join(fixtures, 'sample.csv'));
     const base64 = fileBytes.toString('base64');

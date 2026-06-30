@@ -23,14 +23,8 @@
   }
 }
 
-@keyframes upload-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .upload__spinner {
-  animation: upload-spin var(--duration-spin) linear infinite;
+  animation: spin var(--duration-spin) linear infinite;
   /* Hint the browser this property changes often so it can compositor-only update. */
   will-change: transform;
 }
