@@ -66,7 +66,7 @@ npm test       # Vitest unit tests (headless, single run)
 npm run e2e    # Playwright end-to-end tests (starts/reuses the dev server)
 npm run e2e:ui # same suite in Playwright's interactive UI mode (watch/debug)
 ```
-Current coverage: **135 unit specs** across 15 files (services, store, and every component) and
+Current coverage: **137 unit specs** across 15 files (services, store, and every component) and
 **12 Playwright e2e scenarios** (the real upload, validation, table, and submit paths).
 
 The first `npm run e2e` will download the Chromium browser if it isn't already installed
