@@ -1,1 +1,0 @@
-This `.github` directory is to maintain the boilerplate repo, please disregard for the code challenge.
