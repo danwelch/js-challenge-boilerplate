@@ -208,6 +208,24 @@ describe('AppComponent', () => {
       expect(store.submitting()).toBe(false);
     });
 
+    it('omits the id chip on a success response that has no id', async () => {
+      store.setPolicies(['457508000'], 'policies.csv');
+
+      const pending = component.onSubmit();
+      httpMock.expectOne(TEST_API_URL).flush({}); // success, but the API returned no id
+      await pending;
+      fixture.detectChanges();
+
+      const result = store.submitResult();
+      expect(result?.status).toBe('success');
+      expect(result?.id).toBeUndefined();
+
+      // Template guard: no "#…" chip when id is absent — regression guard for "#undefined".
+      const alert = fixture.nativeElement.querySelector('app-alert[data-variant="success"]');
+      expect(alert).not.toBeNull();
+      expect(alert?.textContent).not.toContain('#');
+    });
+
     it('sets an error result when the request fails', async () => {
       store.setPolicies(['457508000'], 'policies.csv');
 
@@ -252,6 +270,32 @@ describe('AppComponent', () => {
       await first;
 
       httpMock.expectNone(TEST_API_URL);
+    });
+
+    it('holds the spinner for the minimum processing time before showing the result', async () => {
+      setup(1000);
+      vi.useFakeTimers();
+
+      try {
+        store.setPolicies(['457508000', '123456789'], 'policies.csv');
+
+        const pending = component.onSubmit();
+        httpMock.expectOne(TEST_API_URL).flush({ id: 101 });
+
+        // POST has resolved, but the floor hasn't elapsed: spinner still up, no result yet.
+        await Promise.resolve();
+        expect(store.submitting()).toBe(true);
+        expect(store.submitResult()).toBeNull();
+
+        // Fast-forward past the floor and let the resulting microtasks settle.
+        await vi.advanceTimersByTimeAsync(1000);
+        await pending;
+
+        expect(store.submitting()).toBe(false);
+        expect(store.submitResult()?.id).toBe(101);
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 
